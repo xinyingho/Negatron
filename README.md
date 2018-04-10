@@ -1,7 +1,6 @@
+# Negatron by BabelSoft
 
-Negatron by BabelSoft
-
-- PURPOSE -
+## PURPOSE
 
 Negatron is yet another front-end for MAME, the well-known multi-system emulator.
 
@@ -11,7 +10,7 @@ So Negatron has been engineered to assist users in managing the huge list of mac
 
 Moreover, Negatron's second objective is to ease the creation of a complete information set dealing with those video games emulated by MAME, using drag and drop operations, and display it in a convenient way. This information set should archive a whole breadth of resources, helping in preserving what is known as the video game history.
 
-- PREREQUISITES -
+## PREREQUISITES
 
 Negatron requires a Java runtime environment (JRE) to work: ensure that your computer has at least Java version 8 update 60, or newer. If you have any doubt, you can simply download the latest Java version at http://www.java.com and install it on your computer.
 
@@ -22,18 +21,18 @@ You can get the latest version for your specific OS at http://www.videolan.org. 
 
 The latest version of Negatron should always be available at http://www.babelsoft.net/products/negatron.htm.
 
-- QUICK START -
+## QUICK START
 
 Uncompress Negatron's zip archive file wherever you see fit, then:
 * under Windows, launch Negatron.exe
 * under Linux, launch Negatron.sh
 * under MacOS X, launch Negatron.command
 
-- SEE ALSO -
+## SEE ALSO
 
 For any further information, please refer to the manual (Negatron Manual vXXX.pdf).
 
-- LICENSE -
+## LICENSE
 
 Copyright (C) 2015-2018 BabelSoft S.A.S.U.
 
