@@ -1,0 +1,208 @@
+/*
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 3 août 2015, 18:17:00
+    Author     : capan
+*/
+
+.tree-view-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/view/tree.png");
+}
+
+.table-view-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/view/table.png");
+}
+
+.expand-all-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/view/expandAll.png");
+}
+
+.expand-all-button:disabled {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/view/expandAll.grey.png");
+}
+
+.collapse-all-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/view/collapseAll.png");
+}
+
+.collapse-all-button:disabled {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/view/collapseAll.grey.png");
+}
+
+.new-favourite-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/document-new.png");
+}
+
+.new-folder-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/folder-grey-new.png");
+}
+
+.new-separator-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/insert-horizontal-rule.png");
+}
+
+.cut-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/edit-cut.png");
+}
+
+.copy-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/edit-copy.png");
+}
+
+.paste-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/edit-paste.png");
+}
+
+.edit-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/document-edit.png");
+}
+
+.delete-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/edit-table-delete-row.png");
+}
+
+.move-bottom-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/go-bottom.png");
+}
+
+.move-down-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/go-down.png");
+}
+
+.move-up-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/go-up.png");
+}
+
+.move-top-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/go-top.png");
+}
+
+.move-root-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/go-first.png");
+}
+
+.move-left-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/go-previous.png");
+}
+
+.move-right-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/go-next.png");
+}
+
+.move-leaf-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favourites/go-last.png");
+}
+
+.tree-view-button, .table-view-button, .expand-all-button, .collapse-all-button,
+.new-favourite-button, .new-folder-button, .new-separator-button,
+.cut-button, .copy-button, .paste-button, .edit-button, .delete-button,
+.move-bottom-button, .move-down-button, .move-up-button, .move-top-button,
+.move-root-button, .move-left-button, .move-right-button, .move-leaf-button {
+    -fx-padding: 0.333333em 0.333333em 0.333333em 0.333333em;
+}
+
+.launch-mame-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/mame-logo.png");
+}
+
+.launch-mess-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/mess-logo.png");
+}
+
+.machine-configuration-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/configure.png");
+}
+
+.software-configuration-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/preferences-system.png");
+}
+
+.advanced-parametrisation-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/applications-development.png");
+}
+
+.favourite-view-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/folder-grey-favourites.png");
+}
+
+.sound-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/audio-volume-muted.png");
+}
+.sound-button:selected {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/audio-volume-high.png");
+}
+
+.video-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/video-disabled.png");
+}
+.video-button:selected {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/tool-animator.png");
+}
+
+.view3d-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/3dview-disabled.png");
+}
+.view3d-button:selected {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/3dview.png");
+}
+
+.global-configuration-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/applications-system.png");
+}
+
+.help-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/system-help.png");
+}
+
+.button-box {
+    /*-fx-spacing: 0.166665em;*/
+}
+
+.favourites-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favorites.png");
+}
+
+.minimise-button, .maximise-button, .restore-button, .close-button {
+    -fx-padding: 0.333333em 0.666667em;
+    -fx-font-size: 0;
+}
+
+.minimise-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/window/minimise.png");
+}
+
+.maximise-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/window/maximise.png");
+}
+
+.restore-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/window/restore.png");
+}
+
+.close-button {
+    -fx-padding: 0.333333em 0.888888em;
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/window/close.png");
+}
+
+.close-button:hover {
+    -fx-base: #ecaeae;    
+}
+
+.close-button:focused {
+    -fx-background-color: #d35244, -fx-inner-border, -fx-body-color, #d3524422, -fx-body-color;
+}

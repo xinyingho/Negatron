@@ -1,0 +1,41 @@
+/*
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 14 juil. 2015, 17:11:37
+    Author     : capan
+*/
+
+.text-field:error {
+    -fx-focus-color: #d35244;
+    -fx-faint-focus-color: #d3524422;
+
+    -fx-highlight-fill: -fx-accent;
+    -fx-highlight-text-fill: white;
+    -fx-background-color:
+        -fx-focus-color,
+        -fx-control-inner-background,
+        -fx-faint-focus-color,
+        linear-gradient(from 0px 0px to 0px 5px, derive(-fx-control-inner-background, -9%), -fx-control-inner-background);
+    -fx-background-insets: -0.2, 1, -1.4, 3;
+    -fx-background-radius: 3, 2, 4, 0;
+}
+
+.multi-path-field {
+    -fx-border-color: transparent transparent transparent -fx-outer-border;
+    -fx-padding: 0 0 0 5
+}

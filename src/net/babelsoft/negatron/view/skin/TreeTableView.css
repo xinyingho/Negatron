@@ -1,0 +1,114 @@
+/*
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 1 août 2015, 18:01:57
+    Author     : capan
+*/
+
+.tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:odd:filled {
+    -fx-background: derive(-fx-base, 26.4%);
+}
+
+.tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:odd:filled:selected {
+    -fx-background: -fx-selection-bar-non-focused;
+}
+
+.tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:odd:filled:selected {
+    -fx-background: -fx-selection-bar;
+}
+
+.table-view > .virtual-flow > .clipped-container > .sheet > .table-row-cell:odd:filled {
+    -fx-background-color: derive(-fx-base, 26.4%);
+}
+
+.table-view > .virtual-flow > .clipped-container > .sheet > .table-row-cell:odd:filled:selected {
+    -fx-background-color: -fx-selection-bar-non-focused;
+}
+
+.table-view:focused > .virtual-flow > .clipped-container > .sheet > .table-row-cell:odd:filled:selected {
+    -fx-background-color: -fx-selection-bar;
+}
+
+.tree-table-row-cell > .tree-disclosure-node > .arrow {
+    -fx-background-color: transparent;
+    -fx-border-color: derive(-fx-box-border, -10%);/*#a5a5a5*/
+}
+
+.tree-table-row-cell:selected > .tree-disclosure-node > .arrow {
+    -fx-border-color: -fx-text-background-color;
+}
+
+.tree-table-row-cell:expanded > .tree-disclosure-node > .arrow {
+    -fx-background-color: -fx-text-background-color;
+    -fx-border-color: transparent;
+}
+
+.tree-table-row-cell:expanded > .tree-disclosure-node:hover > .arrow {
+    -fx-background-color: transparent;
+}
+
+.tree-table-row-cell > .tree-disclosure-node:hover > .arrow,
+.tree-table-row-cell:expanded > .tree-disclosure-node:hover > .arrow {
+    -fx-border-color: #27c7f7;
+    -fx-effect: dropshadow(gaussian, #27c7f7, 6, 0, 0, 0);
+}
+
+.tree-table-row-cell:selected > .tree-disclosure-node:hover > .arrow,
+.tree-table-row-cell:selected:expanded > .tree-disclosure-node:hover > .arrow {
+    -fx-border-color: aquamarine;
+    -fx-effect: dropshadow(gaussian, aquamarine, 6, 0, 0, 0);
+}
+
+.tree-table-row-cell:cut {
+    -fx-opacity: 0.3;
+}
+
+.tree-table-row-cell:copied {
+    -fx-opacity: 0.6;
+}
+
+.tree-table-row-cell:invalidated > .tree-table-cell > .image-view {
+    -fx-image: url("/net/babelsoft/negatron/resource/icon/status/dialog-close.png");
+}
+
+.tree-table-row-cell:invalidated > .tree-table-cell:invalid {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/status/dialog-close.png");
+}
+
+.tree-table-row-cell:invalidated > .tree-table-cell {
+    -fx-text-fill: ladder(
+        -fx-background,
+        tomato 50%,
+        #990000 51%
+    );
+}
+
+.tree-table-row-cell:move-before {
+    -fx-background-color: -fx-background, -fx-cell-focus-inner-border, -fx-background;
+    -fx-background-insets: 0, 1 0 0 0, 2 0 0 0;
+}
+
+.tree-table-row-cell:move-after {
+    -fx-background-color: -fx-background, -fx-cell-focus-inner-border, -fx-background;
+    -fx-background-insets: 0, 0 0 1 0, 0 0 2 0;
+}
+
+.tree-table-row-cell:move-inside {
+    -fx-background-color: -fx-background, -fx-cell-focus-inner-border, -fx-background;
+    -fx-background-insets: 0, 1, 2;
+}

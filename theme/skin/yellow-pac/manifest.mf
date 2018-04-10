@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Created-By: capan
+Specification-Title: yellow-pac
+Implementation-Title: Yellow Pac
+Implementation-Version: 1.0
+Implementation-Vendor: BabelSoft

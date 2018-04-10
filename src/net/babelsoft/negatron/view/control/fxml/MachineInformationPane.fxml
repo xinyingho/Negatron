@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import org.jpedal.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import net.babelsoft.negatron.view.control.*?>
+
+<fx:root type="javafx.scene.layout.VBox" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="600.0" styleClass="titled-pane" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.MachineInformationPaneController">
+    <stylesheets>
+        <URL value="@../../skin/Tab.css" />
+    </stylesheets>
+   <children>
+      <HBox styleClass="title" alignment="CENTER">
+        <Label fx:id="headerLabel" text="Label" />
+        <Button fx:id="favouritesButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleOnAddToFavourites" styleClass="favourites-button" text="%favourites">
+            <HBox.margin>
+                <Insets left="4" /> 
+            </HBox.margin>
+            <tooltip>
+                <Tooltip text="%favourites.tooltip" />
+            </tooltip>
+        </Button>
+      </HBox>
+      <StackPane alignment="CENTER" VBox.vgrow="SOMETIMES">
+        <ProgressIndicator fx:id="progressIndicator" maxHeight="32" maxWidth="32" visible="false" translateY="-35" />
+        <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="SOMETIMES">
+          <tabs>
+            <Tab fx:id="externalTab" styleClass="externals" text="%machineExternals">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                      <StackPane alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <GridPane hgap="5.0" vgap="5.0">
+                           <padding>
+                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <columnConstraints>
+                               <ColumnConstraints percentWidth="50" />
+                               <ColumnConstraints percentWidth="50" />
+                           </columnConstraints>
+                           <rowConstraints>
+                               <RowConstraints percentHeight="20" />
+                               <RowConstraints percentHeight="60" />
+                               <RowConstraints percentHeight="20" />
+                           </rowConstraints>
+                           <children>
+                               <ImageViewPane fx:id="marqueeImagePane" GridPane.columnSpan="2" GridPane.rowIndex="0">
+                                   <tooltip>
+                                       <Tooltip text="%marquee" /> 
+                                   </tooltip>
+                               </ImageViewPane>
+                               <ImageViewPane fx:id="cabinetImagePane" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                   <tooltip>
+                                       <Tooltip text="%cabinet" />
+                                   </tooltip>
+                               </ImageViewPane>
+                               <ImageViewPane fx:id="controlPanelImagePane" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                   <tooltip>
+                                       <Tooltip text="%controlPanel" />
+                                   </tooltip>
+                               </ImageViewPane>
+                               <ImageViewPane fx:id="flyerImagePane" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
+                                   <tooltip>
+                                       <Tooltip text="%flyer" />
+                                   </tooltip>
+                               </ImageViewPane>
+                           </children>
+                        </GridPane>
+                        <ImageViewPane fx:id="externalsZoomImagePane" mouseTransparent="true" opacity="0.0" />
+                      </StackPane>
+                  </children>
+               </AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="ingameTab" styleClass="in-game" text="%ingameContent">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                       <StackPane alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <GridPane fx:id="ingameGrid" hgap="5.0" vgap="5.0">
+                                <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="40" />
+                                    <ColumnConstraints percentWidth="20" />
+                                    <ColumnConstraints percentWidth="20" />
+                                    <ColumnConstraints percentWidth="20" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints percentHeight="33.333" />
+                                    <RowConstraints percentHeight="33.333" />
+                                    <RowConstraints percentHeight="33.333" />
+                                </rowConstraints>
+                               <children>
+                                  <GridPane fx:id="ingameTitleGrid" hgap="5.0" vgap="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="3">
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="100" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints percentHeight="50" />
+                                        <RowConstraints percentHeight="50" />
+                                    </rowConstraints>
+                                    <children>
+                                        <ImageViewPane fx:id="titleImagePane" GridPane.rowIndex="0">
+                                            <tooltip>
+                                                <Tooltip text="%title" />
+                                            </tooltip>
+                                        </ImageViewPane>
+                                        <ImageViewPane fx:id="snapshotImagePane" GridPane.rowIndex="1">
+                                            <tooltip>
+                                                <Tooltip text="%snapshot" />
+                                            </tooltip>
+                                        </ImageViewPane>
+                                    </children>
+                                  </GridPane>
+                                  
+                                  <ImageViewPane fx:id="logoImagePane" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                      <tooltip>
+                                          <Tooltip text="%logo" />
+                                      </tooltip>
+                                  </ImageViewPane>
+                                  <ImageViewPane fx:id="howtoImagePane" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                      <tooltip>
+                                          <Tooltip text="%howTo" />
+                                      </tooltip>
+                                  </ImageViewPane>
+                                  <ImageViewPane fx:id="scoreImagePane" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                      <tooltip>
+                                          <Tooltip text="%score" />
+                                      </tooltip>
+                                  </ImageViewPane>
+                                  
+                                  <ImageViewPane fx:id="bossImagePane" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                      <tooltip>
+                                          <Tooltip text="%boss" />
+                                      </tooltip>
+                                  </ImageViewPane>
+                                  <ImageViewPane fx:id="gameoverImagePane" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                      <tooltip>
+                                          <Tooltip text="%gameOver" />
+                                      </tooltip>
+                                  </ImageViewPane>
+                                  <ImageViewPane fx:id="endImagePane" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                      <tooltip>
+                                          <Tooltip text="%end" />
+                                      </tooltip>
+                                  </ImageViewPane>
+                                  
+                                  <ImageViewPane fx:id="selectImagePane" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                                      <tooltip>
+                                          <Tooltip text="%select" />
+                                      </tooltip>
+                                  </ImageViewPane>
+                                  <ImageViewPane fx:id="artpreviewImagePane" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                      <tooltip>
+                                          <Tooltip text="%artworkPreview" />
+                                      </tooltip>
+                                  </ImageViewPane>
+                                  <ImageViewPane fx:id="versusImagePane" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                                      <tooltip>
+                                          <Tooltip text="%versus" />
+                                      </tooltip>
+                                  </ImageViewPane>
+                               </children>
+                            </GridPane>
+                            <MediaViewPane fx:id="mediaViewPane" styleClass="player-pane">
+                                <stylesheets>
+                                    <URL value="@../../skin/OverlayMediaPlayer.css" />
+                                </stylesheets>
+                            </MediaViewPane>
+                            <ImageViewPane fx:id="ingameZoomImagePane" mouseTransparent="true" opacity="0.0" />
+                       </StackPane>
+                    </children>
+                 </AnchorPane>
+              </content>
+            </Tab>
+              <Tab fx:id="internalsTab" styleClass="internals" text="%machineInternals">
+                <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                       <children>
+                          <ScrollPane fitToWidth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                             <content>
+                                <GridPane fx:id="internalsPane" hgap="5.0" vgap="5.0">
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </padding>
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="20" />
+                                        <ColumnConstraints percentWidth="80" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints />
+                                    </rowConstraints>
+                                   <children>
+                                   </children>
+                                </GridPane>
+                             </content>
+                          </ScrollPane>
+                       </children>
+                    </AnchorPane>
+                </content>
+              </Tab>
+              <Tab fx:id="informationTab" styleClass="information" text="%information">
+                <content>
+                </content>
+              </Tab>
+              <Tab fx:id="manualTab" styleClass="manual" text="%manual">
+                <content>
+                  <AnchorPane fx:id="pdfPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                      <children>
+                      </children>
+                  </AnchorPane>
+                </content>
+              </Tab>
+          </tabs>
+        </TabPane>
+      </StackPane>
+   </children>
+</fx:root>

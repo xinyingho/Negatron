@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import net.babelsoft.negatron.view.control.*?>
+<?import net.babelsoft.negatron.view.control.adapter.*?>
+
+<fx:root fx:id="root" type="TitledWindowPane" text="%filters" prefHeight="600" prefWidth="800" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.SoftwareFilterPaneController">
+    <content>
+        <ScrollPane fitToHeight="true" fitToWidth="true">
+            <padding>
+                <Insets top="5" right="5" bottom="5" left="5" />
+            </padding>
+            <content>
+                <GridPane fx:id="grid" hgap="5.0" vgap="15.0">
+                  <columnConstraints>
+                    <ColumnConstraints />
+                    <ColumnConstraints hgrow="SOMETIMES" />
+                    <ColumnConstraints />
+                  </columnConstraints>
+                  <rowConstraints>
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                      <RowConstraints />
+                  </rowConstraints>
+                   <children>
+                      <Label styleClass="outline" text="%outline" underline="true" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" />
+                      <Label minWidth="-Infinity" text="%description" wrapText="true" GridPane.rowIndex="1" />
+                      <TextField fx:id="description" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+                         <tooltip>
+                            <Tooltip text="%description.tooltip" />
+                         </tooltip></TextField>
+                      <Label minWidth="-Infinity" text="%name" wrapText="true" GridPane.rowIndex="2" />
+                      <TextField fx:id="name" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2" />
+                      <Label minWidth="-Infinity" text="%publisher" wrapText="true" GridPane.rowIndex="3" />
+                      <TextField fx:id="company" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                      <Label minWidth="-Infinity" text="%group" wrapText="true" GridPane.rowIndex="4" />
+                      <TextField fx:id="group" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                      <Label minWidth="-Infinity" text="%year" wrapText="true" GridPane.rowIndex="5" />
+                      <FlowPane fx:id="yearPane" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                         <children>
+                            <VBox spacing="5.0">
+                               <children>
+                                  <RadioButton fx:id="yearFixed" mnemonicParsing="false" onAction="#handleOnAction" text="%fixed">
+                                     <toggleGroup>
+                                        <ToggleGroup fx:id="yearGroup" />
+                                     </toggleGroup>
+                                  </RadioButton>
+                                  <RadioButton fx:id="yearRange" mnemonicParsing="false" onAction="#handleOnAction" text="%range" toggleGroup="$yearGroup" />
+                               </children>
+                            </VBox>
+                            <TextField fx:id="year" prefWidth="70.0">
+                               <tooltip>
+                                  <Tooltip text="%year.tooltip" />
+                               </tooltip></TextField>
+                            <HBox fx:id="yearRangePane" alignment="CENTER_LEFT" spacing="5.0">
+                               <children>
+                                  <Label text="%from" />
+                                  <YearSpinner fx:id="yearFrom" editable="true" initialValue="1900" min="1900" prefWidth="70.0" />
+                                  <Label text="%to" />
+                                  <YearSpinner fx:id="yearTo" editable="true" min="1900" prefWidth="70.0" />
+                               </children>
+                           </HBox>
+                         </children>
+                      </FlowPane>
+                      <Label minWidth="-Infinity" text="%version" wrapText="true" GridPane.rowIndex="6" />
+                      <FlowPane alignment="CENTER_LEFT" hgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                         <children>
+                            <RadioButton fx:id="versionAll" mnemonicParsing="false" onAction="#handleOnAction" text="%all">
+                               <toggleGroup>
+                                  <ToggleGroup fx:id="versionGroup" />
+                               </toggleGroup>
+                            </RadioButton>
+                            <RadioButton fx:id="versionParents" mnemonicParsing="false" onAction="#handleOnAction" text="%parents" toggleGroup="$versionGroup" />
+                            <RadioButton fx:id="versionClones" mnemonicParsing="false" onAction="#handleOnAction" text="%clones" toggleGroup="$versionGroup" />
+                         </children>
+                      </FlowPane>
+                      <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" />
+                      <Label styleClass="emulation" text="%emulation" underline="true" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
+                      <Label minWidth="-Infinity" text="%supportLevel" wrapText="true" GridPane.rowIndex="9" />
+                      <FlowPane alignment="CENTER_LEFT" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
+                         <children>
+                            <CheckBox fx:id="supportSupported" mnemonicParsing="false" onAction="#handleOnAction" text="%supported">
+                               <tooltip>
+                                  <Tooltip text="%supportSupported.tooltip" />
+                               </tooltip></CheckBox>
+                            <CheckBox fx:id="supportPartial" mnemonicParsing="false" onAction="#handleOnAction" text="%partial">
+                               <tooltip>
+                                  <Tooltip text="%supportPartial.tooltip" />
+                               </tooltip></CheckBox>
+                            <CheckBox fx:id="supportUnsupported" mnemonicParsing="false" onAction="#handleOnAction" text="%unsupported">
+                               <tooltip>
+                                  <Tooltip text="%supportUnsupported.tooltip" />
+                               </tooltip></CheckBox>
+                         </children>
+                      </FlowPane>
+                      <Label minWidth="-Infinity" text="%romChdStatus" wrapText="true" GridPane.rowIndex="10" />
+                      <FlowPane alignment="CENTER_LEFT" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
+                         <children>
+                            <CheckBox fx:id="statusGood" mnemonicParsing="false" onAction="#handleOnAction" text="%romChdStatus.good">
+                               <tooltip>
+                                  <Tooltip text="%statusGood.software.tooltip" />
+                               </tooltip></CheckBox>
+                            <CheckBox fx:id="statusBad" mnemonicParsing="false" onAction="#handleOnAction" text="%bad">
+                               <tooltip>
+                                  <Tooltip text="%statusBad.software.tooltip" />
+                               </tooltip></CheckBox>
+                         </children>
+                      </FlowPane>
+                    <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="11" />
+                    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#handleOnSetCompanyAsSelection" text="%setAsSelection.software" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                       <tooltip>
+                          <Tooltip text="%setAsSelection.software.tooltip" />
+                       </tooltip></Button>
+                    <Button mnemonicParsing="false" onAction="#handleOnSetGroupAsSelection" text="%setAsSelection.software" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                       <tooltip>
+                          <Tooltip text="%setAsSelection.software.tooltip" />
+                       </tooltip></Button>
+                    <Button mnemonicParsing="false" onAction="#handleOnSetYearAsSelection" text="%setAsSelection.software" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                       <tooltip>
+                          <Tooltip text="%setAsSelection.software.tooltip" />
+                       </tooltip></Button>
+                    <Button mnemonicParsing="false" onAction="#handleOnSetVersionAsSelection" text="%setAsSelection.software" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                       <tooltip>
+                          <Tooltip text="%setAsSelection.software.tooltip" />
+                       </tooltip></Button>
+                    <Button mnemonicParsing="false" onAction="#handleOnSetSupportAsSelection" text="%setAsSelection.software" GridPane.columnIndex="2" GridPane.rowIndex="9">
+                       <tooltip>
+                          <Tooltip text="%setAsSelection.software.tooltip" />
+                       </tooltip></Button>
+                    <Button mnemonicParsing="false" onAction="#handleOnSetStatusAsSelection" text="%setAsSelection.software" GridPane.columnIndex="2" GridPane.rowIndex="10">
+                       <tooltip>
+                          <Tooltip text="%setAsSelection.software.tooltip" />
+                       </tooltip></Button>
+                    <Button mnemonicParsing="false" onAction="#handleOnRestoreDefaults" text="%restoreDefaults" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="12" />
+                   </children>
+                </GridPane>
+            </content>
+        </ScrollPane>
+    </content>
+</fx:root>

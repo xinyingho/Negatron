@@ -1,0 +1,215 @@
+/*
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 26 mai 2016, 17:25:51
+    Author     : capan
+*/
+
+.root {
+    -fx-base: rgb(200, 0, 24);
+	-fx-translucid-base: rgba(200, 0, 24, 0.75);
+	-fx-translucid-background: derive(-fx-translucid-base, 26.4%);
+	-fx-translucid-control-inner-background: derive(-fx-translucid-base, 80%);
+	-fx-opaque-control-inner-background: derive(rgba(200, 0, 24, 0.9), 80%);
+
+	-fx-translucent-color: rgba(200, 0, 24, 0.4);
+	-fx-translucent-hover-base: ladder(
+        -fx-translucent-base,
+        derive(-fx-translucent-base,20%) 20%,
+        derive(-fx-translucent-base,30%) 35%,
+        derive(-fx-translucent-base,40%) 50%
+     );
+	
+	-fx-translucent-base: rgba(200, 0, 24, 0.6);
+	-fx-translucent-background: derive(-fx-translucent-base, 26.4%);
+	-fx-translucent-control-inner-background: derive(-fx-translucent-base, 80%);
+	
+	-fx-translucent-text-box-border: ladder(
+        -fx-translucent-background,
+        black 10%,
+        derive(-fx-translucent-background, -15%) 30%
+    );
+}
+
+.expand-all-button {
+    -fx-graphic: url("../dark-modena/expandAll.png") !important;
+}
+
+.expand-all-button:disabled {
+    -fx-graphic: url("../dark-modena/expandAll.grey.png") !important;
+}
+
+.collapse-all-button {
+    -fx-graphic: url("../dark-modena/collapseAll.png") !important;
+}
+
+.collapse-all-button:disabled {
+    -fx-graphic: url("../dark-modena/collapseAll.grey.png") !important;
+}
+
+.minimise-button {
+    -fx-graphic: url("../dark-modena/minimise.png") !important;
+}
+
+.maximise-button {
+    -fx-graphic: url("../dark-modena/maximise.png") !important;
+}
+
+.restore-button {
+    -fx-graphic: url("../dark-modena/restore.png") !important;
+}
+
+.close-button {
+	-fx-graphic: url("../dark-modena/close.png") !important;
+}
+
+.favourite-view-button {
+    -fx-graphic: url("folder-red-favourites.png") !important;
+}
+
+.new-folder-button {
+    -fx-graphic: url("folder-red-new.png") !important;
+}
+
+.tree-table-view > .virtual-flow,
+.table-view > .virtual-flow {
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: 25%;
+}
+
+#machineTreePane .tree-table-view > .virtual-flow {
+	-fx-background-image: url("8_bit_3d__mario_by_cezkid.gif"); /* http://cezkid.deviantart.com */
+}
+
+#softwareTreePane .tree-table-view > .virtual-flow {
+	-fx-background-image: url("supermario64.gif");
+	-fx-background-size: 60%;
+}
+
+.tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell {
+	-fx-background: -fx-translucid-control-inner-background !important;
+}
+
+.tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:odd:filled  {
+	-fx-background: -fx-translucid-background !important;
+}
+
+.tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected {
+    -fx-background: -fx-selection-bar-non-focused !important;
+}
+
+.tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected {
+    -fx-background: -fx-selection-bar !important;
+}
+
+#softwareConfigurationWindow .table-view > .virtual-flow {
+	-fx-background-image: url("mariopeach.gif");
+}
+
+.table-view > .virtual-flow > .clipped-container > .sheet > .table-row-cell {
+	-fx-background-color: -fx-translucid-control-inner-background !important;
+}
+
+.table-view > .virtual-flow > .clipped-container > .sheet > .table-row-cell:odd:filled {
+	-fx-background-color: -fx-translucid-background !important;
+}
+
+.table-view > .virtual-flow > .clipped-container > .sheet > .table-row-cell:filled:selected {
+    -fx-background-color: -fx-selection-bar-non-focused !important;
+}
+
+.table-view:focused > .virtual-flow > .clipped-container > .sheet > .table-row-cell:filled:selected {
+    -fx-background-color: -fx-selection-bar !important;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane {
+	-fx-background-image: url("Mario_Spin_Art_-_Super_Mario_Galaxy.png");
+	-fx-background-position: bottom 30 right 15%;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: 30%;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport {
+	-fx-background-color: -fx-translucid-background;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .content {
+	-fx-padding: 0 0 500 0;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .button {
+	-fx-color: -fx-translucent-color;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .button:hover {
+	-fx-color: -fx-translucent-hover-base;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .button:focused {
+	-fx-color: -fx-translucent-color;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .text-input {
+	-fx-background-color: linear-gradient(to bottom, derive(-fx-translucent-text-box-border, -10%), -fx-translucent-text-box-border),
+        linear-gradient(from 0px 0px to 0px 5px, derive(-fx-translucent-control-inner-background, -9%), -fx-translucent-control-inner-background);
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .mameExe {
+	-fx-graphic: url("mariowalk.gif"); /* by Neweegee at http://www.vg-resource.com/thread-25395.html  */
+	-fx-content-display: right;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .mameIni {
+	-fx-graphic: url("toadwalk.gif"); /* by Neweegee at http://www.vg-resource.com/thread-25395.html  */
+	-fx-content-display: right;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .chdman {
+	-fx-graphic: url("wariocharge.gif"); /* by Neweegee at http://www.vg-resource.com/thread-25395.html  */
+	-fx-content-display: right;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .extrasRoot {
+	-fx-graphic: url("marioluigidance.gif");
+	-fx-content-display: right;
+	-fx-graphic-text-gap: 0;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-header-area > .headers-region > .tab.folders > .tab-container > .tab-label {
+    -fx-graphic: url("folder-red.png") !important;
+}
+
+#machineInformationPane .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane,
+#softwareInformationWindow .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane {
+	-fx-background-image: url("Mario_characters_group_artwork.png");
+	-fx-background-position: bottom;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: 100%;
+}
+
+#machineInformationPane .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane > .viewport,
+#softwareInformationWindow .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane > .viewport {
+	-fx-background-color: -fx-translucid-control-inner-background;
+}
+
+#machineInformationPane .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane > .viewport .textFlow,
+#softwareInformationWindow .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane > .viewport .textFlow {
+	-fx-background-color: transparent;
+	-fx-padding: 10 10 450 10;
+}

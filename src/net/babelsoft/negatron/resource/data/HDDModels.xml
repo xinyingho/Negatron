@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!-- Data based on QCHDMAN, part of QMC2, as of Nov 23 2015 -->
+<hdd>
+    <manufacturer name="Alps Electric">
+        <model name="DRND-10A" cylinder="615" head="2" sector="17" sectorSize="256" />
+        <model name="DRND-20A" cylinder="615" head="4" sector="17" sectorSize="256" />
+        <model name="RPO-20A" cylinder="615" head="4" sector="17" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Ampex">
+        <model name="Pyxis-7" cylinder="320" head="2" sector="17" sectorSize="512" />
+        <model name="Pyxis-13" cylinder="320" head="4" sector="17" sectorSize="512" />
+        <model name="Pyxis-20" cylinder="320" head="6" sector="17" sectorSize="512" />
+        <model name="Pyxis-27" cylinder="320" head="8" sector="17" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Amstrad">
+        <model name="DRMD2OA12A" cylinder="615" head="4" sector="17" sectorSize="512" />
+        <model name="SRD 30400-50" cylinder="822" head="2" sector="51" sectorSize="512" />
+        <model name="SRD 3O8OC-50" cylinder="954" head="10" sector="17" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Applied Engineering">
+        <model name="Vulcan 40MB" cylinder="960" head="5" sector="17" sectorSize="512" />
+        <model name="Vulcan 80MB v1" cylinder="1067" head="5" sector="29" sectorSize="512" />
+        <model name="Vulcan 80MB v2" cylinder="954" head="10" sector="17" sectorSize="512" />
+        <model name="Vulcan 100MB" cylinder="863" head="7" sector="34" sectorSize="512" />
+        <model name="Vulcan 140MB" cylinder="1068" head="9" sector="29" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="APS Technologies">
+        <model name="MS 4.0" cylinder="3124" head="19" sector="144" sectorSize="512" />
+        <model name="Q 10800" cylinder="2864" head="16" sector="46" sectorSize="512" />
+        <model name="Q 2.0" cylinder="3850" head="10" sector="109" sectorSize="512" />
+        <model name="ST 2000(W)" cylinder="6311" head="4" sector="175" sectorSize="512" />
+        <model name="ST 23000(W)" cylinder="6880" head="28" sector="237" sectorSize="512" />
+        <model name="ST 4200" cylinder="3992" head="19" sector="110" sectorSize="512" />
+        <model name="ST 9.0" cylinder="2925" head="27" sector="133" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Blue Disk">
+        <model name="CD 1241-ISA" cylinder="976" head="8" sector="31" sectorSize="512" />
+        <model name="CD 1501-ISA" cylinder="989" head="8" sector="37" sectorSize="512" />
+        <model name="CD 2401-ISA" cylinder="977" head="8" sector="59" sectorSize="512" />
+        <model name="CD 3251-ISA" cylinder="1024" head="12" sector="51" sectorSize="512" />
+        <model name="CD 421-ISA" cylinder="976" head="4" sector="21" sectorSize="512" />
+        <model name="CD 5101" cylinder="977" head="14" sector="72" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Conner">
+        <model name="CP3024" cylinder="636" head="2" sector="33" sectorSize="512" />
+        <model name="CP349" cylinder="788" head="4" sector="26" sectorSize="512" />
+        <model name="CFA 2161A" cylinder="1023" head="64" sector="63" sectorSize="512" />
+        <model name="CFS 1275A" cylinder="2479" head="16" sector="63" sectorSize="512" />
+        <model name="CFS 1621A" cylinder="3146" head="16" sector="63" sectorSize="512" />
+        <model name="CFS 1080S(E)" cylinder="3658" head="6" sector="96" sectorSize="512" />
+        <model name="CFS 4217S" cylinder="6028" head="10" sector="147" sectorSize="512" />
+        <model name="CFS 9117S" cylinder="6028" head="20" sector="158" sectorSize="512" />
+        <model name="CP3184" cylinder="832" head="6" sector="33" sectorSize="512" />
+        <model name="CP3104" cylinder="776" head="8" sector="33" sectorSize="512" />
+        <model name="CFS210A" cylinder="685" head="16" sector="38" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Data General">
+        <model name="6301" cylinder="640" head="7" sector="17" sectorSize="512" />
+        <model name="6338" cylinder="1024" head="8" sector="17" sectorSize="512" />
+        <model name="6339" cylinder="965" head="15" sector="17" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="DMA">
+        <model name="306" cylinder="612" head="2" sector="17" sectorSize="256" />
+    </manufacturer>
+    <manufacturer name="Hitachi">
+        <model name="DK226A-21" cylinder="4188" head="16" sector="63" sectorSize="512" />
+        <model name="DK227A-41" cylinder="7944" head="16" sector="63" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="JVC">
+        <model name="JD 3812M0Z0" cylinder="436" head="2" sector="48" sectorSize="512" />
+        <model name="JD E3848HA" cylinder="436" head="4" sector="48" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="JTC">
+        <model name="100" cylinder="131" head="4" sector="17" sectorSize="512" />
+        <model name="1006" cylinder="436" head="2" sector="17" sectorSize="512" />
+        <model name="1010" cylinder="436" head="4" sector="17" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Magtron">
+        <model name="MT 5760" cylinder="1632" head="15" sector="54" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Maxtor">
+        <model name="72025AP" cylinder="3936" head="16" sector="63" sectorSize="512" />
+        <model name="72577AV" cylinder="4996" head="16" sector="63" sectorSize="512" />
+        <model name="82625A6" cylinder="5100" head="16" sector="63" sectorSize="512" />
+        <model name="83209A5" cylinder="6218" head="16" sector="63" sectorSize="512" />
+        <model name="83500A4" cylinder="7237" head="16" sector="63" sectorSize="512" />
+        <model name="84000A6" cylinder="7763" head="16" sector="63" sectorSize="512" />
+        <model name="85250A6" cylinder="10856" head="16" sector="63" sectorSize="512" />
+        <model name="86480A8" cylinder="13392" head="16" sector="63" sectorSize="512" />
+        <model name="87000A8" cylinder="14475" head="16" sector="63" sectorSize="512" />
+        <model name="88400D8" cylinder="16278" head="16" sector="63" sectorSize="512" />
+        <model name="MXT 1240S" cylinder="2512" head="15" sector="67" sectorSize="512" />
+        <model name="XT-1065" cylinder="918" head="7" sector="17" sectorSize="512" />
+        <model name="XT-1085" cylinder="1024" head="8" sector="17" sectorSize="512" />
+        <model name="XT-1105" cylinder="918" head="11" sector="17" sectorSize="512" />
+        <model name="XT-2085" cylinder="1224" head="7" sector="33" sectorSize="256" />
+        <model name="XT-2190" cylinder="1224" head="15" sector="33" sectorSize="256" />
+        <model name="XT-4170E/S" cylinder="1224" head="7" sector="36" sectorSize="512" />
+        <model name="XT-4280S" cylinder="1224" head="11" sector="36" sectorSize="512" />
+        <model name="XT-8380S" cylinder="1632" head="8" sector="54" sectorSize="512" />
+        <model name="XT-8760S" cylinder="1632" head="15" sector="54" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Olivetti">
+        <model name="HD 362" cylinder="612" head="4" sector="17" sectorSize="512" />
+        <model name="HD 561-1" cylinder="180" head="2" sector="17" sectorSize="512" />
+        <model name="HD 561-2" cylinder="180" head="4" sector="17" sectorSize="512" />
+        <model name="HD 561-3" cylinder="180" head="6" sector="17" sectorSize="512" />
+        <model name="HD 662/11" cylinder="612" head="2" sector="17" sectorSize="512" />
+        <model name="HD 662/12" cylinder="612" head="4" sector="17" sectorSize="512" />
+        <model name="HD 674" cylinder="820" head="6" sector="17" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Quantum">
+        <model name="ProDrive 40 S" cylinder="834" head="3" sector="35" sectorSize="512" scsi="true" />
+        <model name="ProDrive 105 S" cylinder="1019" head="6" sector="35" sectorSize="512" scsi="true" />
+        <model name="ProDrive 170 AT" cylinder="1123" head="7" sector="43" sectorSize="512" />
+        <model name="ProDrive 210 AT" cylinder="1156" head="7" sector="56" sectorSize="512" />
+        <model name="ProDrive 425 AT" cylinder="1021" head="16" sector="51" sectorSize="512" />
+        <model name="ProDrive LPS 525 AT" cylinder="1017" head="16" sector="63" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Samsung">
+        <model name="SP 1366D" cylinder="26464" head="16" sector="63" sectorSize="512" />
+        <model name="SV 1296A/D" cylinder="25038" head="16" sector="63" sectorSize="512" />
+        <model name="SV 1533D" cylinder="29660" head="16" sector="63" sectorSize="512" />
+        <model name="SV 1705D" cylinder="33187" head="16" sector="63" sectorSize="512" />
+        <model name="SV 1824D" cylinder="35324" head="16" sector="63" sectorSize="512" />
+        <model name="SV 2044D" cylinder="39546" head="16" sector="63" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Seagate">
+        <model name="ST-506" cylinder="153" head="4" sector="32" sectorSize="256" />
+        <model name="ST-412" cylinder="306" head="4" sector="32" sectorSize="256" />
+        <model name="ST-225" cylinder="615" head="4" sector="17" sectorSize="512" /><!-- same specs as Western Digital WD262 -->
+        <model name="ST-251" cylinder="820" head="6" sector="17" sectorSize="512" />
+        <model name="ST-9100A" cylinder="748" head="14" sector="16" sectorSize="512" />
+        <model name="ST-3243A" cylinder="1024" head="12" sector="34" sectorSize="512" />
+        <model name="ST-9655AG" cylinder="1024" head="16" sector="64" sectorSize="512" />
+        <model name="ST-423451N" cylinder="6876" head="28" sector="237" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Texas Instruments">
+        <model name="TI-5" cylinder="153" head="4" sector="17" sectorSize="512" />
+        <model name="525-122" cylinder="306" head="4" sector="17" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Western Digital">
+        <model name="WD262" cylinder="615" head="4" sector="17" sectorSize="512" /><!-- same specs as Seagate ST-225 -->
+        <model name="WD95038X" cylinder="615" head="6" sector="17" sectorSize="512" />
+        <model name="WDAC140" cylinder="980" head="5" sector="17" sectorSize="512" />
+        <model name="WDAC280" cylinder="980" head="10" sector="17" sectorSize="512" />
+        <model name="WDAC1170" cylinder="1010" head="6" sector="55" sectorSize="512" />
+        <model name="WDAC2340" cylinder="1010" head="12" sector="55" sectorSize="512" />
+        <model name="WDAC2700" cylinder="1416" head="16" sector="63" sectorSize="512" />
+        <model name="WDAC11000" cylinder="2046" head="16" sector="63" sectorSize="512" />
+    </manufacturer>
+</hdd>

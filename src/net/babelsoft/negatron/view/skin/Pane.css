@@ -1,0 +1,166 @@
+/*
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 20 août 2015, 10:41:51
+    Author     : capan
+*/
+
+.title {
+    -fx-font-size: large;
+}
+
+.titled-pane > .title {
+    -fx-padding: 0.3333em;
+    -fx-background-radius: 0, 0, 0;
+}
+
+.titled-pane > .title:hover {
+    -fx-color: -fx-base; /* override hover color base to disable action hinting as action has been disabled programmatically */
+}
+
+.titled-pane > .title > .header-pane {
+    -fx-padding: 0 80; /* margin for title text so that it doesn't get hidden behind command buttons */
+}
+
+#machineTreeWindow.titled-pane, #favouriteMachineTreeWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/machine@2x.png");
+}
+
+#softwareTreeWindow.titled-pane > .title > .header-pane > .label,
+#favouriteSoftwareTreeWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/software@2x.png");
+}
+
+#machineConfigurationWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/configure@2x.png");
+}
+
+#softwareInformationWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/Negatron@2x.png");
+}
+
+#softwareConfigurationWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/preferences-system@2x.png");
+}
+
+#machineConfigurationPane .content {
+    -fx-padding: 5 0 0 0;
+}
+
+#favouriteTreeWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/favorites.png");
+}
+
+#globalConfigurationWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/applications-system@2x.png");
+}
+
+#internalsPane {
+    -fx-background-color: linear-gradient(to right, transparent 0%, transparent 20%, white 20%);
+}
+
+#marqueeImagePane, #cabinetImagePane, #controlPanelImagePane, #flyerImagePane,
+#boxartImagePane, #coverImagePane, #mediaImagePane,
+#titleImagePane, #screenshotImagePane,
+#mediaViewPane {
+    -fx-cursor: hand;
+}
+
+#mediaViewPane:playing, .media-button-bar {
+    -fx-cursor: default;
+}
+
+#favouriteSplitPane.split-pane > .split-pane-divider {
+    -fx-padding: 0;
+}
+
+#favouriteSplitPane.split-pane > .split-pane-divider.padding {
+    -fx-padding: 0 20;
+}
+
+.tree-table-cell:editable {
+    -fx-cursor: text;
+}
+
+.view3d-pane {
+    -fx-cursor: move;
+}
+
+.background-pane {
+    -fx-background-color: -fx-background;
+}
+
+.hyperlink {
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-wrap-text: true;
+}
+
+.hyperlink .label {
+    -fx-wrap-text: true;
+}
+
+.h1 {
+    -fx-font-size: 1.8em;
+}
+
+.h2 {
+    -fx-font-size: 1.5em;
+    -fx-underline: true;
+}
+
+.h3 {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+}
+
+.textFlow {
+    -fx-background-color: -fx-control-inner-background;
+}
+
+.textFlow > .text {
+    -fx-fill: -fx-text-inner-color;
+}
+
+.folderViewWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/view-sidetree.png");
+}
+
+.filterWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/view-filter@2x.png");
+}
+
+.filterWindow.titled-pane .label.outline {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/filter/view-pim-contacts.png");
+}
+
+.filterWindow.titled-pane .label.emulation {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/filter/mame.png");
+}
+
+.filterWindow.titled-pane .label.architecture {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/filter/qelectrotech.png");
+}
+
+.filterWindow.titled-pane .label.input {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/filter/preferences-desktop-peripherals.png");
+}
+
+.filterWindow.titled-pane .label.output {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/filter/video-television.png");
+}

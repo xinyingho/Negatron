@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root type="javafx.scene.layout.HBox" fx:id="root" spacing="5.0" stylesheets="@../../skin/TextField.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.DeviceController">
+   <children>
+      <TextField fx:id="text" HBox.hgrow="SOMETIMES" />
+      <ComboBox fx:id="combo" editable="true" HBox.hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+      <Button fx:id="createButton" mnemonicParsing="false" onAction="#handleCreateAction" text="%create..." />
+      <ToggleButton fx:id="listButton" mnemonicParsing="false" text="%list..." />
+      <Button mnemonicParsing="false" onAction="#handleBrowseAction" text="%browse..." />
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</fx:root>

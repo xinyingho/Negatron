@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Created-By: capan
+Specification-Title: sonic-blue
+Implementation-Title: Sonic Blue
+Implementation-Version: 1.0
+Implementation-Vendor: BabelSoft

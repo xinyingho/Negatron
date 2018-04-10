@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import net.babelsoft.negatron.view.control.*?>
+
+<fx:root type="javafx.scene.layout.VBox" fillWidth="true" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.EmulatedItemTreePaneController">
+    <padding>
+        <Insets top="5" right="5" bottom="5" left="5" />
+    </padding>
+    <children>
+        <HBox alignment="CENTER" prefHeight="30.0" prefWidth="200.0">
+            <children>
+                <ToggleButton fx:id="treeViewButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleTreeViewSwitchAction" selected="true" styleClass="tree-view-button" text="%treeView">
+                    <HBox.margin>
+                        <Insets right="5.0" />
+                    </HBox.margin>
+                    <toggleGroup>
+                        <ToggleGroup fx:id="displayToggle" />
+                    </toggleGroup>
+                    <tooltip>
+                        <Tooltip text="%treeView.tooltip" />
+                    </tooltip>
+                </ToggleButton>
+                <ToggleButton fx:id="tableViewButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleTableViewSwitchAction" styleClass="table-view-button" text="%tableView" toggleGroup="$displayToggle">
+                    <HBox.margin>
+                        <Insets right="5.0" />
+                    </HBox.margin>
+                    <tooltip>
+                        <Tooltip text="%tableView.tooltip" />
+                    </tooltip>
+                </ToggleButton>
+                <ToggleButton fx:id="viewButton" mnemonicParsing="false" onAction="#handleMoreViewsAction" text="+">
+                    <HBox.margin>
+                        <Insets right="5.0" />
+                    </HBox.margin>
+                    <tooltip>
+                        <Tooltip text="%moreViews.tooltip" />
+                    </tooltip>
+                </ToggleButton>
+                <Separator orientation="VERTICAL" prefHeight="200.0" />
+                <ImageView accessibleText="%filter" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="/net/babelsoft/negatron/resource/icon/view-filter.png" />
+                    </image>
+                    <viewport>
+                        <Rectangle2D height="16.0" width="16.0" />
+                    </viewport>
+                </ImageView>
+                <TextField fx:id="filterField" styleClass="filter">
+                    <HBox.margin>
+                        <Insets left="2.0" right="5.0" />
+                    </HBox.margin>
+                    <tooltip>
+                        <Tooltip text="%filter.tooltip" />
+                    </tooltip>
+                </TextField>
+                <ToggleButton fx:id="filterButton" mnemonicParsing="false" onAction="#handleMoreFiltersAction" text="+">
+                    <HBox.margin>
+                        <Insets right="5.0" />
+                    </HBox.margin>
+                    <tooltip>
+                        <Tooltip text="%moreFilters.tooltip" />
+                    </tooltip>
+                </ToggleButton>
+                <Separator orientation="VERTICAL" prefHeight="200.0" />
+                <Button fx:id="expandAllButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleExpandAllAction" styleClass="expand-all-button" text="%expandAll">
+                    <HBox.margin>
+                        <Insets left="2.0" right="5.0" />
+                    </HBox.margin>
+                    <tooltip>
+                        <Tooltip text="%expandAll.tooltip" />
+                    </tooltip>
+                </Button>
+                <Button fx:id="collapseAllButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleCollapseAllAction" styleClass="collapse-all-button" text="%collapseAll">
+                    <tooltip>
+                        <Tooltip text="%collapseAll.tooltip" />
+                    </tooltip>
+                </Button>
+            </children>
+            <padding>
+                <Insets bottom="5.0" />
+            </padding>
+        </HBox>
+        <EmulatedItemTreeView fx:id="treeView" showRoot="false" VBox.vgrow="SOMETIMES" tableMenuButtonVisible="true">
+            <columns>
+                <TreeTableColumn id="iconDescription" minWidth="0" prefWidth="180.0" text="%description" />
+                <TreeTableColumn id="name" minWidth="0" prefWidth="70.0" text="%name" />
+                <TreeTableColumn id="company" minWidth="0" prefWidth="100.0" text="%company" />
+                <TreeTableColumn id="year" minWidth="0" prefWidth="40.0" text="%year" />
+                <TreeTableColumn id="group" minWidth="0" prefWidth="70.0" text="%group" />
+                <TreeTableColumn id="configurable" minWidth="0" prefWidth="50.0" style="-fx-alignment: center;" text="%configurable" />
+                <TreeTableColumn id="support" minWidth="0" prefWidth="50.0" style="-fx-alignment: center;" text="%support" />
+                <TreeTableColumn id="status" minWidth="0" prefWidth="50.0" style="-fx-alignment: center;" text="%status" />
+            </columns>
+            <tooltip>
+                <Tooltip text="%emulatedItemTreeView.tooltip" />
+            </tooltip>
+        </EmulatedItemTreeView>
+    </children>
+</fx:root>

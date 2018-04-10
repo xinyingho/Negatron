@@ -1,0 +1,49 @@
+/*
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 11 juin 2016, 10:44:38
+    Author     : capan
+*/
+
+.titled-pane .tab-pane > .tab-header-area > .headers-region > .tab.externals > .tab-container > .tab-label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/tab/input-gaming.png");
+}
+
+.titled-pane .tab-pane > .tab-header-area > .headers-region > .tab.in-game > .tab-container > .tab-label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/tab/view-presentation.png");
+}
+
+.titled-pane .tab-pane > .tab-header-area > .headers-region > .tab.internals > .tab-container > .tab-label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/tab/audio-card.png");
+}
+
+.titled-pane .tab-pane > .tab-header-area > .headers-region > .tab.information > .tab-container > .tab-label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/tab/documentation.png");
+}
+
+.titled-pane .tab-pane > .tab-header-area > .headers-region > .tab.manual > .tab-container > .tab-label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/tab/application-epub+zip.png");
+}
+
+.titled-pane .tab-pane > .tab-header-area > .headers-region > .tab.folders > .tab-container > .tab-label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/tab/folder-grey.png");
+}
+
+.titled-pane .tab-pane > .tab-header-area > .headers-region > .tab.options > .tab-container > .tab-label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/tab/preferences-other.png");
+}

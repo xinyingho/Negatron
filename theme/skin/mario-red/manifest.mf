@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Created-By: capan
+Specification-Title: mario-red
+Implementation-Title: Mario Red
+Implementation-Version: 1.0
+Implementation-Vendor: BabelSoft

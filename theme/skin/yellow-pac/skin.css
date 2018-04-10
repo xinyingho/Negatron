@@ -1,0 +1,183 @@
+/*
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 30 mai 2016, 20:20:22
+    Author     : capan
+*/
+
+.root {
+    -fx-base: rgb(255, 229, 103);
+	-fx-translucid-base: rgba(255, 229, 103, 0.75);
+	-fx-translucid-background: derive(-fx-translucid-base, 26.4%);
+	-fx-translucid-control-inner-background: derive(-fx-translucid-base, 80%);
+
+	-fx-translucent-color: rgba(255, 229, 103, 0.4);
+	-fx-translucent-hover-base: ladder(
+        -fx-translucent-base,
+        derive(-fx-translucent-base,20%) 20%,
+        derive(-fx-translucent-base,30%) 35%,
+        derive(-fx-translucent-base,40%) 50%
+     );
+	
+	-fx-translucent-base: rgba(255, 229, 103, 0.6);
+	-fx-translucent-background: derive(-fx-translucent-base, 26.4%);
+	-fx-translucent-control-inner-background: derive(-fx-translucent-base, 80%);
+	
+	-fx-translucent-text-box-border: ladder(
+        -fx-translucent-background,
+        black 10%,
+        derive(-fx-translucent-background, -15%) 30%
+    );
+}
+
+.favourite-view-button {
+    -fx-graphic: url("folder-yellow-favourites.png") !important;
+}
+
+.new-folder-button {
+    -fx-graphic: url("folder-yellow-new.png") !important;
+}
+
+.tree-table-view > .virtual-flow,
+.table-view > .virtual-flow {
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: 30%;
+}
+
+#machineTreePane .tree-table-view > .virtual-flow {
+	-fx-background-image: url("super_pac-man.gif");
+}
+
+#softwareTreePane .tree-table-view > .virtual-flow {
+	-fx-background-image: url("pac-land_namco-museum-4.gif");
+}
+
+.tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell{
+	-fx-background: -fx-translucid-control-inner-background !important;
+}
+
+.tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:odd:filled  {
+	-fx-background: -fx-translucid-background !important;
+}
+
+.tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected {
+    -fx-background: -fx-selection-bar-non-focused !important;
+}
+
+.tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected {
+    -fx-background: -fx-selection-bar !important;
+}
+
+#softwareConfigurationWindow .table-view > .virtual-flow {
+	-fx-background-image: url("pac-man-family.gif");
+	-fx-background-size: 50%;
+}
+
+.table-view > .virtual-flow > .clipped-container > .sheet > .table-row-cell {
+	-fx-background-color: -fx-translucid-control-inner-background !important;
+}
+
+.table-view > .virtual-flow > .clipped-container > .sheet > .table-row-cell:odd:filled {
+	-fx-background-color: -fx-translucid-background !important;
+}
+
+.table-view > .virtual-flow > .clipped-container > .sheet > .table-row-cell:filled:selected {
+    -fx-background-color: -fx-selection-bar-non-focused !important;
+}
+
+.table-view:focused > .virtual-flow > .clipped-container > .sheet > .table-row-cell:filled:selected {
+    -fx-background-color: -fx-selection-bar !important;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane {
+	-fx-background-image: url("pacman_ghostly_adventures.png");
+	-fx-background-position: bottom 30 right 15%;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: 20%;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport {
+	-fx-background-color: -fx-translucid-background;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .content {
+	-fx-padding: 0 0 500 0;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .button {
+	-fx-color: -fx-translucent-color;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .button:hover {
+	-fx-color: -fx-translucent-hover-base;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .button:focused {
+	-fx-color: -fx-translucent-color;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .text-input {
+	-fx-background-color: linear-gradient(to bottom, derive(-fx-translucent-text-box-border, -10%), -fx-translucent-text-box-border),
+        linear-gradient(from 0px 0px to 0px 5px, derive(-fx-translucent-control-inner-background, -9%), -fx-translucent-control-inner-background);
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .mameExe {
+	-fx-graphic: url("pac-mania.gif");
+	-fx-content-display: right;
+	-fx-graphic-text-gap: 0;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .mameIni {
+	-fx-graphic: url("inky.gif");
+	-fx-content-display: right;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .chdman {
+	-fx-graphic: url("blinky.gif");
+	-fx-content-display: right;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-content-area > .scroll-pane > .viewport .extrasRoot {
+	-fx-graphic: url("ghost.gif");
+	-fx-content-display: right;
+}
+
+#globalConfigurationWindow .tab-pane > .tab-header-area > .headers-region > .tab.folders > .tab-container > .tab-label {
+    -fx-graphic: url("folder-yellow.png") !important;
+}
+
+
+#machineInformationPane .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane,
+#softwareInformationWindow .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane {
+	-fx-background-image: url("pac-man_ghostly_adventures_2.png");
+	-fx-background-position: bottom;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: 100%;
+}
+
+#machineInformationPane .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane > .viewport,
+#softwareInformationWindow .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane > .viewport {
+	-fx-background-color: -fx-translucid-control-inner-background;
+}
+
+#machineInformationPane .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane > .viewport .textFlow,
+#softwareInformationWindow .tab-pane > .tab-content-area > .tab-pane > .tab-content-area > .scroll-pane > .viewport .textFlow {
+	-fx-background-color: transparent;
+	-fx-padding: 10 10 400 10;
+}

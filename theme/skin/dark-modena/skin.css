@@ -1,0 +1,61 @@
+/*
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 08 mai 2016, 20:05:05
+    Author     : capan
+*/
+
+.root {
+    -fx-base: rgb(50, 50, 50);
+}
+
+.expand-all-button {
+    -fx-graphic: url("expandAll.png") !important;
+}
+
+.expand-all-button:disabled {
+    -fx-graphic: url("expandAll.grey.png") !important;
+}
+
+.collapse-all-button {
+    -fx-graphic: url("collapseAll.png") !important;
+}
+
+.collapse-all-button:disabled {
+    -fx-graphic: url("collapseAll.grey.png") !important;
+}
+
+.minimise-button {
+    -fx-graphic: url("minimise.png") !important;
+}
+
+.maximise-button {
+    -fx-graphic: url("maximise.png") !important;
+}
+
+.restore-button {
+    -fx-graphic: url("restore.png") !important;
+}
+
+.close-button {
+	-fx-graphic: url("close.png") !important;
+}
+
+.hyperlink {
+	-fx-text-fill: #0000cd;
+}
