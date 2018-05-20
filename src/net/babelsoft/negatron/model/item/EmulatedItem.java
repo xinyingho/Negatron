@@ -150,5 +150,7 @@ public abstract class EmulatedItem<T> extends Item {
         return parent != null;
     }
     
+    public boolean isRunnable() { return true; }
+    
     public void reset() {}
 }

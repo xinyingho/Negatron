@@ -117,6 +117,8 @@ public abstract class FilterPaneController<T extends EmulatedItem<T>> implements
     private CheckBox statusGood;
     @FXML
     private CheckBox statusBad;
+    @FXML
+    private CheckBox statusMissing;
 
     /**
      * Initializes the controller class.
@@ -267,6 +269,7 @@ public abstract class FilterPaneController<T extends EmulatedItem<T>> implements
     public void disableStatusCriteria(boolean disable) {
         statusGood.setDisable(disable);
         statusBad.setDisable(disable);
+        statusMissing.setDisable(disable);
     }
     
     private void restoreDefaults(Parent parent) {
@@ -338,6 +341,7 @@ public abstract class FilterPaneController<T extends EmulatedItem<T>> implements
         // emulation
         updateCheck.accept(statusGood);
         updateCheck.accept(statusBad);
+        updateCheck.accept(statusMissing);
     }
     
     protected class Filter<T extends EmulatedItem<T>> implements Predicate<T> {
@@ -384,7 +388,7 @@ public abstract class FilterPaneController<T extends EmulatedItem<T>> implements
                 yearValidated &&
                 (versionAll.isSelected() || !item.hasParent() && versionParents.isSelected() || item.hasParent() && versionClones.isSelected()) &&
                 // emulation
-                (item.getStatus() == Status.UNKNOWN || item.getStatus() == Status.GOOD && statusGood.isSelected() || item.getStatus() == Status.BAD && statusBad.isSelected())
+                (item.getStatus() == Status.UNKNOWN && statusMissing.isSelected() || item.getStatus() == Status.GOOD && statusGood.isSelected() || item.getStatus() == Status.BAD && statusBad.isSelected())
             ;
         }
     }
@@ -429,10 +433,17 @@ public abstract class FilterPaneController<T extends EmulatedItem<T>> implements
             case GOOD:
                 statusGood.setSelected(true);
                 statusBad.setSelected(false);
+                statusMissing.setSelected(false);
                 break;
-            default:
+            case BAD:
                 statusGood.setSelected(false);
                 statusBad.setSelected(true);
+                statusMissing.setSelected(false);
+            case UNKNOWN:
+            default:
+                statusGood.setSelected(false);
+                statusBad.setSelected(false);
+                statusMissing.setSelected(true);
                 break;
         }
         filterTimeline.playFromStart();

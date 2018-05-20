@@ -49,7 +49,7 @@ public class MachineListCache extends Cache<MachineListCache.Data, String> {
             return version.equals(retrieveVersion());
     }
 
-    protected String retrieveVersion() throws IOException {
+    public String retrieveVersion() throws IOException {
         try (
             InputStream input = Mame.newInputStream("-h");
             InputStreamReader stream = new InputStreamReader(input);

@@ -701,6 +701,10 @@ public enum Configuration {
         return isAsyncExecutionMode;
     }
     
+    public boolean isSyncExecutionMode() {
+        return !isAsyncExecutionMode;
+    }
+    
     public boolean isMess() {
         return isMess;
     }

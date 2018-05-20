@@ -40,8 +40,9 @@ import net.babelsoft.negatron.model.component.MachineElementList;
  * @author capan
  */
 public class Machine extends EmulatedItem<Machine> implements Describable, ParametrisedElement {
-    private static final long serialVersionUID = 8L;
+    private static final long serialVersionUID = 9L;
 
+    private boolean runnable;
     private boolean mechanical;
     private boolean coinSlot;
     private boolean serviceMode;
@@ -98,6 +99,15 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
     
     private String getManufacturer() {
         return manufacturer;
+    }
+    
+    public void setRunnable(boolean isRunnable) {
+        this.runnable = isRunnable;
+    }
+
+    @Override
+    public boolean isRunnable() {
+        return runnable;
     }
 
     public void setMechanical(boolean isMechanical) {

@@ -130,7 +130,6 @@ public class NegatronApp extends Application implements Notifier {
             cache = new MachineListCache();
             mustSynchronize = !cache.checkVersion();
             needsConfirmation = cache.getVersion() != null;
-            Configuration.Manager.determineExecutionMode(cache.getVersion());
         } catch (Exception ex) {
             Logger.getLogger(NegatronApp.class.getName()).log(Level.SEVERE, "Couldn't determine MAME version", ex);
             mustClose = true;

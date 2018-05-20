@@ -31,6 +31,7 @@ import javax.xml.parsers.SAXParserFactory;
 import net.babelsoft.negatron.io.Mame;
 import net.babelsoft.negatron.io.cache.MachineListCache;
 import net.babelsoft.negatron.io.cache.MachineListCache.Data;
+import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.loader.MachineListLoader.MachineListData;
 import net.babelsoft.negatron.model.item.Machine;
 import org.xml.sax.Attributes;
@@ -81,6 +82,7 @@ public class MachineListLoader implements Callable<MachineListData> {
         if (cache.exists()) try {
             progressProperty.set(0.0);
 
+            Configuration.Manager.determineExecutionMode(cache.getVersion());
             Data data = cache.load();
             MachineListData result = new MachineListData(data);
 
@@ -91,6 +93,9 @@ public class MachineListLoader implements Callable<MachineListData> {
                 Level.WARNING, "Cache has been corrupted, reload from source.", ex
             );
         }
+        
+        // Determine which types of machines should be processed (only runnable machines for MAME v0.186 and before, include devices from MAME v0.186 forward)
+        Configuration.Manager.determineExecutionMode(cache.retrieveVersion());
         
         // Determine total number of machines to process
         long totalCount;
@@ -168,12 +173,13 @@ public class MachineListLoader implements Callable<MachineListData> {
             switch (qName) {
                 case "machine":
                 case "game":
-                    if ("yes".equals(atts.getValue("runnable"))) {
+                    if (Configuration.Manager.isSyncExecutionMode() || "yes".equals(atts.getValue("runnable"))) {
                         buildCurrentItem(
                             atts.getValue("name"),
                             atts.getValue("sourcefile"),
                             atts.getValue("cloneof")
                         );
+                        currentItem.setRunnable("yes".equals(atts.getValue("runnable")));
                         currentItem.setMechanical("yes".equals(atts.getValue("ismechanical")));
                         biosCount = 0;
                         ramCount = 0;

@@ -152,6 +152,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                <tooltip>
                                   <Tooltip text="%statusBad.machine.tooltip" />
                                </tooltip></CheckBox>
+                            <CheckBox fx:id="statusMissing" mnemonicParsing="false" onAction="#handleOnAction" text="%missing">
+                               <tooltip>
+                                  <Tooltip text="%statusMissing.machine.tooltip" />
+                               </tooltip></CheckBox>
                          </children>
                       </FlowPane>
                       <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="11" />

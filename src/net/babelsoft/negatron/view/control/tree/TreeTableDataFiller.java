@@ -50,7 +50,7 @@ public final class TreeTableDataFiller {
         
         final Statistics statistics = new Statistics();
         
-        items.stream().forEach(
+        items.stream().filter(item -> item.isRunnable()).forEach(
             item -> {
                 item.reset();
 

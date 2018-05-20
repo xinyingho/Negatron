@@ -200,6 +200,9 @@ public class MachineFilterPaneController extends FilterPaneController<Machine> {
 
         @Override
         public boolean test(Machine machine) {
+            if (!machine.isRunnable())
+                return false;
+            
             int nbPlayers = machine.getMaxNumberPlayers();
             boolean controllerValidated = controllerPane.getChildren().stream().map(
                 node -> (CheckBox) node
