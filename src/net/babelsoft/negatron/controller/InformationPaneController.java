@@ -362,7 +362,7 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
             // possibly resulting into the hide/show animation being stuck instead of being completed.
             // 
             // To avoid this, hideTab() is thus reduce to the strict minimum:
-            // no animation, and directly go to the final hiding animation state
+            // no animation, and directly go to the hiding animation's final state
             keyValues2.forEach(keyValue -> 
                 ((DoubleProperty) keyValue.getTarget()).setValue((Double) keyValue.getEndValue())
             );
