@@ -28,7 +28,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 
 /**
  *

@@ -39,7 +39,7 @@ import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.io.extras.Icons;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.SoftwareList;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.util.IterableEnumeration;
 
 /**

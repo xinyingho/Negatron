@@ -41,7 +41,7 @@ import net.babelsoft.negatron.model.item.Software.Requirement;
 import net.babelsoft.negatron.model.item.SoftwareList;
 import net.babelsoft.negatron.theme.Components;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.TriConsumer;
+import net.babelsoft.negatron.util.function.TriConsumer;
 import net.babelsoft.negatron.view.control.adapter.FocusData;
 import net.babelsoft.negatron.view.control.form.Control;
 

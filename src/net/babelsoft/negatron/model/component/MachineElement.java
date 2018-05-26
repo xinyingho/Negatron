@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.model.component;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import net.babelsoft.negatron.io.XmlOutput;
@@ -27,7 +28,8 @@ import net.babelsoft.negatron.model.ParametrisedElement;
  *
  * @author capan
  */
-public abstract class MachineElement<T> implements ParametrisedElement, XmlOutput {
+public abstract class MachineElement<T> implements ParametrisedElement, XmlOutput, Serializable {
+    private static final long serialVersionUID = 1L;
     
     private final String name;
     private String previousName;

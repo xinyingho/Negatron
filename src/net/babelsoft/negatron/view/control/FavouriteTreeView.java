@@ -49,7 +49,7 @@ import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import net.babelsoft.negatron.model.favourites.Favourite;
 import net.babelsoft.negatron.model.favourites.Folder;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.util.ReversedIterator;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem.CutCopyState;

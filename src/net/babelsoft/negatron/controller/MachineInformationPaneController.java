@@ -38,7 +38,7 @@ import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.io.extras.Extras;
 import net.babelsoft.negatron.io.extras.Images;
 import net.babelsoft.negatron.model.item.Machine;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.ImageViewPane;
 import net.babelsoft.negatron.view.control.adapter.ImageGridAdapter;
 

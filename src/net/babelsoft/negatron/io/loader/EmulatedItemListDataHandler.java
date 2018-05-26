@@ -20,6 +20,11 @@ package net.babelsoft.negatron.io.loader;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
 import net.babelsoft.negatron.model.item.EmulatedItem;
+import net.babelsoft.negatron.util.function.HexaConsumer;
+import net.babelsoft.negatron.util.function.PentaConsumer;
+import net.babelsoft.negatron.util.function.TetraConsumer;
+import net.babelsoft.negatron.util.function.TriConsumer;
+import net.babelsoft.negatron.util.function.TriFunction;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -83,6 +88,33 @@ public abstract class EmulatedItemListDataHandler<T extends EmulatedItem<T>> ext
             consumer.accept(currentItem, value);
     }
     
+    protected <U, V> void startConsumeCurrentItem(TriConsumer<T, U, V> consumer, U value1, V value2) {
+        if (currentItem != null)
+            consumer.accept(currentItem, value1, value2);
+    }
+    
+    protected <U, V, W> void startConsumeCurrentItem(TetraConsumer<T, U, V, W> consumer, U value1, V value2, W value3) {
+        if (currentItem != null)
+            consumer.accept(currentItem, value1, value2, value3);
+    }
+    
+    protected <U, V, W, X> void startConsumeCurrentItem(PentaConsumer<T, U, V, W, X> consumer, U value1, V value2, W value3, X value4) {
+        if (currentItem != null)
+            consumer.accept(currentItem, value1, value2, value3, value4);
+    }
+    
+    protected <U, V, W, X, Y> void startConsumeCurrentItem(HexaConsumer<T, U, V, W, X, Y> consumer, U value1, V value2, W value3, X value4, Y value5) {
+        if (currentItem != null)
+            consumer.accept(currentItem, value1, value2, value3, value4, value5);
+    }
+    
+    protected <U, V, R> R startApplyOnCurrentItem(TriFunction<T, U, V, R> function, U value1, V value2) {
+        if (currentItem != null)
+            return function.apply(currentItem, value1, value2);
+        else
+            return null;
+    }
+    
     @Override
     public void characters(char[] chars, int start, int length) throws SAXException {
         if (text != null)
@@ -99,6 +131,13 @@ public abstract class EmulatedItemListDataHandler<T extends EmulatedItem<T>> ext
     protected void endTextElement(BiConsumer<T, String> consumer) {
         if (text != null) {
             consumer.accept(currentItem, text.toString());
+            text = null;
+        }
+    }
+    
+    protected <V> void endTextElement(TriConsumer<T, String, V> consumer, V value) {
+        if (text != null) {
+            consumer.accept(currentItem, text.toString(), value);
             text = null;
         }
     }

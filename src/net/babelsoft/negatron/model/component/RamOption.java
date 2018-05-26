@@ -25,6 +25,7 @@ import net.babelsoft.negatron.model.SizeUnit;
  * @author capan
  */
 public class RamOption extends Option<RamOption> {
+    private static final long serialVersionUID = 1L;
     protected static final RamOption DEFAULT_VALUE = new RamOption();
     
     private RamOption() {

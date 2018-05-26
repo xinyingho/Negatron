@@ -21,7 +21,7 @@ import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import net.babelsoft.negatron.controller.GlobalConfigurationPaneController;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 
 /**
  *

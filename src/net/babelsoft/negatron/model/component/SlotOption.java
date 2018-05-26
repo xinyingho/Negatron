@@ -18,13 +18,17 @@
 package net.babelsoft.negatron.model.component;
 
 import net.babelsoft.negatron.model.Option;
+import net.babelsoft.negatron.model.item.Machine;
 
 /**
  *
  * @author capan
  */
 public class SlotOption extends Option<SlotOption> {
+    private static final long serialVersionUID = 1L;
     protected static final SlotOption EMPTY_SLOT = new SlotOption();
+    
+    private Machine device;
     
     private SlotOption() {
         super();
@@ -34,8 +38,21 @@ public class SlotOption extends Option<SlotOption> {
         this(ref.getName(), ref.getDescription());
     }
     
+    public SlotOption(String name) {
+        super(name);
+    }
+    
     public SlotOption(String name, String description) {
         super(name, description);
+    }
+    
+    public Machine getDevice() {
+        return device;
+    }
+    
+    public void setDevice(Machine device) {
+        setDescription(device.getDescription());
+        this.device = device;
     }
     
     @Override

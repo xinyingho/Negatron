@@ -24,7 +24,7 @@ import javafx.scene.control.TabPane;
 import net.babelsoft.negatron.controller.SoftwareInformationPaneController;
 import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 
 /**
  *

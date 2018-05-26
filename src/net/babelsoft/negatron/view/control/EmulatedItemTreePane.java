@@ -36,7 +36,7 @@ import net.babelsoft.negatron.controller.FilterPaneController;
 import net.babelsoft.negatron.model.Statistics;
 import net.babelsoft.negatron.model.item.EmulatedItem;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.tree.SortableTreeItem;
 
 /**

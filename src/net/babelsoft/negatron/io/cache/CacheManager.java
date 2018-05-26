@@ -109,27 +109,34 @@ public class CacheManager extends Task<Void> {
         List<Future<Void>> tasks = new ArrayList<>();
         
         try {
-            ///// Machine & software lists
-            
             notify(true);
             
-            // launch tasks
-            MachineListLoader machineListLoader = new MachineListLoader(controller.ProgressProperty());
-            Future<MachineListData> machineListFuture = service.submit(machineListLoader);
+            ///// Software lists
             
+            // launch tasks
             SoftwareListCache softwareListCache = new SoftwareListCache();
             softwareListCache.threadedLoad().forEach(
                 loader -> tasks.add(execService.submit(loader))
             );
             
             // wait for them to finish
-            MachineListData machines = machineListFuture.get();
-            onMachineListLoaded.accept(machines.getList());
-            
             for (int i = 0, max = tasks.size(); i < max; ++i)
                 tasks.remove(execService.take());
             
             controller.setSoftwareLists(softwareListCache.get());
+            
+            ///// Machine lists
+            
+            // launch tasks
+            MachineListLoader machineListLoader = new MachineListLoader(
+                softwareListCache.get(), controller.ProgressProperty()
+            );
+            Future<MachineListData> machineListFuture = service.submit(machineListLoader);
+            
+            // wait for it to finish
+            MachineListData machines = machineListFuture.get();
+            onMachineListLoaded.accept(machines.getList());
+            
             controller.setSucceeded(true);
             
             ///// Favourites

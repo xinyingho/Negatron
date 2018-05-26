@@ -60,7 +60,7 @@ import net.babelsoft.negatron.model.favourites.Separator;
 import net.babelsoft.negatron.model.favourites.SoftwareConfiguration;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.view.control.FavouriteTreeView;
 import net.babelsoft.negatron.view.control.FavouriteTreeView.Position;

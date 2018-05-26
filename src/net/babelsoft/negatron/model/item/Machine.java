@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.model.ControllerType;
 import net.babelsoft.negatron.model.Describable;
 import net.babelsoft.negatron.model.DisplayType;
@@ -33,14 +34,21 @@ import net.babelsoft.negatron.model.Status;
 import net.babelsoft.negatron.model.Support;
 import net.babelsoft.negatron.model.comparing.InternalDeviceComparator;
 import net.babelsoft.negatron.model.comparing.Merger;
+import net.babelsoft.negatron.model.component.Bios;
+import net.babelsoft.negatron.model.component.BiosSet;
+import net.babelsoft.negatron.model.component.Device;
 import net.babelsoft.negatron.model.component.MachineElementList;
+import net.babelsoft.negatron.model.component.Ram;
+import net.babelsoft.negatron.model.component.RamOption;
+import net.babelsoft.negatron.model.component.Slot;
+import net.babelsoft.negatron.model.component.SlotOption;
 
 /**
  *
  * @author capan
  */
 public class Machine extends EmulatedItem<Machine> implements Describable, ParametrisedElement {
-    private static final long serialVersionUID = 9L;
+    private static final long serialVersionUID = 10L;
 
     private boolean runnable;
     private boolean mechanical;
@@ -54,11 +62,16 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
     private ScreenOrientation screenOrientation;
     private SoundType soundType;
     private EnumSet<ControllerType> controllerTypes;
-    private transient Map<String, String> internalDevices;
-    private transient List<SoftwareListFilter> softwareLists;
+    private Map<String, String> internalDevices;
+    private List<SoftwareListFilter> softwareLists;
     private transient MachineElementList parameters;
     private transient Merger merger;
     private transient InternalDeviceComparator internalDeviceComparator;
+    // MAME v0.186+
+    private Bios bios;
+    private Ram ram;
+    private List<Device> devices;
+    private List<Slot> slots;
 
     public Machine(final String name, final String sourceFile) {
         super(name, sourceFileToGroup(sourceFile));
@@ -240,6 +253,8 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
     }
     
     public void addInternalDevice(String name, String description) {
+        if (internalDevices == null)
+            internalDevices = new HashMap<>();
         internalDevices.put(name, description);
     }
     
@@ -271,8 +286,10 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
             internalDeviceComparator = new InternalDeviceComparator();
         }
         merger.reset(origin);
-        internalDevices = new HashMap<>();
-        softwareLists = null;
+        if (Configuration.Manager.isAsyncExecutionMode()) {
+            internalDevices = new HashMap<>();
+            softwareLists = null;
+        }
         
         return merger;
     }
@@ -314,5 +331,80 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
         if (parameters == null)
             parameters = new MachineElementList(this);
         return parameters.toString();
+    }
+    
+    // MAME v0.186+
+    
+    public Bios getBios() {
+        return bios;
+    }
+    
+    public void addBiosSet(String name, String description, boolean isDefault) {
+        BiosSet set = new BiosSet(name, description);
+        if (bios == null)
+            bios = new Bios();
+        bios.addOption(set, isDefault);
+    }
+    
+    public Ram getRam() {
+        return ram;
+    }
+    
+    public void addRamOption(String name, boolean isDefault) {
+        RamOption option = new RamOption(name);
+        if (ram == null)
+            ram = new Ram();
+        ram.addOption(option, isDefault);
+    }
+    
+    public List<Device> getDevices() {
+        return devices;
+    }
+    
+    public void addDevice(String name, String type, String tag, String interfaceFormat, boolean mandatory) {
+        Device device = new Device(name, type, tag, mandatory);
+        device.setInterfaceFormats(
+            interfaceFormat != null ? interfaceFormat.split(",") : new String[0]
+        );
+        if (devices == null)
+            devices = new ArrayList<>();
+        devices.add(device);
+    }
+    
+    public void addExtensionToLastDevice(String name) {
+        devices.get(devices.size() - 1).addExtension(name);
+    }
+    
+    public List<Slot> getSlots() {
+        return slots;
+    }
+    
+    public void addSlot(String name) {
+        Slot slot = new Slot(name);
+        if (slots == null)
+            slots = new ArrayList<>();
+        slots.add(slot);
+    }
+    
+    public SlotOption addSlotOptionToLastSlot(String name, boolean isDefault) {
+        SlotOption option = new SlotOption(name);
+        slots.get(slots.size() - 1).addOption(option, isDefault);
+        return option;
+    }
+    
+    public void initialise(Map<String, SoftwareList> softwareListMap) {
+        if (devices != null && softwareLists != null) {
+            devices.stream().forEach(device -> {
+                softwareLists.stream().flatMap(softwareListFilter -> {
+                    SoftwareList softwareList = softwareListMap.get(softwareListFilter.getSoftwareList());
+                    if (softwareList != null)
+                        return softwareList.getSoftwares(device.getInterfaceFormats(), softwareListFilter.getFilter()).stream();
+                    else
+                        return null;
+                }).findAny().ifPresent(
+                    software -> device.setCompatibleSoftwareLists(true)
+                );
+            });
+        }
     }
 }

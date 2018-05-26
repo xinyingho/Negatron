@@ -89,7 +89,7 @@ import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.model.item.SoftwareList;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.util.DirectoryWatchService;
 import net.babelsoft.negatron.util.Disposable;
 import net.babelsoft.negatron.util.SimpleDirectoryWatchService;
@@ -211,6 +211,7 @@ public class MainController implements Initializable, AlertController, EditContr
     private DeviceController currentDeviceController;
     private Machine previousMachine;
     private Machine currentMachine;
+    private List<Machine> machines;
     private Map<String, SoftwareList> softwareLists;
     
     private boolean isFocusOnMame;
@@ -635,6 +636,8 @@ public class MainController implements Initializable, AlertController, EditContr
     
     public void initialiseData() {
         cache = new CacheManager(this, machines -> Platform.runLater(() -> {
+            this.machines = machines;
+            
             Statistics statistics = machineTreePane.setItems(machines);
             machineFilterWindow.bind(machineTreePane);
             softwareFilterWindow.bind(softwareTreePane);

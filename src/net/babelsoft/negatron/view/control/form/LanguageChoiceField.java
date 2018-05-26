@@ -31,7 +31,7 @@ import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.util.Strings;
 
 /**

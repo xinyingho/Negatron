@@ -32,7 +32,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.TitledWindowPane;
 import net.babelsoft.negatron.view.control.TitledWindowPane.DisplayMode;
 

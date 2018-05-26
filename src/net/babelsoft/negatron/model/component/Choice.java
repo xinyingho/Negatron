@@ -27,9 +27,10 @@ import net.babelsoft.negatron.model.OptionProperty;
  * @author capan
  */
 public abstract class Choice<T extends Option<T>> extends MachineElement<T> implements MachineComponent<T, OptionProperty<T>> {
+    private static final long serialVersionUID = 1L;
     
     private final List<T> options;
-    private OptionProperty<T> value;
+    private transient OptionProperty<T> value;
     protected T defaultValue;
     
     protected Choice(String name) {

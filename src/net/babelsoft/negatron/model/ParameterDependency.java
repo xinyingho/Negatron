@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.model;
 
+import java.io.Serializable;
 import java.util.List;
 import net.babelsoft.negatron.model.component.MachineElement;
 
@@ -24,7 +25,8 @@ import net.babelsoft.negatron.model.component.MachineElement;
  *
  * @author capan
  */
-public class ParameterDependency<T> {
+public class ParameterDependency<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
     
     private final MachineElement<T> dependency;
     private final List<String> filterValues;

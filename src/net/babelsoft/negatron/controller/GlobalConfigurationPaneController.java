@@ -31,7 +31,7 @@ import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Domain;
 import net.babelsoft.negatron.io.configuration.Property;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.form.ChdmanPathField;
 import net.babelsoft.negatron.view.control.form.CheatCheckField;
 import net.babelsoft.negatron.view.control.form.ExtrasRootPathField;

@@ -26,6 +26,7 @@ import net.babelsoft.negatron.model.Option;
  * @author capan
  */
 public class Slot extends Choice<SlotOption> {
+    private static final long serialVersionUID = 1L;
     
     public Slot(String name) {
         super(name);

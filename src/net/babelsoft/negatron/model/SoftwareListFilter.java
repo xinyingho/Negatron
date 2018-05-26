@@ -17,11 +17,14 @@
  */
 package net.babelsoft.negatron.model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author capan
  */
-public class SoftwareListFilter {
+public class SoftwareListFilter implements Serializable {
+    private static final long serialVersionUID = 1L;
     
     private final String softwareList;
     private final String filter;

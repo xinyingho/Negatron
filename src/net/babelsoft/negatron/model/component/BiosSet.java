@@ -18,13 +18,13 @@
 package net.babelsoft.negatron.model.component;
 
 import net.babelsoft.negatron.model.Option;
-import static net.babelsoft.negatron.model.component.RamOption.DEFAULT_VALUE;
 
 /**
  *
  * @author capan
  */
 public class BiosSet extends Option<BiosSet> {
+    private static final long serialVersionUID = 1L;
     protected static final BiosSet DEFAULT_VALUE = new BiosSet();
     
     private BiosSet() {

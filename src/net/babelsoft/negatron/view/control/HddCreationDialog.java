@@ -43,7 +43,7 @@ import javax.xml.parsers.SAXParserFactory;
 import net.babelsoft.negatron.model.HddGeometry;
 import net.babelsoft.negatron.model.SizeUnit;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

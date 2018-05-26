@@ -72,7 +72,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import net.babelsoft.negatron.io.Video;
 import net.babelsoft.negatron.io.configuration.Configuration;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.util.Disposable;
 import net.babelsoft.negatron.util.Strings;
 import uk.co.caprica.vlcj.component.DirectMediaPlayerComponent;

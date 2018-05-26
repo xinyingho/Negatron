@@ -38,7 +38,7 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.HiddenSidePane;
 import net.babelsoft.negatron.view.control.TitledWindowPane;
 import net.babelsoft.negatron.view.control.TitledWindowPane.DisplayMode;

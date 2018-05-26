@@ -27,7 +27,7 @@ import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import net.babelsoft.negatron.controller.TitledWindowPaneController;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 
 /**
  *

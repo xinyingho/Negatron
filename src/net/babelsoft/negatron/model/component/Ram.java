@@ -26,6 +26,7 @@ import net.babelsoft.negatron.model.Option;
  * @author capan
  */
 public class Ram extends Choice<RamOption> {
+    private static final long serialVersionUID = 1L;
     
     public Ram() {
         super("ramsize");

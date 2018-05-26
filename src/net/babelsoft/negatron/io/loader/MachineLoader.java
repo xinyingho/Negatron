@@ -36,6 +36,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import net.babelsoft.negatron.io.Mame;
+import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.model.comparing.Difference;
 import net.babelsoft.negatron.model.comparing.MergedUnit;
 import net.babelsoft.negatron.model.comparing.Merger;
@@ -113,99 +114,109 @@ public class MachineLoader extends Service<List<Control<?>>> {
             @Override
             protected List<Control<?>> call() throws Exception {
                 MachineDataHandler dataHandler;
-                List<String> params;
+                List<String> params = null;
                 // ensure that the JavaFX thread isn't writing to the initialisation data while the current machine data loader thread reads them
                 synchronized (dataSync) {
                     dataHandler = new MachineDataHandler(this, machine, softwareLists, origin, mode);
-                    params = parameters;
-                    params.add("-lx");
+                    if (Configuration.Manager.isAsyncExecutionMode()) {
+                        params = parameters;
+                        params.add("-lx");
+                    }
                 }
                 
                 if (isCancelled())
                     return null;
 
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware(false);
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                
-                try {
-                    Logger.getLogger(MachineLoader.class.getName()).log(Level.INFO, params.toString());
+                if (Configuration.Manager.isAsyncExecutionMode()) {
+                    // MAME v0.185 and before
                     
-                    // time and memory consuming section
-                    // so we prevent Negatron from having several threads simultaneously running it
-                    Document doc = null;
-                    synchronized (MachineLoader.this) {
-                        boolean tryAgain = false;
-                        int attemptCount = 0;
-                        
-                        if (isCancelled())
-                            return null;
-                        
-                        do { try (InputStream input = Mame.newInputStream(params)) {
-                            boolean canProceed = true;
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    dbf.setNamespaceAware(false);
+                    DocumentBuilder db = dbf.newDocumentBuilder();
 
-                            if (input.markSupported()) {
-                                input.mark(30);
+                    try {
+                        Logger.getLogger(MachineLoader.class.getName()).log(Level.INFO, params.toString());
 
-                                byte[] header = new byte[33];
-                                input.read(header, 0, 21);
+                        // time and memory consuming section
+                        // so we prevent Negatron from having several threads simultaneously running it
+                        Document doc = null;
+                        synchronized (MachineLoader.this) {
+                            boolean tryAgain = false;
+                            int attemptCount = 0;
 
-                                if (!XML_PROLOG.equals(new String(header).trim())) {
-                                    canProceed = false;
+                            if (isCancelled())
+                                return null;
 
-                                    if (attemptCount < 2) {
-                                        // invalid output, so try alternative options before giving up
-                                        input.reset();
-                                        InputStreamReader stream = new InputStreamReader(input);
-                                        BufferedReader reader = new BufferedReader(stream);
+                            do { try (InputStream input = Mame.newInputStream(params)) {
+                                boolean canProceed = true;
 
-                                        String[] error = reader.readLine().split(":");
-                                        if (error[0].equals("Error") && error[1].equals(" unknown option")) {
-                                            String param = error[2].trim();
-                                            int index = params.indexOf(param);
+                                if (input.markSupported()) {
+                                    input.mark(30);
 
-                                            params.remove(index);
-                                            if (attemptCount == 0) { // replace faulty option -harddisk by -harddisk1 or -harddisk1 by -harddisk
-                                                if (param.endsWith("1"))
-                                                    param = param.substring(0, param.length() - 1);
-                                                else
-                                                    param += "1";
-                                                params.add(index, param);
-                                            } else { // attemptCount == 1, remove faulty option and its parameter e.g. -harddisk <file path>
-                                                if (params.size() > index && params.get(index) != null && !params.get(index).startsWith("-"))
-                                                    params.remove(index);
-                                            }
-                                            params.remove(0);
+                                    byte[] header = new byte[33];
+                                    input.read(header, 0, 21);
 
-                                            tryAgain = true;
-                                            ++attemptCount;
+                                    if (!XML_PROLOG.equals(new String(header).trim())) {
+                                        canProceed = false;
+
+                                        if (attemptCount < 2) {
+                                            // invalid output, so try alternative options before giving up
+                                            input.reset();
+                                            InputStreamReader stream = new InputStreamReader(input);
+                                            BufferedReader reader = new BufferedReader(stream);
+
+                                            String[] error = reader.readLine().split(":");
+                                            if (error[0].equals("Error") && error[1].equals(" unknown option")) {
+                                                String param = error[2].trim();
+                                                int index = params.indexOf(param);
+
+                                                params.remove(index);
+                                                if (attemptCount == 0) { // replace faulty option -harddisk by -harddisk1 or -harddisk1 by -harddisk
+                                                    if (param.endsWith("1"))
+                                                        param = param.substring(0, param.length() - 1);
+                                                    else
+                                                        param += "1";
+                                                    params.add(index, param);
+                                                } else { // attemptCount == 1, remove faulty option and its parameter e.g. -harddisk <file path>
+                                                    if (params.size() > index && params.get(index) != null && !params.get(index).startsWith("-"))
+                                                        params.remove(index);
+                                                }
+                                                params.remove(0);
+
+                                                tryAgain = true;
+                                                ++attemptCount;
+                                            } else
+                                                tryAgain = false;
                                         } else
                                             tryAgain = false;
-                                    } else
+                                    } else {
+                                        input.reset();
                                         tryAgain = false;
-                                } else {
-                                    input.reset();
-                                    tryAgain = false;
+                                    }
                                 }
-                            }
 
-                            if (canProceed)
-                                doc = db.parse(input);
-                            else if (!tryAgain) {
-                                Logger.getLogger(MachineLoader.class.getName()).log(
-                                    Level.WARNING, "MAME didn't output valid XML"
-                                );
-                                return MAME_FATAL_ERROR;
-                            }
-                        }} while (tryAgain && !isCancelled());
+                                if (canProceed)
+                                    doc = db.parse(input);
+                                else if (!tryAgain) {
+                                    Logger.getLogger(MachineLoader.class.getName()).log(
+                                        Level.WARNING, "MAME didn't output valid XML"
+                                    );
+                                    return MAME_FATAL_ERROR;
+                                }
+                            }} while (tryAgain && !isCancelled());
+                        }
+
+                        if (isCancelled())
+                            return null;
+                        dataHandler.process(doc);
+                        return dataHandler.result();
+                    } catch (IOException | SAXException ex) {
+                        throw ex;
                     }
-                    
-                    if (isCancelled())
-                        return null;
-                    dataHandler.process(doc);
+                } else {
+                    // MAME v0.186+
+                    dataHandler.process();
                     return dataHandler.result();
-                } catch (IOException | SAXException ex) {
-                    throw ex;
                 }
             }
         };
@@ -418,6 +429,36 @@ public class MachineLoader extends Service<List<Control<?>>> {
                 slot -> merger.add(slot)
             );
             
+            if ((merger.merge() || mode == Mode.CREATE) && !task.isCancelled())
+                differences = merger.commit();
+            else
+                merger.rollback();
+        }
+        
+        public void process() {
+            Merger merger = machine.reset(origin);
+            
+            Bios bios = machine.getBios();
+            if (bios != null && bios.size() > 1)
+                merger.add(bios);
+            Ram ram = machine.getRam();
+            if (ram != null && ram.size() > 1)
+                merger.add(ram);
+            List<Device> devices = machine.getDevices();
+            if (devices != null)
+                devices.stream().filter(
+                    device -> device.getExtensions().size() > 0
+                ).forEach(
+                    device -> merger.add(device)
+                );
+            List<Slot> slots = machine.getSlots();
+            if (slots != null)
+                slots.stream().filter(
+                    slot -> slot.size() > 1
+                ).forEach(
+                    slot -> merger.add(slot)
+                );
+
             if ((merger.merge() || mode == Mode.CREATE) && !task.isCancelled())
                 differences = merger.commit();
             else

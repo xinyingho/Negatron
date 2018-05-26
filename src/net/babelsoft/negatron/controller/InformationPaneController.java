@@ -38,6 +38,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -67,8 +68,8 @@ import net.babelsoft.negatron.io.extras.Extras;
 import net.babelsoft.negatron.io.extras.Icons;
 import net.babelsoft.negatron.io.extras.Images;
 import net.babelsoft.negatron.model.item.EmulatedItem;
-import net.babelsoft.negatron.util.Delegate;
 import net.babelsoft.negatron.util.Disposable;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.ImageViewPane;
 import net.babelsoft.negatron.view.control.MediaViewPane;
 import net.babelsoft.negatron.view.control.Text;
@@ -354,7 +355,19 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
     }
     
     public void hideTab(Delegate delegate, boolean onStarted) {
-        if (
+        if (Configuration.Manager.isSyncExecutionMode()) {
+            // With MAME 0.186+, as no information are required to be fetched from MAME,
+            // processing from internal data cache can be so fast that showTab() is sometimes
+            // called practically at the same time as hideTab() instead of some time after,
+            // possibly resulting into the hide/show animation being stuck instead of being completed.
+            // 
+            // To avoid this, hideTab() is thus reduce to the strict minimum:
+            // no animation, and directly go to the final hiding animation state
+            keyValues2.forEach(keyValue -> 
+                ((DoubleProperty) keyValue.getTarget()).setValue((Double) keyValue.getEndValue())
+            );
+            delegate.fire();
+        } else if (
             timeline.getStatus() == Animation.Status.STOPPED &&
             tabPane.getOpacity() > 0.0
         ) {

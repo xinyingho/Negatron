@@ -26,6 +26,7 @@ import net.babelsoft.negatron.model.Option;
  * @author capan
  */
 public class Bios extends Choice<BiosSet> {
+    private static final long serialVersionUID = 1L;
     
     public Bios() {
         super("bios");
@@ -38,7 +39,7 @@ public class Bios extends Choice<BiosSet> {
     @Override
     public void setDefaultValue() {
         // This method's body should be empty as by default MAME explicitly select the 1st available bios
-        // But it's still required for Negatron 0.98 and older where it could mistakenly record favourites
+        // But it's still required for Negatron 0.98.4 and older where it could mistakenly record favourites
         // with empty bios values instead of forcing the 1st available bios
         defaultValue = BiosSet.DEFAULT_VALUE;
     }

@@ -52,7 +52,7 @@ import net.babelsoft.negatron.model.Support;
 import net.babelsoft.negatron.model.item.EmulatedItem;
 import net.babelsoft.negatron.model.item.MachineFolder;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.Delegate;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.tree.ConfigurableTreeTableCell;
 import net.babelsoft.negatron.view.control.tree.DisclosureNode;
 import net.babelsoft.negatron.view.control.tree.IconDescriptionTreeTableCell;
