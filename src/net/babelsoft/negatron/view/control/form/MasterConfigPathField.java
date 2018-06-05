@@ -82,7 +82,10 @@ public class MasterConfigPathField extends SinglePathField {
         
         browseButton.setOnAction(event -> {
             DirectoryChooser dc = new DirectoryChooser();
-            dc.setInitialDirectory(new File("."));
+            if (!pathField.getText().isEmpty())
+                dc.setInitialDirectory(new File(pathField.getText()));
+            else
+                dc.setInitialDirectory(new File("."));
             File f = dc.showDialog(browseButton.getScene().getWindow());
             if (f != null)
                 pathField.setText(f.getAbsolutePath());

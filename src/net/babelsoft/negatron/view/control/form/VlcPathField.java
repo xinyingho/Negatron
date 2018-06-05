@@ -44,7 +44,10 @@ public class VlcPathField extends SinglePathField {
         
         browseButton.setOnAction(event -> {
             FileChooser fc = new FileChooser();
-            fc.setInitialDirectory(new File("."));
+            if (!pathField.getText().isEmpty())
+                fc.setInitialDirectory(new File(pathField.getText()).getParentFile());
+            else
+                fc.setInitialDirectory(new File("."));
             if (Shell.isWindows())
                 fc.getExtensionFilters().add(
                     new FileChooser.ExtensionFilter("libVLC", "libvlc.dll")

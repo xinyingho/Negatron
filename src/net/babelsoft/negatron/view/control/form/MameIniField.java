@@ -57,7 +57,10 @@ public class MameIniField extends SinglePathField {
         
         browseButton.setOnAction(event -> {
             FileChooser fc = new FileChooser();
-            fc.setInitialDirectory(new File("."));
+            if (!pathField.getText().isEmpty())
+                fc.setInitialDirectory(new File(pathField.getText()).getParentFile());
+            else
+                fc.setInitialDirectory(new File("."));
             fc.getExtensionFilters().addAll(isMess ?
                 new FileChooser.ExtensionFilter("mess.ini", "*mess*.ini")
                 :

@@ -58,7 +58,10 @@ public class MamePathField extends SinglePathField {
         
         browseButton.setOnAction(event -> {
             FileChooser fc = new FileChooser();
-            fc.setInitialDirectory(new File("."));
+            if (!pathField.getText().isEmpty())
+                fc.setInitialDirectory(new File(pathField.getText()).getParentFile());
+            else
+                fc.setInitialDirectory(new File("."));
             if (Shell.isWindows())
                 fc.getExtensionFilters().add(
                     isMess ?
