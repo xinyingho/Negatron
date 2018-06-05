@@ -29,19 +29,11 @@ import net.babelsoft.negatron.model.OptionProperty;
 public abstract class Choice<T extends Option<T>> extends MachineElement<T> implements MachineComponent<T, OptionProperty<T>> {
     private static final long serialVersionUID = 1L;
     
-    private final List<T> options;
+    private final List<T> options = new ArrayList<>();
     private transient OptionProperty<T> value;
     protected T defaultValue;
     
-    protected Choice(String name) {
-        super(name);
-        options = new ArrayList<>();
-    }
-    
-    protected Choice(Choice<T> ref) {
-        super(ref);
-        
-        options = new ArrayList<>();
+    private void initialise(Choice<T> ref) {
         ref.options.forEach(option -> {
             T cloned = option.copy();
             if (option == ref.defaultValue)
@@ -51,6 +43,20 @@ public abstract class Choice<T extends Option<T>> extends MachineElement<T> impl
         
         if (ref.value != null)
             setValue(ref.getValue());
+    }
+    
+    protected Choice(String name) {
+        super(name);
+    }
+    
+    protected Choice(Choice<T> ref) {
+        super(ref);
+        initialise(ref);
+    }
+    
+    protected Choice(String name, Choice<T> ref) {
+        super(name, ref);
+        initialise(ref);
     }
 
     @Override

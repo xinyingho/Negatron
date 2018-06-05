@@ -36,6 +36,7 @@ public class SlotOption extends Option<SlotOption> {
     
     protected SlotOption(SlotOption ref) {
         this(ref.getName(), ref.getDescription());
+        device = ref.device;
     }
     
     public SlotOption(String name) {

@@ -20,6 +20,7 @@ package net.babelsoft.negatron.model.component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.util.Pair;
 import net.babelsoft.negatron.model.item.Machine;
 
@@ -62,9 +63,41 @@ public class MachineElementList extends ArrayList<MachineElement<?>> {
     }
     
     public List<String> toParameters() {
-        List<String> params = stream().flatMap(
+        return toParameters(null);
+    }
+    
+    public List<String> toParameters(String origin) {
+        List<String> params = stream().filter(
+            elt -> !(elt instanceof Device)
+        ).flatMap(
             value -> value.parameters().stream()
-        ).collect(Collectors.toList());
+        ).collect(
+            Collectors.toList()
+        );
+        
+        Stream<MachineElement<?>> stream = null;
+        if (origin != null) {
+            // if currently processing a slot that has just changed its value
+            if (stream().filter(elt -> elt instanceof Slot).filter(
+                slot -> slot.getName().equals(origin)
+            ).findAny().isPresent())
+                // filter out the related subdevices that are now all invalid
+                stream = stream().filter(elt -> {
+                    if (elt instanceof Device)
+                        return !((Device) elt).getTag().startsWith(origin + ":");
+                    else
+                        return false;
+                });
+        }
+        if (stream == null)
+            stream = stream().filter(elt -> elt instanceof Device);
+        
+        params.addAll(stream.flatMap(
+            value -> value.parameters().stream()
+        ).collect(
+            Collectors.toList()
+        ));
+        
         params.add(0, machine);
         return params;
     }

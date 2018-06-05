@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.util.Pair;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -93,7 +94,7 @@ public class MachineLoader extends Service<List<Control<?>>> {
         // ensure that a machine data loader thread isn't reading the initialisation data while the JavaFX thread write to them
         synchronized (dataSync) {
             this.machine = machine;
-            this.parameters = machine.parameters();
+            this.parameters = machine.parameters(origin);
             this.origin = origin;
             this.mode = mode;
         }
@@ -118,28 +119,30 @@ public class MachineLoader extends Service<List<Control<?>>> {
                 // ensure that the JavaFX thread isn't writing to the initialisation data while the current machine data loader thread reads them
                 synchronized (dataSync) {
                     dataHandler = new MachineDataHandler(this, machine, softwareLists, origin, mode);
-                    if (Configuration.Manager.isAsyncExecutionMode()) {
+                    if (Configuration.Manager.isAsyncExecutionMode() || Configuration.Manager.isXmlMediaOptionAvailable()) {
                         params = parameters;
-                        params.add("-lx");
+                        if (Configuration.Manager.isAsyncExecutionMode())
+                            params.add("-lx");
+                        else
+                            params.add("-lmx");
                     }
                 }
                 
                 if (isCancelled())
                     return null;
 
-                if (Configuration.Manager.isAsyncExecutionMode()) {
-                    // MAME v0.185 and before
+                Document doc = null;
+                if (Configuration.Manager.isAsyncExecutionMode() || Configuration.Manager.isXmlMediaOptionAvailable()) {
+                    // MAME v0.185 and before, or NegaMAME
                     
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                     dbf.setNamespaceAware(false);
                     DocumentBuilder db = dbf.newDocumentBuilder();
-
                     try {
                         Logger.getLogger(MachineLoader.class.getName()).log(Level.INFO, params.toString());
 
                         // time and memory consuming section
                         // so we prevent Negatron from having several threads simultaneously running it
-                        Document doc = null;
                         synchronized (MachineLoader.this) {
                             boolean tryAgain = false;
                             int attemptCount = 0;
@@ -208,16 +211,13 @@ public class MachineLoader extends Service<List<Control<?>>> {
 
                         if (isCancelled())
                             return null;
-                        dataHandler.process(doc);
-                        return dataHandler.result();
                     } catch (IOException | SAXException ex) {
                         throw ex;
                     }
-                } else {
-                    // MAME v0.186+
-                    dataHandler.process();
-                    return dataHandler.result();
                 }
+                
+                dataHandler.process(doc);
+                return dataHandler.result();
             }
         };
     }
@@ -239,9 +239,58 @@ public class MachineLoader extends Service<List<Control<?>>> {
             this.mode = mode;
         }
         
-        public void process(final Document doc) {
-            Merger merger = machine.reset(origin);
-            
+        private void processXmlDevices(Element machineNode, Merger merger) {
+            List<Node> deviceList = Dom.getElementsByTagName(machineNode, "device");
+            deviceList.stream().map(
+                o -> (Element) o
+            ).filter(
+                deviceElement -> deviceElement.getElementsByTagName("instance").item(0) != null
+            ).map(deviceElement -> {
+                    NamedNodeMap attributes = deviceElement.getAttributes();
+
+                    boolean isMandatory = false;
+                    if (attributes.getNamedItem("mandatory") != null)
+                        isMandatory = true;
+                    Node tag = attributes.getNamedItem("tag");
+                    
+                    Device device = new Device(
+                        deviceElement.getElementsByTagName("instance").item(0).getAttributes().getNamedItem("name").getNodeValue(),
+                        attributes.getNamedItem("type").getNodeValue(),
+                        tag != null ? tag.getNodeValue() : null,
+                        isMandatory
+                    );
+
+                    Node interfaceFormat = attributes.getNamedItem("interface");
+                    device.setInterfaceFormats(
+                        interfaceFormat != null ? interfaceFormat.getNodeValue().split(",") : new String[0]
+                    );
+                    if (machine.getSoftwareLists() != null) {
+                        machine.getSoftwareLists().stream().flatMap(softwareListFilter -> {
+                            SoftwareList softwareList = softwareLists.get(softwareListFilter.getSoftwareList());
+                            if (softwareList != null)
+                                return softwareList.getSoftwares(device.getInterfaceFormats(), softwareListFilter.getFilter()).stream();
+                            else
+                                return null;
+                        }).findAny().ifPresent(
+                            software -> device.setCompatibleSoftwareLists(true)
+                        );
+                    }
+                    Dom.getElementsByTagName(deviceElement, "extension").stream().map(
+                        extension -> extension.getAttributes().getNamedItem("name").getNodeValue()
+                    ).forEach(
+                        extension -> device.addExtension(extension)
+                    );
+
+                    return device;
+                }
+            ).filter(
+                device -> device.getExtensions().size() > 0
+            ).forEach(
+                device -> merger.add(device)
+            );
+        }
+        
+        private void processXml(final Document doc, Merger merger) {
             XPath xpath = XPathFactory.newInstance().newXPath();
             Element machineNode = null;
             try {
@@ -338,54 +387,7 @@ public class MachineLoader extends Service<List<Control<?>>> {
             }
             
             // devices
-            List<Node> deviceList = Dom.getElementsByTagName(machineNode, "device");
-            deviceList.stream().map(
-                o -> (Element) o
-            ).filter(
-                deviceElement -> deviceElement.getElementsByTagName("instance").item(0) != null
-            ).map(deviceElement -> {
-                    NamedNodeMap attributes = deviceElement.getAttributes();
-
-                    boolean isMandatory = false;
-                    if (attributes.getNamedItem("mandatory") != null)
-                        isMandatory = true;
-                    Node tag = attributes.getNamedItem("tag");
-                    
-                    Device device = new Device(
-                        deviceElement.getElementsByTagName("instance").item(0).getAttributes().getNamedItem("name").getNodeValue(),
-                        attributes.getNamedItem("type").getNodeValue(),
-                        tag != null ? tag.getNodeValue() : null,
-                        isMandatory
-                    );
-
-                    Node interfaceFormat = attributes.getNamedItem("interface");
-                    device.setInterfaceFormats(
-                        interfaceFormat != null ? interfaceFormat.getNodeValue().split(",") : new String[0]
-                    );
-                    if (machine.getSoftwareLists() != null) {
-                        machine.getSoftwareLists().stream().flatMap(softwareListFilter -> {
-                            SoftwareList softwareList = softwareLists.get(softwareListFilter.getSoftwareList());
-                            if (softwareList != null)
-                                return softwareList.getSoftwares(device.getInterfaceFormats(), softwareListFilter.getFilter()).stream();
-                            else
-                                return null;
-                        }).findAny().ifPresent(
-                            software -> device.setCompatibleSoftwareLists(true)
-                        );
-                    }
-                    Dom.getElementsByTagName(deviceElement, "extension").stream().map(
-                        extension -> extension.getAttributes().getNamedItem("name").getNodeValue()
-                    ).forEach(
-                        extension -> device.addExtension(extension)
-                    );
-
-                    return device;
-                }
-            ).filter(
-                device -> device.getExtensions().size() > 0
-            ).forEach(
-                device -> merger.add(device)
-            );
+            processXmlDevices(machineNode, merger);
             
             // slots
             List<Node> slotList = Dom.getElementsByTagName(machineNode, "slot");
@@ -428,37 +430,140 @@ public class MachineLoader extends Service<List<Control<?>>> {
             ).forEach(
                 slot -> merger.add(slot)
             );
-            
-            if ((merger.merge() || mode == Mode.CREATE) && !task.isCancelled())
-                differences = merger.commit();
-            else
-                merger.rollback();
         }
         
-        public void process() {
-            Merger merger = machine.reset(origin);
-            
+        private void copyDefaults(List<Pair<String, String>> defaults, Machine device, String root) {
+            List<Pair<String, String>> deviceDefaults = device.getDefaultSlotOptions();
+            if (deviceDefaults != null)
+                deviceDefaults.stream().forEach(pair ->
+                    defaults.add(new Pair<>(root + pair.getKey(), pair.getValue()))
+                );
+        }
+        
+        private void retrieveDefaults(
+            Machine device, List<Pair<String, String>> defaults, String root, String[] splitOrigin, int start
+        ) {
+            copyDefaults(defaults, device, root);
+
+            StringBuilder name = new StringBuilder();
+            for (int i = start;i < splitOrigin.length; ++i) {
+                if (i != 0)
+                    name.append(":");
+                name.append(splitOrigin[i]);
+
+                Slot parentSlot = device.getSlots().stream().filter(
+                    slot -> slot.getName().equals(name.toString())
+                ).findAny().orElse(null);
+
+                if (parentSlot != null) {
+                    Machine subdevice = parentSlot.getValue().getDevice();
+                    retrieveDefaults(subdevice, defaults, root + name + ":" + parentSlot.getValue().getName(), splitOrigin, ++i);
+                }
+            }
+        }
+
+        private void processSlots(List<Slot> slots, Slot rootSlot, String root, List<Pair<String, String>> defaults) {
+            Machine device = rootSlot.getValue().getDevice();
+            if (device != null && device.getSlots() != null)
+                device.getSlots().forEach(slot -> {
+                    String subroot = root + ":" + rootSlot.getValue().getName();
+                    String name = subroot + slot.getName();
+                    Slot clone = slot.copy(name);
+                    List<Pair<String, String>> dft = new ArrayList<>(defaults);
+                    copyDefaults(dft, device, subroot);
+
+                    Pair<String, String> value = dft.stream().filter(
+                        pair -> pair.getKey().equals(name)
+                    ).findFirst().orElse(null);
+                    clone.setValue(clone.getOptions().stream().filter(
+                        option -> option.getName().equals(value.getValue())
+                    ).findFirst().orElse(null));
+                    
+                    slots.add(clone);
+                    processSlots(slots, clone, name, dft);
+                });
+        }
+        
+        private void process(Document doc, Merger merger) {
             Bios bios = machine.getBios();
             if (bios != null && bios.size() > 1)
                 merger.add(bios);
             Ram ram = machine.getRam();
             if (ram != null && ram.size() > 1)
                 merger.add(ram);
-            List<Device> devices = machine.getDevices();
-            if (devices != null)
-                devices.stream().filter(
-                    device -> device.getExtensions().size() > 0
-                ).forEach(
-                    device -> merger.add(device)
-                );
+            
+            String filter = origin + ":";
+            
+            if (mode == Mode.UPDATE && doc != null) {
+                XPath xpath = XPathFactory.newInstance().newXPath();
+                Element machineNode = null;
+                try {
+                    machineNode = (Element) xpath.evaluate(
+                        String.format("/mame/machine[@name='%s']", machine.getName()), doc, XPathConstants.NODE
+                    );
+                } catch (XPathExpressionException ex) {
+                    Logger.getLogger(MachineLoader.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                processXmlDevices(machineNode, merger);
+            } else {
+                List<Device> devices = machine.getDevices();
+                if (devices != null) {
+                    devices.removeIf(candidate -> candidate.getTag().startsWith(filter));
+                    devices.stream().filter(
+                        device -> device.getExtensions().size() > 0
+                    ).forEach(
+                        device -> merger.add(device.copy())
+                    );
+                }
+            }
+            
             List<Slot> slots = machine.getSlots();
-            if (slots != null)
+            if (slots != null) {
+                // as the merger expects to be fed with completely new instances
+                // of all the slots and be able to completely scrap the content
+                // of the old instances, clone the slots accordingly
+                List<Slot> copiedSlots = new ArrayList<>();
+                slots.forEach(slot -> copiedSlots.add(slot.copy()));
+                slots = copiedSlots;
+                
+                if (mode == Mode.UPDATE) {
+                    // find the original slot that triggered the current reloading process
+                    Slot originSlot = slots.stream().filter(
+                        slot -> slot.getName().equals(origin)
+                    ).findAny().orElse(null);
+
+                    if (originSlot != null) {
+                        // remove subslots and subdevices linked to the slot that has been changed
+                        slots.removeIf(candidate -> candidate.getName().startsWith(filter));
+
+                        // add the new subslots and subdevices linked to the newly selected slot option
+                        if (!originSlot.getValue().getName().isEmpty()) {
+                            List<Pair<String, String>> defaults = new ArrayList<>();
+                            retrieveDefaults(machine, defaults, "", origin.split(":"), 0);
+                            processSlots(slots, originSlot, origin, defaults);
+                        }
+                    }
+                }
+                
                 slots.stream().filter(
                     slot -> slot.size() > 1
-                ).forEach(
+                ).sorted(
+                    (s1, s2) -> s1.getName().compareTo(s2.getName())
+                ).forEachOrdered(
                     slot -> merger.add(slot)
                 );
-
+            }
+        }
+        
+        public void process(final Document doc) {
+            Merger merger = machine.reset(origin);
+            
+            if (Configuration.Manager.isAsyncExecutionMode())
+                processXml(doc, merger);
+            else
+                process(doc, merger);
+            
             if ((merger.merge() || mode == Mode.CREATE) && !task.isCancelled())
                 differences = merger.commit();
             else

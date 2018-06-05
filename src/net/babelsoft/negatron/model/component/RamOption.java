@@ -52,6 +52,8 @@ public class RamOption extends Option<RamOption> {
     
     @Override
     public RamOption copy() {
+        if (getName().isEmpty() || getName().equals("\"\""))
+            return DEFAULT_VALUE;
         return new RamOption(this);
     }
 }

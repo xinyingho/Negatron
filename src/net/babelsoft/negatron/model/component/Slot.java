@@ -36,6 +36,10 @@ public class Slot extends Choice<SlotOption> {
         super(ref);
     }
     
+    protected Slot(String name, Slot ref) {
+        super(name, ref);
+    }
+    
     @Override
     public void setDefaultValue() {
         defaultValue = SlotOption.EMPTY_SLOT;
@@ -49,8 +53,12 @@ public class Slot extends Choice<SlotOption> {
     }
 
     @Override
-    public MachineElement<?> copy() {
+    public Slot copy() {
         return new Slot(this);
+    }
+    
+    public Slot copy(String newName) {
+        return new Slot(newName, this);
     }
     
     @Override
@@ -58,7 +66,7 @@ public class Slot extends Choice<SlotOption> {
         writer.writeEmptyElement("slot");
         writer.writeAttribute("name", getName());
         Option v = getValue();
-        if (v != SlotOption.EMPTY_SLOT) {
+        if (v != SlotOption.EMPTY_SLOT && !v.getName().isEmpty() && !v.getName().equals("\"\"")) {
             writer.writeAttribute("value", v.getName());
             writer.writeAttribute("description", v.getDescription());
             if (v == getDefaultValue())

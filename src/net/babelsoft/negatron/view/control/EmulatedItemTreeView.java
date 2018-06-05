@@ -249,9 +249,25 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
     }
     
     public void select(T item) {
-        if (item != null)
-            getSelectionModel().select( map.get(item.getName()) );
-        else
+        if (item != null) {
+            // When a part of the item list has been filtered out and users select
+            // a filtered out item, the list may graphically keep the old selection
+            // although it has programmatically switched to the new selection.
+            // If the user selects back the old selection, no selection update events
+            // may be triggered as the graphical status and the programmatical status
+            // are clashing with each other.
+            // To avoid those weird situations, programmatically clean the status
+            // before selecting the new item
+            getSelectionModel().clearSelection();
+            
+            // Selection isn't always successfull on hidden items,
+            // so ensure that the item's visible
+            SortableTreeItem<T> treeItem = map.get(item.getName());
+            if (treeItem.getParent() != null && !treeItem.getParent().isExpanded())
+                treeItem.getParent().setExpanded(true);
+            
+            getSelectionModel().select(treeItem);
+        } else
             getSelectionModel().clearSelection();
     }
     

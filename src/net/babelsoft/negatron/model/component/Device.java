@@ -20,6 +20,7 @@ package net.babelsoft.negatron.model.component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javax.xml.stream.XMLStreamException;
@@ -63,6 +64,7 @@ public final class Device extends MachineElement<String> implements MachineCompo
         ref.extensions.forEach(extension -> extensions.add(extension));
         ref.interfaceFormats.forEach(extension -> interfaceFormats.add(extension));
         setValue(ref.getValue());
+        compatibleSoftwareLists = ref.compatibleSoftwareLists;
     }
     
     @Override
@@ -191,7 +193,7 @@ public final class Device extends MachineElement<String> implements MachineCompo
     
     @Override
     public void write(XMLStreamWriter writer) throws XMLStreamException {
-        if (interfaceFormats.size() > 0)
+        if (interfaceFormats.size() > 0 || extensions.size() > 0)
             writer.writeStartElement("device");
         else
             writer.writeEmptyElement("device");
@@ -199,6 +201,7 @@ public final class Device extends MachineElement<String> implements MachineCompo
         writer.writeAttribute("type", getType());
         writer.writeAttribute("tag", getTag());
         writer.writeAttribute("mandatory", Boolean.toString(isMandatory()));
+        writer.writeAttribute("compatibleSoftwareLists", Boolean.toString(hasCompatibleSoftwareLists()));
         String v = getValue();
         if (!Strings.isEmpty(v))
             writer.writeAttribute("value", v);
@@ -209,8 +212,18 @@ public final class Device extends MachineElement<String> implements MachineCompo
                 writer.writeAttribute("name", interfaceFormat);
             }
             writer.writeEndElement();
-            
-            writer.writeEndElement();
         }
+        if (extensions.size() > 0) {
+            writer.writeEmptyElement("extensions");
+            writer.writeAttribute("names", extensions.stream().map(
+                ext -> ext.substring(2)
+            ).filter(
+                ext -> !ext.equals("zip")
+            ).collect(
+                Collectors.joining(",")
+            ));
+        }
+        if (interfaceFormats.size() > 0 || extensions.size() > 0)   
+            writer.writeEndElement();
     }
 }

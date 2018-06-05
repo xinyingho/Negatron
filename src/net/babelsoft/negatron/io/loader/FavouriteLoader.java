@@ -20,11 +20,15 @@ package net.babelsoft.negatron.io.loader;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.SAXParserFactory;
+import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.FavouriteConfiguration;
 import net.babelsoft.negatron.io.configuration.FavouriteTree;
 import net.babelsoft.negatron.model.component.Bios;
@@ -99,6 +103,32 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
         
         public FavouriteDataHandler() {
             favouriteTree = new FavouriteTree();
+        }
+        
+        private Slot findSlot(Slot refSlot, String fullname, String name) {
+            String parentName = name;
+            int j = parentName.indexOf(":");
+            String value = parentName.substring(0, j);
+            SlotOption option = refSlot.getOptions().stream().filter(
+                o -> o.getName().equals(value)
+            ).findAny().orElse(null);
+            if (option != null) {
+                List<Slot> slots = option.getDevice().getSlots();
+                if (slots != null) {
+                    String slotName = name.substring(j);
+                    refSlot = slots.stream().filter(
+                        s -> slotName.startsWith(s.getName())
+                    ).findAny().orElse(null);
+                    if (refSlot != null) {
+                        int k = refSlot.getName().length();
+                        if (k < slotName.length())
+                            return findSlot(refSlot, fullname, slotName.substring(k + 2));
+                        else
+                            return refSlot.copy(fullname);
+                    }
+                }
+            }
+            return null;
         }
         
         public FavouriteTree result() {
@@ -197,7 +227,10 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                         atts.getValue("name"),
                         atts.getValue("type"),
                         atts.getValue("tag"),
-                        Boolean.parseBoolean(atts.getValue("configurable"))
+                        Boolean.parseBoolean(atts.getValue("mandatory"))
+                    );
+                    device.setCompatibleSoftwareLists(
+                        Boolean.parseBoolean(atts.getValue("compatibleSoftwareLists"))
                     );
                     if (atts.getValue("value") != null)
                         device.setValue(atts.getValue("value"));
@@ -208,17 +241,64 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                 case "interface":
                     device.addInterfaceFormat(atts.getValue("name"));
                     break;
+                case "extensions":
+                    Arrays.stream(atts.getValue("names").split(",")).forEach(
+                        ext -> device.addExtension(ext)
+                    );
+                    break;
                 case "slot":
-                    Slot slot = new Slot(atts.getValue("name"));
-                    if (atts.getValue("value") != null) {
-                        SlotOption option = new SlotOption(atts.getValue("value"), atts.getValue("description"));
-                        String isDefault = atts.getValue("default");
-                        slot.addOption(option, isDefault != null && isDefault.equals(Boolean.TRUE.toString()));
+                    if (Configuration.Manager.isAsyncExecutionMode()) {
+                        // MAME 0.185 and older
+                        Slot slot = new Slot(atts.getValue("name"));
+                        if (atts.getValue("value") != null) {
+                            SlotOption option = new SlotOption(atts.getValue("value"), atts.getValue("description"));
+                            String isDefault = atts.getValue("default");
+                            slot.addOption(option, isDefault != null && isDefault.equals(Boolean.TRUE.toString()));
+
+                            slot.setValue(option);
+                        } else
+                            slot.setDefaultValue();
+                        parameters.add(slot);
+                    } else {
+                        // MAME 0.186+
                         
-                        slot.setValue(option);
-                    } else
-                        slot.setDefaultValue();
-                    parameters.add(slot);
+                        // try to find the slot in the machine default settings
+                        Slot refSlot = favourite.getMachine().getSlots().stream().filter(
+                            s -> s.getName().equals(atts.getValue("name"))
+                        ).findAny().orElse(null);
+                        
+                        Slot slot = null;
+                        if (refSlot == null) {
+                            // didn't find it, so try to recreate the slot
+                            String name = atts.getValue("name");
+                            String parentName = name;
+                            int i;
+                            while ((i = parentName.lastIndexOf(":")) > 0) {
+                                String filter = parentName.substring(0, i);
+                                refSlot = favourite.getMachine().getSlots().stream().filter(
+                                    s -> s.getName().equals(filter)
+                                ).findAny().orElse(null);
+                                if (refSlot != null) {
+                                    slot = findSlot(refSlot, name, name.substring(i + 1));
+                                    break;
+                                }
+                                parentName = filter;
+                            }
+                        } else
+                            // found it
+                            slot = refSlot.copy();
+                        
+                        // set the slot value
+                        if (slot != null && atts.getValue("value") != null) {
+                            SlotOption option = slot.getOptions().stream().filter(
+                                o -> o.getName().equals(atts.getValue("value"))
+                            ).findAny().orElse(null);
+                            if (option != null) {
+                                slot.setValue(option);
+                                parameters.add(slot);
+                            }
+                        }
+                    }
                     break;
                 case "softwareConfiguration":
                     Software software = null;

@@ -35,13 +35,22 @@ public abstract class MachineElement<T> implements ParametrisedElement, XmlOutpu
     private String previousName;
     private List<ParameterDependency<?>> dependencies;
     
+    private void initialise(MachineElement<T> ref) {
+        previousName = ref.previousName;
+    }
+    
     protected MachineElement(String name) {
         this.name = name;
     }
     
     protected MachineElement(MachineElement<T> ref) {
         this(ref.name);
-        previousName = ref.previousName;
+        initialise(ref);
+    }
+    
+    protected MachineElement(String name, MachineElement<T> ref) {
+        this(name);
+        initialise(ref);
     }
 
     @Override

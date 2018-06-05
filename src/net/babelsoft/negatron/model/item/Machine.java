@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.util.Pair;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.model.ControllerType;
 import net.babelsoft.negatron.model.Describable;
@@ -48,7 +49,7 @@ import net.babelsoft.negatron.model.component.SlotOption;
  * @author capan
  */
 public class Machine extends EmulatedItem<Machine> implements Describable, ParametrisedElement {
-    private static final long serialVersionUID = 10L;
+    private static final long serialVersionUID = 11L;
 
     private boolean runnable;
     private boolean mechanical;
@@ -72,6 +73,7 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
     private Ram ram;
     private List<Device> devices;
     private List<Slot> slots;
+    private List<Pair<String, String>> defaultSlotOptions; // slot name, default slot option name
 
     public Machine(final String name, final String sourceFile) {
         super(name, sourceFileToGroup(sourceFile));
@@ -296,6 +298,24 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
     
     public void setParameters(MachineElementList parameters) {
         this.parameters = parameters;
+        
+        if (Configuration.Manager.isSyncExecutionMode()) {
+            if (slots != null)
+                slots.clear();
+            if (devices != null)
+                devices.clear();
+            parameters.forEach(param -> {
+                if (param instanceof Slot) {
+                    if (slots == null)
+                        slots = new ArrayList<>();
+                    slots.add((Slot) param);
+                } else if (param instanceof Device) {
+                    if (devices == null)
+                        devices = new ArrayList<>();
+                    devices.add((Device) param);
+                }
+            });
+        }
     }
     
     public MachineElementList getParameters() {
@@ -322,9 +342,13 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
 
     @Override
     public List<String> parameters() {
+        return parameters(null);
+    }
+    
+    public List<String> parameters(String origin) {
         if (parameters == null)
             parameters = new MachineElementList(this);
-        return parameters.toParameters();
+        return parameters.toParameters(origin);
     }
     
     public String toCommandLine() {
@@ -391,8 +415,24 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
         slots.get(slots.size() - 1).addOption(option, isDefault);
         return option;
     }
+
+    public List<Pair<String, String>> getDefaultSlotOptions() {
+        return defaultSlotOptions;
+    }
     
     public void initialise(Map<String, SoftwareList> softwareListMap) {
+        if (slots != null) {
+            slots.removeIf(slot -> slot.size() == 0);
+            if (!slots.isEmpty()) {
+                defaultSlotOptions = new ArrayList<>();
+                slots.stream().forEach(slot ->
+                    // save machine's default slot options as they may override what's indicated by the devices linked to those slots
+                    defaultSlotOptions.add(new Pair<>(slot.getName(), slot.getDefaultValue().getName()))
+                );
+            } else
+                slots = null;
+        }
+        
         if (devices != null && softwareLists != null) {
             devices.stream().forEach(device -> {
                 softwareLists.stream().flatMap(softwareListFilter -> {
