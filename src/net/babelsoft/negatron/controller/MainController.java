@@ -1071,7 +1071,7 @@ public class MainController implements Initializable, AlertController, EditContr
     }
 
     @Override
-    public void show(Machine machine, SoftwareConfiguration software, MachineConfiguration configuration) {
+    public void show(Machine machine, SoftwareConfiguration software, MachineConfiguration configuration, boolean mustMigrate) {
         displayingSoftwareConfiguration = software;
         
         if (softwareConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
@@ -1080,8 +1080,9 @@ public class MainController implements Initializable, AlertController, EditContr
             softwareInformationWindow.close();
 
         if (machine != null) {
-            // force sync between favourite conf and current machine conf
-            machine.forceParameters(configuration.getParameters());
+            if (!mustMigrate)
+                // force sync between favourite conf and current machine conf
+                machine.forceParameters(configuration.getParameters());
             if (machineTreePane.getCurrentItem() == machine)
                 load();
             else

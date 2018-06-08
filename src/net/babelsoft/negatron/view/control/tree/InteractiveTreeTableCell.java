@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.view.control.tree;
 
+import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -37,6 +38,7 @@ import net.babelsoft.negatron.model.item.Machine;
 public abstract class InteractiveTreeTableCell<I> extends FavouriteTreeTableCell<I> {
     
     private static final String OK = ButtonType.OK.getText();
+    public static final PseudoClass ERROR_CLASS = PseudoClass.getPseudoClass("error");
     
     protected I editField;
     protected VBox editPane;
@@ -147,14 +149,24 @@ public abstract class InteractiveTreeTableCell<I> extends FavouriteTreeTableCell
     }
     
     private void commitRowEdit() {
+        Favourite fav = getTreeTableRow().getItem();
+        if (fav.mustMigrate()) {
+            fav.setMustMigrate(false);
+            getTreeTableRow().requestLayout();
+        }
+        
         getTreeTableRow().getChildrenUnmodifiable().stream().filter(
             cell -> cell != this && cell instanceof InteractiveTreeTableCell
         ).map(
             cell -> (InteractiveTreeTableCell) cell
-        ).forEach(
-            cell -> cell.commitEdit()
-        );
-        commitEdit(); // commit the editing cell at the end so that the favourite saving process has all the required information
+        ).forEach(cell -> {
+            cell.pseudoClassStateChanged(ERROR_CLASS, false);
+            cell.commitEdit();
+        });
+        // commit the editing cell at the end so that the favourite saving process
+        // has all the required information
+        commitEdit();
+        
         controller.fireOnCommitted();
     }
 
@@ -166,12 +178,21 @@ public abstract class InteractiveTreeTableCell<I> extends FavouriteTreeTableCell
         if (empty) {
             setText(null);
             setGraphic(null);
+            pseudoClassStateChanged(ERROR_CLASS, false);
         } else {
             Node separator = getSeparator();
-            if (separator != null)
-                setText(null);
-            else
+            if (separator == null) {
                 setText(toString());
+                
+                Favourite fav = getTreeTableRow().getItem();
+                if (fav != null && fav.mustMigrate())
+                    pseudoClassStateChanged(ERROR_CLASS, true);
+                else
+                    pseudoClassStateChanged(ERROR_CLASS, false);
+            } else {
+                setText(null);
+                pseudoClassStateChanged(ERROR_CLASS, false);
+            }
             setGraphic(separator);
         }
     }

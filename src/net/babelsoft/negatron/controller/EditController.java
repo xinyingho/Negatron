@@ -27,7 +27,7 @@ import net.babelsoft.negatron.model.item.Machine;
  */
 public interface EditController {
     
-    void show(Machine machine, SoftwareConfiguration softwareConfiguration, MachineConfiguration machineConfiguration);
+    void show(Machine machine, SoftwareConfiguration softwareConfiguration, MachineConfiguration machineConfiguration, boolean mustMigrate);
     
     void requestMachineList(ConfigurationChangeListener onMachineChangeListener, SoftwareConfiguration softwareConfiguration);
     void dismissMachineList(ConfigurationChangeListener onMachineChangeListener);

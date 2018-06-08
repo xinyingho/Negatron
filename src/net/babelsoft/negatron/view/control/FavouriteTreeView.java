@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.function.Supplier;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -29,8 +30,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
@@ -42,6 +45,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -49,8 +54,9 @@ import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import net.babelsoft.negatron.model.favourites.Favourite;
 import net.babelsoft.negatron.model.favourites.Folder;
-import net.babelsoft.negatron.util.function.Delegate;
+import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.ReversedIterator;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem.CutCopyState;
 import net.babelsoft.negatron.view.control.tree.DisclosureNode;
@@ -83,6 +89,8 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
     private Delegate onInsertFavourite;
     private Delegate onDragDone;
     private boolean isDragDropping;
+    
+    private PopOver popup;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -497,9 +505,52 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         } else {
             if (event.getClickCount() == 1)
                 getSelectionModel().clearAndSelect(cell.getIndex(), cell.getTableColumn());
-            else
+            else if (cell.getTreeTableRow().getItem() == null || !cell.getTreeTableRow().getItem().mustMigrate())
                 super.handleMouseClicked(event);
+            else
+                showFavouriteMigrationPopup();
             event.consume();
+        }
+    }
+    
+    @Override
+    public void handleKeyPressed(KeyEvent event) {
+        Favourite fav = getSelectionModel().getSelectedItem().getValue();
+        
+        if (fav == null || !fav.mustMigrate())
+            super.handleKeyPressed(event);
+        else if ((event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.ALT) && fav.mustMigrate()) {
+            showFavouriteMigrationPopup();
+            event.consume();
+        }
+    }
+    
+    private void showFavouriteMigrationPopup() {
+        if (popup == null) {
+            popup = new PopOver();
+            popup.setAnimated(true);
+            popup.setTitle(Language.Manager.getString("favouriteMigration.title"));
+            
+            Label label = new Label(Language.Manager.getString("favouriteMigration.text"));
+            label.setPadding(new Insets(8));
+            label.getStyleClass().add("text");
+            popup.setContentNode(label);
+        }
+        int rowIndex = getSelectionModel().getSelectedIndex();
+        Set<Node> treeTableRowCell = lookupAll(".tree-table-row-cell");
+        for (Node tableRow : treeTableRowCell) {
+            TreeTableRow<?> row = (TreeTableRow<?>) tableRow;
+            if (row.getIndex() == rowIndex) {
+                Set<Node> cells = row.lookupAll(".tree-table-cell");
+                for (Node node : cells) {
+                    TreeTableCell<?, ?> cell = (TreeTableCell<?, ?>) node;
+                    if (getColumns().indexOf(cell.getTableColumn()) == 1) {
+                        popup.show(cell);
+                        break;
+                    }
+                }
+                break;
+            }
         }
     }
 }

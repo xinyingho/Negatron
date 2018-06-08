@@ -385,9 +385,9 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     public void show(TreeItem<Favourite> item) {
         if (item != null) {
             Favourite fav = item.getValue();
-            editController.show(fav.getMachine(), fav.getSoftwareConfiguration(), fav.getMachineConfiguration());
+            editController.show(fav.getMachine(), fav.getSoftwareConfiguration(), fav.getMachineConfiguration(), fav.mustMigrate());
         } else
-            editController.show(null, null, null);
+            editController.show(null, null, null, false);
     }
     
     private void cancelEdit(Delegate beforeCancellingDelegate) {

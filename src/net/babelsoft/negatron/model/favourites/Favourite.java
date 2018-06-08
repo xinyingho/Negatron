@@ -80,6 +80,7 @@ public class Favourite implements XmlOutput {
     private transient BooleanProperty invalidated;
     private transient boolean disableDateModifiedUpdate;
     private transient boolean machineEditable;
+    private transient BooleanProperty mustMigrate = new SimpleBooleanProperty();
     
     protected Favourite() { // separator creation
         dateCreated.set(LocalDateTime.now());
@@ -307,6 +308,18 @@ public class Favourite implements XmlOutput {
     
     public ReadOnlyBooleanProperty invalidatedProperty() {
         return invalidated;
+    }
+
+    public boolean mustMigrate() {
+        return mustMigrate.get();
+    }
+
+    public void setMustMigrate(boolean mustMigrate) {
+        this.mustMigrate.set(mustMigrate);
+    }
+    
+    public ReadOnlyBooleanProperty mustMigrateProperty() {
+        return mustMigrate;
     }
     
     public void checkValidity() {

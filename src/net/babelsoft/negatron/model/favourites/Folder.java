@@ -77,7 +77,7 @@ public class Folder extends Favourite {
             writer.writeEmptyElement(tag);
         if (isRoot) {
             writer.writeDefaultNamespace("http://www.babelsoft.net/products/negatron/favourites");
-            writer.writeAttribute("version", "1.0");
+            writer.writeAttribute("version", "1.1");
             writer.writeAttribute("dateTreeModified", LocalDateTime.now().toString());
         }
         writer.writeAttribute("name", getName());

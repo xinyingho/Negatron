@@ -97,6 +97,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     -fx-cursor: text;
 }
 
+.tree-table-cell:error {
+    -fx-background-color: ladder(
+        -fx-background,
+        tomato 50%,
+        #990000 51%
+    );
+}
+
 .view3d-pane {
     -fx-cursor: move;
 }

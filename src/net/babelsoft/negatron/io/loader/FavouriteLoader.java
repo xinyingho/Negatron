@@ -374,6 +374,8 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                     parameters = null;
                     break;
                 case "device":
+                    if (Configuration.Manager.isSyncExecutionMode() && device.getExtensions().isEmpty())
+                        favourite.setMustMigrate(true);
                     device = null;
                     break;
             }
