@@ -18,6 +18,7 @@
 package net.babelsoft.negatron.io;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Level;
@@ -88,11 +89,15 @@ public class Video {
         @Override
         protected void onGetDirectoryNames(List<String> directoryNames) {
             String vlcPath = Configuration.Manager.getVlcPath();
-            if (Strings.isEmpty(vlcPath)) try {
+            if (Strings.isEmpty(vlcPath) || Files.notExists(Paths.get(vlcPath))) try {
                 // detect any Windows versions of VLC media player included in Negatron's installation folder
-                final String libVlc = "VLC\\libvlc.dll";
-                if (Files.exists(Paths.get(libVlc)))
-                    Configuration.Manager.updateVlcPath(libVlc);
+                Path libVlc = Files.find(Paths.get("."), 2,
+                    (p, bfa) -> {
+                        return p.toString().startsWith(".\\vlc-") && p.endsWith("libvlc.dll") && bfa.isRegularFile();
+                    }
+                ).findAny().orElse(null);
+                if (libVlc != null)
+                    Configuration.Manager.updateVlcPath(libVlc.toString());
             } catch (Exception ex) {
                 Logger.getLogger(Video.class.getName()).log(
                     Level.WARNING,
