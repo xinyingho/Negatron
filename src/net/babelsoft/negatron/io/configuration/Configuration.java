@@ -51,6 +51,21 @@ public enum Configuration {
     private static final String TRUE = "1";
     private static final String FALSE = "0";
     
+    public static Path getRootFolder() {
+        Path root = Paths.get(".");
+        if (Files.isWritable(root))
+            return root;
+        else {
+            String osName = System.getProperty("os.name").toLowerCase();
+            if (osName.contains("win"))
+                return Paths.get(System.getenv("AppData"), "Negatron");
+            else if (osName.startsWith("mac os x"))
+                return Paths.get(System.getProperty("user.home"), "Library", "Application Support", ".Negatron");
+            else // Linux
+                return Paths.get(System.getProperty("user.home"), ".Negatron");
+        }
+    }
+    
     private final String MAME = "mame";
     private final String MESS = "mess";
     private final String CHDMAN = "chdman";
@@ -72,7 +87,7 @@ public enum Configuration {
     
     private final String MAME_CHEAT_MENU_ENTRY = "cheat";
     
-    private final Path NEGATRON_INI = Paths.get("./Negatron.ini");
+    private final Path NEGATRON_INI = Paths.get(getRootFolder().toString(), "Negatron.ini");
     private final String MAME_INI = "mame.ini";
     private final String MESS_INI = "mess.ini";
     

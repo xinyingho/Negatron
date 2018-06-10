@@ -34,6 +34,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.babelsoft.negatron.io.configuration.Configuration;
 
 /**
  *
@@ -43,7 +44,7 @@ public class Cache<T, S> {
     
     private static final String VERSION_EXTENSION = ".version";
     protected static final String CACHE_EXTENSION = ".cache";
-    public static final Path ROOT_FOLDER = Paths.get("Cache");
+    public static final Path ROOT_FOLDER = Paths.get(Configuration.getRootFolder().toString(), "Cache");
     
     public static void initialise() {
         if (Files.notExists(ROOT_FOLDER)) try {

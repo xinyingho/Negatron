@@ -36,7 +36,7 @@ import net.babelsoft.negatron.model.favourites.Favourite;
  */
 public class FavouriteConfiguration {
     
-    public static final Path FAV_PATH = Paths.get("Favourites.xml");
+    public static final Path FAV_PATH = Paths.get(Configuration.getRootFolder().toString(), "Favourites.xml");
     
     private XMLStreamWriter writer;
     

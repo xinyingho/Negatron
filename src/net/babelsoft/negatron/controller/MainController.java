@@ -19,6 +19,7 @@ package net.babelsoft.negatron.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -621,11 +622,12 @@ public class MainController implements Initializable, AlertController, EditContr
         // Those files are captured by the watcher for on-screen display through alerts.
         
         try {
-            EmulationErrorWatcher watcher = new EmulationErrorWatcher(launchButton);
+            Path root = Configuration.getRootFolder();
+            EmulationErrorWatcher watcher = new EmulationErrorWatcher(launchButton, root);
             emulationErrorWatcherTimeline.setOnFinished((evt) -> watcher.displayAlert());
             SimpleDirectoryWatchService.getInstance().register(
                 watcher,
-                Paths.get("").toAbsolutePath(), // Directory to watch
+                root.toAbsolutePath(), // Directory to watch
                 "tmp-*.log"
             );
         } catch (IOException ex) {
@@ -799,10 +801,12 @@ public class MainController implements Initializable, AlertController, EditContr
     private class EmulationErrorWatcher implements DirectoryWatchService.OnFileChangeListener {
         
         private final Node node;
+        private final Path root;
         private Path filePath;
         
-        public EmulationErrorWatcher(Node node) {
+        public EmulationErrorWatcher(Node node, Path root) {
             this.node = node;
+            this.root = root;
         }
         
         @Override
@@ -817,7 +821,7 @@ public class MainController implements Initializable, AlertController, EditContr
         public void displayAlert() {
             try {
                 StringBuilder sb = new StringBuilder();
-                Files.newBufferedReader(filePath).lines().forEach(
+                Files.newBufferedReader(root.resolve(filePath)).lines().forEach(
                     line -> sb.append(line).append(System.lineSeparator())
                 );
                 String msg = sb.toString();

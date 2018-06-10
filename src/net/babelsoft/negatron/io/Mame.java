@@ -84,7 +84,7 @@ public class Mame {
         ProcessBuilder pb = new ProcessBuilder(arguments);
         pb.directory(new File(workingFolder));
 
-        File err = Files.createTempFile(Paths.get(""), "tmp-", ".log").toFile();
+        File err = Files.createTempFile(Configuration.getRootFolder(), "tmp-", ".log").toFile();
         err.deleteOnExit();
 
         pb.redirectError(err);

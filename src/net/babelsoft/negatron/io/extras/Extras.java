@@ -197,7 +197,7 @@ public class Extras {
         
         if (Files.notExists(defaultDocumentPath)) {
             // remove any old versions of the wanted document
-            Files.walkFileTree(Paths.get("."), EnumSet.noneOf(FileVisitOption.class), 1, new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(Paths.get(Configuration.getRootFolder().toString()), EnumSet.noneOf(FileVisitOption.class), 1, new SimpleFileVisitor<Path>() {
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -207,6 +207,7 @@ public class Extras {
                 }
             });
             // extract the current version of the wanted document
+            defaultDocumentPath = Paths.get(Configuration.getRootFolder().toString(), String.format(wantedFilenameMask, version));
             Files.copy(Extras.class.getResourceAsStream(
                 "/net/babelsoft/negatron/resource/" + resource
             ), defaultDocumentPath);
