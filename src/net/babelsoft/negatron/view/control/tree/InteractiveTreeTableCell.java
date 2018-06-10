@@ -150,10 +150,8 @@ public abstract class InteractiveTreeTableCell<I> extends FavouriteTreeTableCell
     
     private void commitRowEdit() {
         Favourite fav = getTreeTableRow().getItem();
-        if (fav.mustMigrate()) {
+        if (fav.mustMigrate())
             fav.setMustMigrate(false);
-            getTreeTableRow().requestLayout();
-        }
         
         getTreeTableRow().getChildrenUnmodifiable().stream().filter(
             cell -> cell != this && cell instanceof InteractiveTreeTableCell

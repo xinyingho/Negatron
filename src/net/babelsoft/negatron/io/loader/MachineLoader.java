@@ -56,6 +56,7 @@ import net.babelsoft.negatron.util.Dom;
 import net.babelsoft.negatron.view.control.form.ChoiceControl;
 import net.babelsoft.negatron.view.control.form.Control;
 import net.babelsoft.negatron.view.control.form.DeviceControl;
+import net.babelsoft.negatron.view.control.form.SlotControl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -597,7 +598,9 @@ public class MachineLoader extends Service<List<Control<?>>> {
 
                     if (element instanceof Device)
                         views.add(new DeviceControl((Device) element, status));
-                    else // Bios / Ram / Slot
+                    else if (element instanceof Slot)
+                        views.add(new SlotControl((Slot) element, status));
+                    else // Bios / Ram
                         views.add(new ChoiceControl((Choice) element, status));
                 }
             );

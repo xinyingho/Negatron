@@ -17,6 +17,8 @@
  */
 package net.babelsoft.negatron.model.component;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import net.babelsoft.negatron.model.Option;
@@ -28,16 +30,32 @@ import net.babelsoft.negatron.model.Option;
 public class Slot extends Choice<SlotOption> {
     private static final long serialVersionUID = 1L;
     
+    private String bios;
+    
     public Slot(String name) {
         super(name);
     }
     
     protected Slot(Slot ref) {
         super(ref);
+        bios = ref.bios;
     }
     
     protected Slot(String name, Slot ref) {
         super(name, ref);
+        bios = ref.bios;
+    }
+    
+    public String getBios() {
+        return bios;
+    }
+    
+    public void setBios(String biosSet) {
+        bios = biosSet;
+    }
+    
+    public void setBios(BiosSet biosSet) {
+        bios = biosSet.getName();
     }
     
     @Override
@@ -60,11 +78,23 @@ public class Slot extends Choice<SlotOption> {
     public Slot copy(String newName) {
         return new Slot(newName, this);
     }
+
+    @Override
+    public List<String> parameters() {
+        List<String> param = super.parameters();
+        
+        if (bios != null)
+            param.add(param.remove(1) + ",bios=" + bios);
+        
+        return param;
+    }
     
     @Override
     public void write(XMLStreamWriter writer) throws XMLStreamException {
         writer.writeEmptyElement("slot");
         writer.writeAttribute("name", getName());
+        if (bios != null)
+            writer.writeAttribute("bios", getBios());
         Option v = getValue();
         if (v != SlotOption.EMPTY_SLOT && !v.getName().isEmpty() && !v.getName().equals("\"\"")) {
             writer.writeAttribute("value", v.getName());

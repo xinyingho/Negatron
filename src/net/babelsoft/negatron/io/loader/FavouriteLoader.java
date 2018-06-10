@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -258,6 +257,10 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                             slot.setValue(option);
                         } else
                             slot.setDefaultValue();
+                        
+                        if (atts.getValue("bios") != null)
+                            slot.setBios(atts.getValue("bios"));
+                        
                         parameters.add(slot);
                     } else {
                         // MAME 0.186+
@@ -288,15 +291,21 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                             // found it
                             slot = refSlot.copy();
                         
-                        // set the slot value
-                        if (slot != null && atts.getValue("value") != null) {
-                            SlotOption option = slot.getOptions().stream().filter(
-                                o -> o.getName().equals(atts.getValue("value"))
-                            ).findAny().orElse(null);
-                            if (option != null) {
-                                slot.setValue(option);
-                                parameters.add(slot);
+                        if (slot != null) {
+                            // set the slot value
+                            if (atts.getValue("value") != null) {
+                                SlotOption option = slot.getOptions().stream().filter(
+                                    o -> o.getName().equals(atts.getValue("value"))
+                                ).findAny().orElse(null);
+                                if (option != null)
+                                    slot.setValue(option);
                             }
+                            if (slot.getValue() == null)
+                                slot.setDefaultValue();
+                            
+                            if (atts.getValue("bios") != null)
+                                slot.setBios(atts.getValue("bios"));
+                            parameters.add(slot);
                         }
                     }
                     break;
