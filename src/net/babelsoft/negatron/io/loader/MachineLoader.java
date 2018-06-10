@@ -457,7 +457,10 @@ public class MachineLoader extends Service<List<Control<?>>> {
 
                 if (parentSlot != null) {
                     Machine subdevice = parentSlot.getValue().getDevice();
-                    retrieveDefaults(subdevice, defaults, root + name + ":" + parentSlot.getValue().getName(), splitOrigin, ++i);
+                    if (subdevice != null)
+                        retrieveDefaults(subdevice, defaults,
+                            root + name + ":" + parentSlot.getValue().getName(),
+                        splitOrigin, ++i);
                 }
             }
         }
