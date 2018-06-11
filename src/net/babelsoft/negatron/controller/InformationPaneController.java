@@ -509,7 +509,7 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
                     nodes.add(text);
                 }
                 
-                Pattern pattern = Pattern.compile("http:\\/\\/\\S+[\\w/]|- ([A-Z\\d]+ )+-|={6} (\\S+ )+={6}|={5} (\\S+ )+={5}|={2} (\\S+ )+={2}");
+                Pattern pattern = Pattern.compile("https?:\\/\\/\\S+[\\w/]|- ([A-Z\\d]+ )+-|={6} (\\S+ )+={6}|={5} (\\S+ )+={5}|={2} (\\S+ )+={2}");
                 Matcher matcher = pattern.matcher(content);
                 while (matcher.find()) {
                     int to = matcher.start();
