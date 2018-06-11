@@ -220,10 +220,10 @@ public class SoftwareInformationPaneController extends InformationPaneController
     }
     
     @Override
-    public void setEmulatedItem(Software emulatedItem) {
+    public void setEmulatedItem(Software emulatedItem, boolean keepFavouritesButtonEnabled) {
         if (emulatedItem != null)
             systemName = emulatedItem.getGroup();
-        super.setEmulatedItem(emulatedItem);
+        super.setEmulatedItem(emulatedItem, keepFavouritesButtonEnabled);
     }
 
     @Override

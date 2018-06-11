@@ -27,8 +27,8 @@ import javafx.scene.layout.VBox;
 import net.babelsoft.negatron.controller.MachineInformationPaneController;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.util.Disposable;
+import net.babelsoft.negatron.util.function.Delegate;
 
 /**
  *
@@ -54,8 +54,8 @@ public class MachineInformationPane extends VBox implements Disposable {
         return controller.getTabPane();
     }
     
-    public void setEmulatedItem(Machine machine) {
-        controller.setEmulatedItem(machine);
+    public void setEmulatedItem(Machine machine, boolean keepFavouritesButtonEnabled) {
+        controller.setEmulatedItem(machine, keepFavouritesButtonEnabled);
     }
 
     public void setApplication(Application application) {

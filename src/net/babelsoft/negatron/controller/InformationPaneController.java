@@ -227,7 +227,7 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
         if (tabs != null)
             Arrays.stream(tabs).forEach(tab -> tab.setUserData(dummyMachine));
         
-        setEmulatedItem(null);
+        setEmulatedItem(null, true);
         
         initialise(titleImagePane);
         initialise(snapshotImagePane);
@@ -283,7 +283,7 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
         this.application = application;
     }
     
-    public void setEmulatedItem(T emulatedItem) {
+    public void setEmulatedItem(T emulatedItem, boolean keepFavouritesButtonEnabled) {
         currentEmulatedItem = emulatedItem;
         
         try {
@@ -294,7 +294,8 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
                 if (image == null)
                     image = new Image(getClass().getResourceAsStream("/net/babelsoft/negatron/resource/icon/Negatron@2x.png"));
                 setGraphic(new ImageView(image));
-                favouritesButton.setDisable(false);
+                if (keepFavouritesButtonEnabled)
+                    favouritesButton.setDisable(false);
             } else {
                 setText("Negatron");
                 setGraphic(new ImageView(new Image(

@@ -50,8 +50,8 @@ public class SoftwareInformationPane extends TitledWindowPane {
         return controller.getTabPane();
     }
     
-    public void setEmulatedItem(Software software) {
-        controller.setEmulatedItem(software);
+    public void setEmulatedItem(Software software, boolean keepFavouritesButtonEnabled) {
+        controller.setEmulatedItem(software, keepFavouritesButtonEnabled);
         //controller.hideTab(() -> controller.showTab(), false);
     }
 

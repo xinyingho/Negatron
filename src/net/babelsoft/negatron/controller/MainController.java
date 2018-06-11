@@ -369,7 +369,7 @@ public class MainController implements Initializable, AlertController, EditContr
         });
         Delegate decrementMachineLoadingCount = () -> {
             int count = machineLoadingCount.decrementAndGet();
-            if (count == 0) {
+            if (count == 0 && favouriteTreeWindow.getDisplayMode() == DisplayMode.HIDDEN) {
                 machineInformationPane.setFavouriteEnabled(true);
                 softwareInformationWindow.setFavouriteEnabled(true);
             }
@@ -433,7 +433,7 @@ public class MainController implements Initializable, AlertController, EditContr
                     fireOnMachineLoaded();
                 machineConfigurationPane.satisfyRequirement(software.getRequirement(), softwareLists);
                 softwareConfigurationTable.setSoftware(software);
-                softwareInformationWindow.setEmulatedItem(software);
+                softwareInformationWindow.setEmulatedItem(software, favouriteTreeWindow.getDisplayMode() == DisplayMode.HIDDEN);
                 if (
                     softwareInformationWindow.getDisplayMode() == DisplayMode.HIDDEN
                 ) {
@@ -458,7 +458,7 @@ public class MainController implements Initializable, AlertController, EditContr
                     buttonBar.getItems().remove(softwareConfigurationButton);
             } else {
                 softwareConfigurationTable.setSoftware(null);
-                softwareInformationWindow.setEmulatedItem(null);
+                softwareInformationWindow.setEmulatedItem(null, favouriteTreeWindow.getDisplayMode() == DisplayMode.HIDDEN);
                 if (softwareConfigurationButton.getParent() != null)
                     buttonBar.getItems().remove(softwareConfigurationButton);
             }
@@ -506,6 +506,9 @@ public class MainController implements Initializable, AlertController, EditContr
                 softwareTreePane.requestTreeFocus();
             else
                 machineTreePane.requestTreeFocus();
+            
+            machineInformationPane.setFavouriteEnabled(true);
+            softwareInformationWindow.setFavouriteEnabled(true);
         });
         favouriteTreePane.setEditController(this);
         favouriteTreePane.setOnCommitted(favourite -> {
@@ -573,8 +576,11 @@ public class MainController implements Initializable, AlertController, EditContr
                 favouriteTreeWindow.setOnceOnAnimationEnded(() -> {
                     if (isShiftDown)
                         favouriteTreeWindow.close();
-                    else
+                    else {
                         favouriteTreePane.requestTreeFocus();
+                        machineInformationPane.setFavouriteEnabled(false);
+                        softwareInformationWindow.setFavouriteEnabled(false);
+                    }
                 });
                 favouriteViewButton.fire();
             }
@@ -982,7 +988,7 @@ public class MainController implements Initializable, AlertController, EditContr
     }
     
     private void loadMachineInformation() {
-        machineInformationPane.setEmulatedItem(currentMachine);
+        machineInformationPane.setEmulatedItem(currentMachine, favouriteTreeWindow.getDisplayMode() == DisplayMode.HIDDEN);
         machineInformationPane.showTab();
     }
     
@@ -1281,10 +1287,17 @@ public class MainController implements Initializable, AlertController, EditContr
     
     @FXML
     private void handleFavouriteViewAction(ActionEvent event) {
-        if (favouriteViewButton.isSelected())
+        if (favouriteViewButton.isSelected()) {
             favouriteTreeWindow.showMaximised();
-        else
+            
+            machineInformationPane.setFavouriteEnabled(false);
+            softwareInformationWindow.setFavouriteEnabled(false);
+        } else {
             favouriteTreeWindow.close();
+            
+            machineInformationPane.setFavouriteEnabled(true);
+            softwareInformationWindow.setFavouriteEnabled(true);
+        }
     }
     
     @FXML
