@@ -196,21 +196,23 @@ public class Extras {
         Path defaultDocumentPath = Paths.get(".", String.format(wantedFilenameMask, version));
         
         if (Files.notExists(defaultDocumentPath)) {
-            // remove any old versions of the wanted document
-            Files.walkFileTree(Paths.get(Configuration.getRootFolder().toString()), EnumSet.noneOf(FileVisitOption.class), 1, new SimpleFileVisitor<Path>() {
-
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (file.getName(file.getNameCount() - 1).toString().matches(removingExpression))
-                        Files.delete(file);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-            // extract the current version of the wanted document
             defaultDocumentPath = Paths.get(Configuration.getRootFolder().toString(), String.format(wantedFilenameMask, version));
-            Files.copy(Extras.class.getResourceAsStream(
-                "/net/babelsoft/negatron/resource/" + resource
-            ), defaultDocumentPath);
+            if (Files.notExists(defaultDocumentPath)) {
+                // remove any old versions of the wanted document
+                Files.walkFileTree(Paths.get(Configuration.getRootFolder().toString()), EnumSet.noneOf(FileVisitOption.class), 1, new SimpleFileVisitor<Path>() {
+
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (file.getName(file.getNameCount() - 1).toString().matches(removingExpression))
+                            Files.delete(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+                // extract the current version of the wanted document
+                Files.copy(Extras.class.getResourceAsStream(
+                    "/net/babelsoft/negatron/resource/" + resource
+                ), defaultDocumentPath);
+            }
         }
         
         return defaultDocumentPath;
