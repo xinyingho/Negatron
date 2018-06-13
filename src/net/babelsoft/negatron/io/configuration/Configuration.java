@@ -60,7 +60,7 @@ public enum Configuration {
             if (osName.contains("win"))
                 return Paths.get(System.getenv("AppData"), "Negatron");
             else if (osName.startsWith("mac os x"))
-                return Paths.get(System.getProperty("user.home"), "Library", "Application Support", ".Negatron");
+                return Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Negatron");
             else // Linux
                 return Paths.get(System.getProperty("user.home"), ".Negatron");
         }
