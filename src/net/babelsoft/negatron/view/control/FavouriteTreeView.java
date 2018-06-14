@@ -278,13 +278,17 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         scrollTimeline.setCycleCount(Timeline.INDEFINITE);
         scrollTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> dragScroll()));
         setOnDragExited(event -> {
-            if (event.getY() > 0) {
-                scrollDirection = 1.0 / getExpandedItemCount();
-            }
-            else {
-                scrollDirection = -1.0 / getExpandedItemCount();
-            }
-            scrollTimeline.play();
+            double x = event.getX(), y = event.getY();
+            if (x < 0 || y < 0 || x > getWidth() || y > getHeight()) {
+                if (y > 0) {
+                    scrollDirection = 1.0 / getExpandedItemCount();
+                }
+                else {
+                    scrollDirection = -1.0 / getExpandedItemCount();
+                }
+                scrollTimeline.play();
+            } else // workaround for Linux and macOS, where the event DragDone never gets triggered
+                scrollTimeline.stop();
         });
         setOnDragEntered(event -> scrollTimeline.stop());
         setOnDragDone(event -> scrollTimeline.stop());
