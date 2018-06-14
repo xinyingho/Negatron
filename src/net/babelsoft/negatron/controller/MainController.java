@@ -679,7 +679,12 @@ public class MainController implements Initializable, AlertController, EditContr
         
         stage.setHeight(Configuration.Manager.getWindowHeight());
         stage.setWidth(Configuration.Manager.getWindowWidth());
-        stage.setMaximized(Configuration.Manager.isWindowMaximised());
+        // macOS workaround: if the UI requests to get maximised on the go, some graphical bugs occurs
+        // this gets fixed by waiting for all graphical components to be initialised
+        if (Configuration.Manager.isWindowMaximised())
+            new Timeline(new KeyFrame(Duration.seconds(1),
+                evt -> stage.setMaximized(Configuration.Manager.isWindowMaximised())
+            )).play();
         stage.setFullScreen(Configuration.Manager.isWindowFullscreen());
         stage.centerOnScreen();
         
