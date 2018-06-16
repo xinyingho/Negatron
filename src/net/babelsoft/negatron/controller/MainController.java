@@ -838,6 +838,7 @@ public class MainController implements Initializable, AlertController, EditContr
                 if (Strings.isValid(msg) &&
                     // ignore error messages that are actually minor warnings already displayed from MAME's internal UI
                     !msg.contains("NO GOOD DUMP KNOWN") &&
+                    !msg.contains("NEEDS REDUMP") &&
                     !msg.contains("WARNING: the machine might not run correctly")
                 )
                     Platform.runLater(() -> alert(AlertType.WARNING, msg));
