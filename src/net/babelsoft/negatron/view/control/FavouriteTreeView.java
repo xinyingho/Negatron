@@ -501,20 +501,18 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         @SuppressWarnings("unchecked")
         TreeTableCell<Favourite, ?> cell = (TreeTableCell<Favourite, ?>) event.getSource();
         
-        if (!event.isAltDown()) {
-            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1 && !cell.isEditing())
-                cancelEdit();
-            else if (event.getButton() == MouseButton.MIDDLE)
-                edit(cell.getIndex(), cell.getTableColumn());
-        } else {
-            if (event.getClickCount() == 1)
-                getSelectionModel().clearAndSelect(cell.getIndex(), cell.getTableColumn());
-            else if (cell.getTreeTableRow().getItem() == null || !cell.getTreeTableRow().getItem().mustMigrate())
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1 && !cell.isEditing())
+            cancelEdit();
+        else if (event.getButton() == MouseButton.MIDDLE)
+            edit(cell.getIndex(), cell.getTableColumn());
+        else if (event.getClickCount() == 1)
+            getSelectionModel().clearAndSelect(cell.getIndex(), cell.getTableColumn());
+        else if (cell.getTreeTableRow().getItem() != null && cell.getTreeTableRow().getItem().getMachine() != null)
+            if (!cell.getTreeTableRow().getItem().mustMigrate())
                 super.handleMouseClicked(event);
             else
                 showFavouriteMigrationPopup();
-            event.consume();
-        }
+        event.consume();
     }
     
     @Override

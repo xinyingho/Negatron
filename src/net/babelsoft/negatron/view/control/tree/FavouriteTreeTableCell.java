@@ -21,9 +21,11 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Skin;
 import javafx.scene.control.TreeTableView;
 import net.babelsoft.negatron.controller.FavouriteTreePaneController;
 import net.babelsoft.negatron.model.favourites.Favourite;
+import net.babelsoft.negatron.view.skin.FavouriteTreeTableCellSkin;
 
 /**
  *
@@ -51,6 +53,11 @@ public class FavouriteTreeTableCell<I> extends NegatronTreeTableCell<Favourite, 
     
     private boolean isSeparator() {
         return getTreeTableRow().getItem() instanceof net.babelsoft.negatron.model.favourites.Separator;
+    }
+    
+    /** {@inheritDoc} */
+    @Override protected Skin<?> createDefaultSkin() {
+        return new FavouriteTreeTableCellSkin<>(this);
     }
     
     protected Node getSeparator() {
