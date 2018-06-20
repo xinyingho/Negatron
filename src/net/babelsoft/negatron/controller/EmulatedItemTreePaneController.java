@@ -38,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
@@ -187,21 +188,41 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
         List<TreeTableColumn<T, ?>> sortOrder = new ArrayList<>(treeView.getSortOrder());
         treeView.getSortOrder().clear();
         
+        treeView.getMap().values().forEach(item -> {
+            if (item.getParent() != null)
+                ((SortableTreeItem<T>) item.getParent()).getInternalChildren().clear();
+            item.getInternalChildren().clear();
+        });
+        
         SortableTreeItem<T> root = treeView.getSortableRoot();
         root.getInternalChildren().clear();
-        viewType.entrySet().forEach(entry -> {
-            SortableTreeItem<T> folder = entry.getKey();
-            entry.getValue().forEach(itemName -> {
-                SortableTreeItem<T> item = treeView.getTreeItem(itemName);
-                if (item != null)
-                    folder.getInternalChildren().add(item);
-            });
-            if (folder.getInternalChildren().size() > 0)
-                if (!Strings.isEmpty(folder.getValue().getName()))
+        
+        if (viewType.size() > 0)
+            viewType.entrySet().forEach(entry -> {
+                SortableTreeItem<T> folder = entry.getKey();
+                boolean canAddToFolder = !Strings.isEmpty(folder.getValue().getName());
+                
+                entry.getValue().forEach(itemName -> {
+                    SortableTreeItem<T> item = treeView.getTreeItem(itemName);
+                    if (item != null)
+                        if (canAddToFolder)
+                            folder.getInternalChildren().add(item);
+                        else
+                            root.getInternalChildren().add(item);
+                });
+                
+                if (folder.getInternalChildren().size() > 0 && canAddToFolder)
                     root.getInternalChildren().add(folder);
+            });
+        else
+            treeView.getMap().values().forEach(item -> {
+                if (mustFlatten || !item.getValue().hasParent())
+                    root.getInternalChildren().add(item);
                 else
-                    root.getInternalChildren().addAll(folder.getInternalChildren());
-        });
+                    treeView.getTreeItem(
+                        item.getValue().getParent().getName()
+                    ).getInternalChildren().add(item);
+            });
         
         treeView.getSortOrder().addAll(sortOrder);
         treeView.endTreeWiseOperation();

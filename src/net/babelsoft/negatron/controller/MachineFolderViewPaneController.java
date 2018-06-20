@@ -156,11 +156,12 @@ public class MachineFolderViewPaneController implements Initializable {
     @FXML
     private void handleChoiceAction(ActionEvent event) {
         flow.getChildren().clear();
+        
         IniPath iniPath = choice.getSelectionModel().getSelectedItem();
+        Map<SortableTreeItem<Machine>, List<String>> view = new HashMap<>();
         
         if (iniPath != defaultPath) try {
             Map<String, SortableTreeItem<Machine>> index = new HashMap<>();
-            Map<SortableTreeItem<Machine>, List<String>> view = new HashMap<>();
             List<String> lines = Files.readAllLines(iniPath.getPath());
             boolean skip = false;
             boolean isMame32Format = false;
@@ -197,11 +198,12 @@ public class MachineFolderViewPaneController implements Initializable {
                         items.add(line);
                     }
             }
-            
-            onViewTypeChanged.accept(view);
         } catch (IOException ex) {
             Logger.getLogger(MachineFolderViewPaneController.class.getName()).log(Level.SEVERE, "Error while processing .ini file", ex);
         }
+        
+        if (onViewTypeChanged != null)
+            onViewTypeChanged.accept(view);
         
         selectAllButton.setDisable(flow.getChildren().size() <= 0);
         selectNoneButton.setDisable(flow.getChildren().size() <= 0);

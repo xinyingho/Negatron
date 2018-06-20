@@ -212,6 +212,10 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
         this.map = map;
     }
     
+    public Map<String, SortableTreeItem<T>> getMap() {
+        return map;
+    }
+    
     public SortableTreeItem<T> getTreeItem(String name) {
         return map.get(name);
     }
