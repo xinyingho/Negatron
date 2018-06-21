@@ -35,6 +35,7 @@ import net.babelsoft.negatron.controller.EmulatedItemTreePaneController;
 import net.babelsoft.negatron.controller.FilterPaneController;
 import net.babelsoft.negatron.model.Statistics;
 import net.babelsoft.negatron.model.item.EmulatedItem;
+import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.tree.SortableTreeItem;
@@ -182,7 +183,11 @@ public class EmulatedItemTreePane<T extends EmulatedItem<T>> extends VBox {
         tree.requestFocus();
     }
 
-    public void setViewType(Map<SortableTreeItem<T>, List<String>> viewType) {
-        controller.setViewType(viewType);
+    public void setFolderViewType(Map<SortableTreeItem<T>, List<String>> folderViewType) {
+        controller.setFolderViewType(folderViewType);
+    }
+    
+    public void setFolderVisible(SortableTreeItem<T> folder, boolean visible) {
+        controller.setFolderVisible(folder, visible);
     }
 }

@@ -20,6 +20,7 @@ package net.babelsoft.negatron.view.control;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javafx.fxml.FXMLLoader;
 import net.babelsoft.negatron.controller.MachineFolderViewPaneController;
@@ -47,7 +48,11 @@ public class MachineFolderViewPane extends TitledWindowPane {
         }
     }
     
-    public void setOnViewTypeChanged(Consumer<Map<SortableTreeItem<Machine>, List<String>>> onViewTypeChanged) {
-        controller.setOnViewTypeChanged(onViewTypeChanged);
+    public void setOnFolderViewTypeChanged(Consumer<Map<SortableTreeItem<Machine>, List<String>>> onFolderViewTypeChanged) {
+        controller.setOnFolderViewTypeChanged(onFolderViewTypeChanged);
+    }
+    
+    public void setOnCheckAction(BiConsumer<SortableTreeItem<Machine>, Boolean> onCheckAction) {
+        controller.setOnCheckAction(onCheckAction);
     }
 }

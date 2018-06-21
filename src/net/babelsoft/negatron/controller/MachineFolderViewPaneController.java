@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,7 +87,8 @@ public class MachineFolderViewPaneController implements Initializable {
     }
     
     private IniPath defaultPath;
-    private Consumer<Map<SortableTreeItem<Machine>, List<String>>> onViewTypeChanged;
+    private Consumer<Map<SortableTreeItem<Machine>, List<String>>> onFolderViewTypeChanged;
+    private BiConsumer<SortableTreeItem<Machine>, Boolean> onCheckAction;
     
     /**
      * Initializes the controller class.
@@ -113,8 +115,12 @@ public class MachineFolderViewPaneController implements Initializable {
         }});
     }
     
-    public void setOnViewTypeChanged(Consumer<Map<SortableTreeItem<Machine>, List<String>>> onViewTypeChanged) {
-        this.onViewTypeChanged = onViewTypeChanged;
+    public void setOnFolderViewTypeChanged(Consumer<Map<SortableTreeItem<Machine>, List<String>>> onFolderViewTypeChanged) {
+        this.onFolderViewTypeChanged = onFolderViewTypeChanged;
+    }
+    
+    public void setOnCheckAction(BiConsumer<SortableTreeItem<Machine>, Boolean> onCheckAction) {
+        this.onCheckAction = onCheckAction;
     }
     
     private List<String> addFolder(
@@ -139,6 +145,8 @@ public class MachineFolderViewPaneController implements Initializable {
         if (addGraphics) {
             CheckBox check = new CheckBox(name);
             check.setSelected(true);
+            check.setUserData(folder);
+            check.setOnAction(evt -> onCheckAction.accept(folder, check.isSelected()));
             flow.getChildren().add(check);
         }
         
@@ -148,9 +156,10 @@ public class MachineFolderViewPaneController implements Initializable {
     private void setSelected(boolean selected) {
         flow.getChildren().stream().map(
             node -> (CheckBox) node
-        ).forEach(
-            check -> check.setSelected(selected)
-        );
+        ).forEach(check -> {
+            if (selected != check.isSelected())
+                check.fire();
+        });
     }
     
     @FXML
@@ -202,8 +211,8 @@ public class MachineFolderViewPaneController implements Initializable {
             Logger.getLogger(MachineFolderViewPaneController.class.getName()).log(Level.SEVERE, "Error while processing .ini file", ex);
         }
         
-        if (onViewTypeChanged != null)
-            onViewTypeChanged.accept(view);
+        if (onFolderViewTypeChanged != null)
+            onFolderViewTypeChanged.accept(view);
         
         selectAllButton.setDisable(flow.getChildren().size() <= 0);
         selectNoneButton.setDisable(flow.getChildren().size() <= 0);

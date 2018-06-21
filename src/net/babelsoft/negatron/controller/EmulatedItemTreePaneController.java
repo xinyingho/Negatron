@@ -183,7 +183,7 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
         return stats;
     }
     
-    public void setViewType(Map<SortableTreeItem<T>, List<String>> viewType) {
+    public void setFolderViewType(Map<SortableTreeItem<T>, List<String>> folderViewType) {
         treeView.beginTreeWiseOperation();
         List<TreeTableColumn<T, ?>> sortOrder = new ArrayList<>(treeView.getSortOrder());
         treeView.getSortOrder().clear();
@@ -197,8 +197,8 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
         SortableTreeItem<T> root = treeView.getSortableRoot();
         root.getInternalChildren().clear();
         
-        if (viewType.size() > 0)
-            viewType.entrySet().forEach(entry -> {
+        if (folderViewType.size() > 0)
+            folderViewType.entrySet().forEach(entry -> {
                 SortableTreeItem<T> folder = entry.getKey();
                 boolean canAddToFolder = !Strings.isEmpty(folder.getValue().getName());
                 
@@ -226,6 +226,13 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
         
         treeView.getSortOrder().addAll(sortOrder);
         treeView.endTreeWiseOperation();
+    }
+    
+    public void setFolderVisible(SortableTreeItem<T> folder, boolean visible) {
+        if (visible)
+            treeView.getSortableRoot().getInternalChildren().add(folder);
+        else
+            treeView.getSortableRoot().getInternalChildren().remove(folder);
     }
     
     private void switchView() {

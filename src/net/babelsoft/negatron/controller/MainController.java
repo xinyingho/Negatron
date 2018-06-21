@@ -357,7 +357,8 @@ public class MainController implements Initializable, AlertController, EditContr
         machineConfigurationWindow.setWindowSlaves(softwareTreeWindow, softwareInformationWindow, softwareConfigurationWindow);
         machineConfigurationWindow.setOnClose(onWindowClose);
         machineInformationPane.setOnVideoShortcut(() -> videoButton.fire());
-        machineFolderViewWindow.setOnViewTypeChanged(viewType -> machineTreePane.setViewType(viewType));
+        machineFolderViewWindow.setOnFolderViewTypeChanged(machineTreePane::setFolderViewType);
+        machineFolderViewWindow.setOnCheckAction(machineTreePane::setFolderVisible);
         
         machineLoader.setOnReady(e -> {
             int count = machineLoadingCount.incrementAndGet();
