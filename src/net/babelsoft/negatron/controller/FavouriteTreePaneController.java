@@ -428,7 +428,10 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         listTimeline = new Timeline(
             new KeyFrame(
                 Duration.millis(200),
-                e -> listDividerGrabber.getStyleClass().add("padding"),
+                e -> {
+                    listDividerGrabber.getStyleClass().add("padding");
+                    treeView.scrollTo(treeView.getEditingCell().getRow());
+                },
                 new KeyValue(listDivider.positionProperty(), 0.5)
             )
         );
@@ -564,6 +567,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
                         editingColumn == softwareConfiguration && selected.getValue().getSoftwareConfiguration() == null ||
                         editingColumn == machineConfiguration && !selected.getValue().getMachine().isConfigurable()
                     );
+                    cancelEdit();
                 } else
                     return; // Folders only have 1 editable column so no need to change the editing field
             } else
