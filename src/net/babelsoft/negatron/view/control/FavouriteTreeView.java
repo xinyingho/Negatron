@@ -503,9 +503,11 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1 && !cell.isEditing())
             cancelEdit();
-        else if (event.getButton() == MouseButton.MIDDLE)
+        else if (event.getButton() == MouseButton.MIDDLE) {
+            if (getSelectionModel().isEmpty())
+                getSelectionModel().select(cell.getIndex());
             edit(cell.getIndex(), cell.getTableColumn());
-        else if (event.getClickCount() == 1)
+        } else if (event.getClickCount() == 1)
             getSelectionModel().clearAndSelect(cell.getIndex(), cell.getTableColumn());
         else if (cell.getTreeTableRow().getItem() != null && cell.getTreeTableRow().getItem().getMachine() != null)
             if (!cell.getTreeTableRow().getItem().mustMigrate())
