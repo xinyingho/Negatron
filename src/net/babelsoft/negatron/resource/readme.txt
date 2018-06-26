@@ -49,8 +49,8 @@ The source code to NegaMAME, Negatron and all its dependencies are available at 
 
 To compile NegaMAME:
 1. Download its source code using git i.e. `git clone https://github.com/xinyingho/NegaMAME`.
-2. Check out the tag of the version of NegaMAME you want to build e.g. `git checkout tags/negamame0198` for v0.198.
-3. Check that your repository is really in the good state by doing `git describe --dirty`. If this command doesn't exactly display the name of the desired tag, then there's an issue e.g. you may need to force download the tags with `git fetch --all --tags --prune`.
+2. Check out the branch of the version of NegaMAME you want to build e.g. `git checkout negamame0198` for v0.198.
+3. Check that your repository is really in the good state by doing `git describe --dirty`. If this command doesn't exactly display the name of the desired tag (usually <branch name>-1, e.g. negamame0198-1), then there's an issue e.g. you may need to force download the tags with `git pull --all --tags --prune`.
 4. Follow the instructions available at http://docs.mamedev.org/initialsetup/compilingmame.html as NegaMAME has just minor modifications compared to standard MAME.
 
 To compile Negatron:
