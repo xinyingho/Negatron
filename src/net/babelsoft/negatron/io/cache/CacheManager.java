@@ -39,6 +39,9 @@ import net.babelsoft.negatron.io.loader.InitialisedCallable;
 import net.babelsoft.negatron.io.loader.MachineListLoader;
 import net.babelsoft.negatron.io.loader.MachineListLoader.MachineListData;
 import net.babelsoft.negatron.model.item.Machine;
+import net.babelsoft.negatron.model.statistics.MachineStatistics;
+import net.babelsoft.negatron.model.statistics.SoftwareStatistics;
+import net.babelsoft.negatron.util.function.TriConsumer;
 
 /**
  *
@@ -75,9 +78,12 @@ public class CacheManager extends Task<Void> {
     private final MainController controller;
     private final ExecutorService service;
     private final ExecutorCompletionService<Void> execService;
-    private final Consumer<List<Machine>> onMachineListLoaded;
+    private final TriConsumer<List<Machine>, MachineStatistics, SoftwareStatistics> onMachineListLoaded;
     
-    public CacheManager(MainController controller, Consumer<List<Machine>> onMachineListLoaded) {
+    public CacheManager(
+        MainController controller,
+        TriConsumer<List<Machine>, MachineStatistics, SoftwareStatistics> onMachineListLoaded
+    ) {
         this.controller = controller;
         this.onMachineListLoaded = onMachineListLoaded;
         
@@ -135,7 +141,9 @@ public class CacheManager extends Task<Void> {
             
             // wait for it to finish
             MachineListData machines = machineListFuture.get();
-            onMachineListLoaded.accept(machines.getList());
+            onMachineListLoaded.accept(
+                machines.getList(), machines.getStatistics(), softwareListCache.getStatistics()
+            );
             
             controller.setSucceeded(true);
             

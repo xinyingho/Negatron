@@ -79,7 +79,6 @@ import net.babelsoft.negatron.io.configuration.FavouriteTree;
 import net.babelsoft.negatron.io.loader.MachineLoader;
 import net.babelsoft.negatron.io.loader.MachineLoader.Mode;
 import net.babelsoft.negatron.model.SoftwareListFilter;
-import net.babelsoft.negatron.model.Statistics;
 import net.babelsoft.negatron.model.comparing.Difference;
 import net.babelsoft.negatron.model.component.Device;
 import net.babelsoft.negatron.model.favourites.MachineConfiguration;
@@ -104,6 +103,7 @@ import net.babelsoft.negatron.view.control.MachineInformationPane;
 import net.babelsoft.negatron.view.control.SoftwareConfigurationPane;
 import net.babelsoft.negatron.view.control.SoftwareFilterPane;
 import net.babelsoft.negatron.view.control.SoftwareInformationPane;
+import net.babelsoft.negatron.view.control.StatisticsPane;
 import net.babelsoft.negatron.view.control.TitledWindowPane;
 import net.babelsoft.negatron.view.control.TitledWindowPane.DisplayMode;
 import net.babelsoft.negatron.view.control.form.Control;
@@ -160,6 +160,8 @@ public class MainController implements Initializable, AlertController, EditContr
     
     @FXML
     private GlobalConfigurationPane globalConfigurationWindow;
+    @FXML
+    private StatisticsPane statisticsWindow;
     
     @FXML
     private ToolBar buttonBar;
@@ -175,6 +177,9 @@ public class MainController implements Initializable, AlertController, EditContr
     private Button advancedParametrisationButton;
     @FXML
     private ToggleButton favouriteViewButton;
+    
+    @FXML
+    private ToggleButton statisticsButton;
     
     @FXML
     private HBox notificationArea;
@@ -272,6 +277,7 @@ public class MainController implements Initializable, AlertController, EditContr
         machineFolderViewWindow.setOnClose(() -> machineTreePane.setViewButtonSelected(false));
         softwareFilterWindow.setOnClose(() -> softwareTreePane.setFilterButtonSelected(false));
         favouriteTreeWindow.setOnClose(() -> favouriteViewButton.setSelected(false));
+        statisticsWindow.setOnClose(() -> statisticsButton.setSelected(false));
         globalConfigurationWindow.setOnClose(() -> globalConfigurationButton.setSelected(false));
         globalConfigurationWindow.setOnRestart(() -> { try {
             dispose();
@@ -641,15 +647,17 @@ public class MainController implements Initializable, AlertController, EditContr
     }
     
     public void initialiseData() {
-        cache = new CacheManager(this, machines -> Platform.runLater(() -> {
-            Statistics statistics = machineTreePane.setItems(machines);
+        cache = new CacheManager(this, (machines, machineStats, softwareStats) -> Platform.runLater(() -> {
+            machineTreePane.setItems(machines);
             machineFilterWindow.bind(machineTreePane);
             softwareFilterWindow.bind(softwareTreePane);
+            statisticsWindow.setStatistics(machineStats, softwareStats);
+            
             try {
                 MachineListCache machineListCache = new MachineListCache();
-                statusLabel.setText(String.format(Language.Manager.getString("statistics"),
-                    machineListCache.getVersion().split("-")[0].trim(), statistics.getTotalCount(),
-                    statistics.getParentCount(), statistics.getCloneCount()
+                statusLabel.setText(String.format(Language.Manager.getString("statistics.status"),
+                    machineListCache.getVersion().split("-")[0].trim(),
+                    machineStats.getTotalCount(), machineStats.getParentCount(), machineStats.getCloneCount()
                 ));
             } catch (ClassNotFoundException | IOException ex) {
                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Couldn't display statistics", ex);
@@ -1305,6 +1313,16 @@ public class MainController implements Initializable, AlertController, EditContr
     }
     
     @FXML
+    private void handleStatisticsAction(ActionEvent event) {
+        if (statisticsButton.isSelected()) {
+            statisticsWindow.showMaximised();
+            if (globalConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+                globalConfigurationWindow.close();
+        } else
+            statisticsWindow.close();
+    }
+    
+    @FXML
     private void handleSoundAction(ActionEvent event) throws IOException {
         if (soundButton.isSelected())
             Audio.play(Sound.SOUND_ON);
@@ -1341,6 +1359,8 @@ public class MainController implements Initializable, AlertController, EditContr
         switch (globalConfigurationWindow.getDisplayMode()) {
             case HIDDEN:
                 globalConfigurationWindow.showMaximised();
+                if (statisticsWindow.getDisplayMode() != DisplayMode.HIDDEN)
+                    statisticsWindow.close();
                 break;
             default:
                 globalConfigurationWindow.close();

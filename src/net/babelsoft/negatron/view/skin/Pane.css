@@ -66,6 +66,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     -fx-graphic: url("/net/babelsoft/negatron/resource/icon/favorites.png");
 }
 
+#statisticsWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/office-chart-pie@2x.png");
+}
+
 #globalConfigurationWindow.titled-pane > .title > .header-pane > .label {
     -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/applications-system@2x.png");
 }

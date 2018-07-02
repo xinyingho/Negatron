@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root fx:id="root" type="net.babelsoft.negatron.view.control.TitledWindowPane" text="%statistics" prefHeight="600" prefWidth="800" stylesheets="@../../skin/Statistics.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.StatisticsPaneController">
+    <content>
+        <StackPane HBox.hgrow="SOMETIMES">
+            <PieChart fx:id="pieChart1" legendVisible="false" />
+            <PieChart fx:id="pieChart2" legendVisible="false" />
+            <PieChart fx:id="pieChart3" legendVisible="false" />
+            <PieChart fx:id="pieChart4" legendVisible="false" />
+            <HBox alignment="TOP_CENTER" spacing="5.0">
+                <RadioButton mnemonicParsing="false" text="All" selected="true" onAction="#handleAllMode">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="modeGroup" />
+                    </toggleGroup>
+                </RadioButton>
+                <RadioButton mnemonicParsing="false" text="Machine Only" toggleGroup="$modeGroup" onAction="#handleMachineOnlyMode" />
+                <RadioButton mnemonicParsing="false" text="Software Only" toggleGroup="$modeGroup" onAction="#handleSoftwareOnlyMode" />
+            </HBox>
+        </StackPane>
+    </content>
+</fx:root>

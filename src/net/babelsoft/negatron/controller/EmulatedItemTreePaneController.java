@@ -38,12 +38,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import net.babelsoft.negatron.io.configuration.Configuration;
-import net.babelsoft.negatron.model.Statistics;
 import net.babelsoft.negatron.model.item.EmulatedItem;
 import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.view.control.EmulatedItemTreeView;
@@ -170,17 +168,15 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
         filterTimeline = null;
     }
     
-    public Statistics setItems(List<T> emulatedItems) {
+    public void setItems(List<T> emulatedItems) {
         treeView.beginResetOperation();
         
         reset();
-        Statistics stats = TreeTableDataFiller.fill(treeView, emulatedItems, false);
+        TreeTableDataFiller.fill(treeView, emulatedItems, false);
         if (mustFlatten)
             switchView(false);
         
         treeView.endResetOperation();
-        
-        return stats;
     }
     
     public void setFolderViewType(Map<SortableTreeItem<T>, List<String>> folderViewType) {

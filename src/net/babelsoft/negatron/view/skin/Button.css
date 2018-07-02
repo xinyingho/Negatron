@@ -140,6 +140,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/folder-grey-favourites.png");
 }
 
+.statistics-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/office-chart-pie.png");
+}
+
 .sound-button {
     -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/audio-volume-muted.png");
 }

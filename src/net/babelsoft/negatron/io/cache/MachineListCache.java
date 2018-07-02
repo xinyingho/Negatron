@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.babelsoft.negatron.io.Mame;
 import net.babelsoft.negatron.model.item.Machine;
+import net.babelsoft.negatron.model.statistics.MachineStatistics;
 
 /**
  *
@@ -35,7 +36,19 @@ import net.babelsoft.negatron.model.item.Machine;
 public class MachineListCache extends Cache<MachineListCache.Data, String> {
     
     public static class Data extends ArrayList<Machine> {
-        static final long serialVersionUID = 2L;
+        static final long serialVersionUID = 3L;
+        
+        private MachineStatistics statistics = new MachineStatistics();
+        
+        // TODO: override other add methods?
+        public boolean add(Machine machine) {
+            statistics.add(machine);
+            return super.add(machine);
+        }
+        
+        public MachineStatistics getStatistics() {
+            return statistics;
+        }
     }
 
     public MachineListCache() throws ClassNotFoundException, IOException {

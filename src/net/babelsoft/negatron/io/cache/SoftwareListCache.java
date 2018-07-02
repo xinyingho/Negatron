@@ -35,6 +35,7 @@ import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.io.loader.SoftwareListLoader;
 import net.babelsoft.negatron.io.loader.ThreadedCacheLoader;
 import net.babelsoft.negatron.model.item.SoftwareList;
+import net.babelsoft.negatron.model.statistics.SoftwareStatistics;
 
 /**
  *
@@ -47,7 +48,8 @@ public class SoftwareListCache extends Cache<SoftwareListCache.Data, SoftwareLis
     }
     
     protected static class Data extends HashMap<String, SoftwareList> {
-        static final long serialVersionUID = 1L;
+        static final long serialVersionUID = 2L;
+        private SoftwareStatistics statistics = new SoftwareStatistics();
     }
     
     public static String convertPathToName(Path path) {
@@ -66,6 +68,10 @@ public class SoftwareListCache extends Cache<SoftwareListCache.Data, SoftwareLis
     
     public Map<String, SoftwareList> get() {
         return data;
+    }
+    
+    public SoftwareStatistics getStatistics() {
+        return data.statistics;
     }
     
     @Override

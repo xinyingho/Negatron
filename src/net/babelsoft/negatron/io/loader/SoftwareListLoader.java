@@ -28,6 +28,7 @@ import net.babelsoft.negatron.io.cache.SoftwareListCache;
 import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.model.item.SoftwareList;
 import net.babelsoft.negatron.model.item.SoftwarePart;
+import net.babelsoft.negatron.model.statistics.SoftwareStatistics;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -49,7 +50,7 @@ public class SoftwareListLoader implements Callable<Void> {
 
     @Override
     public Void call() {
-        SoftwareListDataHandler dataHandler = new SoftwareListDataHandler(path);
+        SoftwareListDataHandler dataHandler = new SoftwareListDataHandler(path, cache.getStatistics());
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setNamespaceAware(false);
@@ -76,10 +77,12 @@ public class SoftwareListLoader implements Callable<Void> {
 
         private final String name;
         private SoftwareList softwareList;
+        private final SoftwareStatistics statistics;
 
-        public SoftwareListDataHandler(Path path) {
+        public SoftwareListDataHandler(Path path, final SoftwareStatistics statistics) {
             super((name, group) -> new Software(name, group));
             name = SoftwareListCache.convertPathToName(path);
+            this.statistics = statistics;
         }
         
         public SoftwareList result() {
@@ -172,6 +175,9 @@ public class SoftwareListLoader implements Callable<Void> {
             
             switch (qName) {
                 case "software":
+                    // Do not reverse the 2 following lines as
+                    // SoftwareList::addSoftware can remove data important to generate stats
+                    statistics.add(currentItem);
                     endConsumeCurrentItem(SoftwareList::addSoftware, softwareList);
                     break;
                 case "publisher":

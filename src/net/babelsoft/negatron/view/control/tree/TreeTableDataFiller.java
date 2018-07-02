@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import javafx.scene.control.TreeItem;
-import net.babelsoft.negatron.model.Statistics;
 import net.babelsoft.negatron.model.item.EmulatedItem;
 import net.babelsoft.negatron.view.control.EmulatedItemTreeView;
 
@@ -36,7 +35,7 @@ public final class TreeTableDataFiller {
     
     private TreeTableDataFiller() { }
     
-    public static <T extends EmulatedItem<T>> Statistics fill(
+    public static <T extends EmulatedItem<T>> void fill(
         EmulatedItemTreeView<T> tree, List<T> items, boolean mustFlatten
     ) {
         final Map<String, SortableTreeItem<T>> parentMap = new HashMap<>();
@@ -48,10 +47,8 @@ public final class TreeTableDataFiller {
             item1.getValue().getName().compareTo( item2.getValue().getName() )
         ;
         
-        final Statistics statistics = new Statistics();
-        
-        items.stream().filter(item -> item.isRunnable()).forEach(
-            item -> {
+        items.stream().forEach(item -> {
+            if (item.isRunnable()) {
                 item.reset();
 
                 // build tree
@@ -62,7 +59,6 @@ public final class TreeTableDataFiller {
                     if (!item.hasParent()) {
                         parentMap.put(name, currentTreeItem);
                         root.getInternalChildren().add(currentTreeItem);
-                        statistics.incrementParentCount();
                     }
                 }
 
@@ -79,14 +75,11 @@ public final class TreeTableDataFiller {
                             parentMap.put(parentName, parentTreeItem);
                             root.getInternalChildren().add(parentTreeItem);
                         }
-                        statistics.incrementParentCount();
-                    } else
-                        statistics.incrementCloneCount();
+                    }
                     
-                    if (!mustFlatten) {
+                    if (!mustFlatten)
                         parentTreeItem.getInternalChildren().add(currentTreeItem);
-                        statistics.incrementCloneCount();
-                    } else
+                    else
                         root.getInternalChildren().add(currentTreeItem);
                 }
 
@@ -99,10 +92,8 @@ public final class TreeTableDataFiller {
                 
                 itemMap.put(item.getName(), currentTreeItem);
             }
-        );
+        });
         tree.setShortcutMap(shortcutMap);
         tree.setMap(itemMap);
-        
-        return statistics;
     }
 }

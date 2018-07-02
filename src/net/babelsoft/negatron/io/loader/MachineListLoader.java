@@ -38,6 +38,7 @@ import net.babelsoft.negatron.io.loader.MachineListLoader.MachineListData;
 import net.babelsoft.negatron.model.component.SlotOption;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.SoftwareList;
+import net.babelsoft.negatron.model.statistics.MachineStatistics;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -65,6 +66,7 @@ public class MachineListLoader implements Callable<MachineListData> {
         }
         
         public Data getList() { return list; }
+        public MachineStatistics getStatistics() { return list.getStatistics(); }
         public Map<String, Machine> getMap() { return map; }
         
         public void add(Machine machine) {

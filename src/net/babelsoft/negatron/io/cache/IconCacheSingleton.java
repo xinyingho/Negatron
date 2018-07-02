@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.image.Image;
 import net.babelsoft.negatron.io.loader.IconLoader;
 import net.babelsoft.negatron.io.loader.InitialisedCallable;
 import net.babelsoft.negatron.io.loader.ThreadedCacheLoader;
@@ -51,9 +50,5 @@ public enum IconCacheSingleton implements ThreadedCacheLoader<InitialisedCallabl
         list.add(loader);
         
         return list;
-    }
-
-    public Image get(String name) {
-        return cache.get(name);
     }
 }

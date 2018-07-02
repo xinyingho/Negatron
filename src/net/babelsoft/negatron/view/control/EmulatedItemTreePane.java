@@ -33,9 +33,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import net.babelsoft.negatron.controller.EmulatedItemTreePaneController;
 import net.babelsoft.negatron.controller.FilterPaneController;
-import net.babelsoft.negatron.model.Statistics;
 import net.babelsoft.negatron.model.item.EmulatedItem;
-import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.tree.SortableTreeItem;
@@ -99,8 +97,8 @@ public class EmulatedItemTreePane<T extends EmulatedItem<T>> extends VBox {
         tree.getSelectionModel().clearSelection();
     }
     
-    public Statistics setItems(List<T> emulatedItems) {
-        return controller.setItems(emulatedItems);
+    public void setItems(List<T> emulatedItems) {
+        controller.setItems(emulatedItems);
     }
     
     public void setOnAction(Delegate delegate) {
