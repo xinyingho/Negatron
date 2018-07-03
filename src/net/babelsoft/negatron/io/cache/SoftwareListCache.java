@@ -49,7 +49,15 @@ public class SoftwareListCache extends Cache<SoftwareListCache.Data, SoftwareLis
     
     protected static class Data extends HashMap<String, SoftwareList> {
         static final long serialVersionUID = 2L;
+        
         private SoftwareStatistics statistics = new SoftwareStatistics();
+        
+        // TODO: override other remove methods?
+        @Override
+        public SoftwareList remove(Object key) {
+            statistics.remove(key.toString());
+            return super.remove(key);
+        }
     }
     
     public static String convertPathToName(Path path) {
