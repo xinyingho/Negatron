@@ -656,7 +656,7 @@ public class MainController implements Initializable, AlertController, EditContr
             try {
                 MachineListCache machineListCache = new MachineListCache();
                 statusLabel.setText(String.format(Language.Manager.getString("statistics.status"),
-                    machineListCache.getVersion().split("-")[0].trim(),
+                    machineListCache.getVersion().split(" - ")[0].trim(),
                     machineStats.getTotalCount(), machineStats.getParentCount(), machineStats.getCloneCount()
                 ));
             } catch (ClassNotFoundException | IOException ex) {
