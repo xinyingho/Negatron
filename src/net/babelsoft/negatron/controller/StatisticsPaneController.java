@@ -32,6 +32,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
 import net.babelsoft.negatron.model.statistics.MachineStatistics;
 import net.babelsoft.negatron.model.statistics.SoftwareStatistics;
+import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.view.control.TitledWindowPane;
 
 /**
@@ -111,42 +112,66 @@ public class StatisticsPaneController implements Initializable {
     private String softwareInterfaceToCategory(String interfaceFormat) {
         // categorisation up to date with MAME v0.199
         if (interfaceFormat.startsWith("floppy_") || interfaceFormat.contains("_flop") || interfaceFormat.equals("_disk"))
-            return "Floppy";
+            return Language.Manager.getString("floppy");
         if (interfaceFormat.endsWith("_cart") || interfaceFormat.endsWith("_card") || interfaceFormat.endsWith("pack") ||
             interfaceFormat.startsWith("snspell") || interfaceFormat.startsWith("snread") || interfaceFormat.equals("tntell") ||
             interfaceFormat.equals("fidel_scc") || interfaceFormat.equals("k28m2") || interfaceFormat.equals("ereader") ||
             interfaceFormat.equals("sm_memc")
         )
-            return "Cartridge";
+            return Language.Manager.getString("cartridge");
         if (interfaceFormat.contains("cdrom") || interfaceFormat.contains("_cd_") || interfaceFormat.equals("vsmile_vdisk"))
-            return "CD-ROM";
+            return Language.Manager.getString("cdrom");
         if (interfaceFormat.endsWith("cass"))
-            return "Cassette";
-        return "Others";
+            return Language.Manager.getString("cassette");
+        return Language.Manager.getString("others");
     }
 
     public void setStatistics(MachineStatistics machineStats, SoftwareStatistics softwareStats) {
         this.machineStats = machineStats;
         
         machineCategoryCount = new TreeMap<>();
-        machineCategoryCount.put("Clone - Gambling / Pinball", machineStats.getGamblingPinballCloneCount());
-        machineCategoryCount.put("Clone - Arcade Game", machineStats.getArcadeGameCloneCount());
-        machineCategoryCount.put("Clone - Calculator / Computer", machineStats.getCalculatorComputerCloneCount());
-        machineCategoryCount.put("Clone - Console", machineStats.getConsoleCloneCount());
-        machineCategoryCount.put("Parent - Gambling / Pinball", machineStats.getGamblingPinballParentCount());
-        machineCategoryCount.put("Parent - Arcade Game", machineStats.getArcadeGameParentCount());
-        machineCategoryCount.put("Parent - Calculator / Computer", machineStats.getCalculatorComputerParentCount());
-        machineCategoryCount.put("Parent - Console", machineStats.getConsoleParentCount());
+        machineCategoryCount.put(
+            String.format("%s - %s", Language.Manager.getString("clone"), Language.Manager.getString("gamblingPinball")),
+            machineStats.getGamblingPinballCloneCount()
+        );
+        machineCategoryCount.put(
+            String.format("%s - %s", Language.Manager.getString("clone"), Language.Manager.getString("arcadeGame")),
+            machineStats.getArcadeGameCloneCount()
+        );
+        machineCategoryCount.put(
+            String.format("%s - %s", Language.Manager.getString("clone"), Language.Manager.getString("calculatorComputer")),
+            machineStats.getCalculatorComputerCloneCount()
+        );
+        machineCategoryCount.put(
+            String.format("%s - %s", Language.Manager.getString("clone"), Language.Manager.getString("console")),
+            machineStats.getConsoleCloneCount()
+        );
+        machineCategoryCount.put(
+            String.format("%s - %s", Language.Manager.getString("parent"), Language.Manager.getString("gamblingPinball")),
+            machineStats.getGamblingPinballParentCount()
+        );
+        machineCategoryCount.put(
+            String.format("%s - %s", Language.Manager.getString("parent"), Language.Manager.getString("arcadeGame")),
+            machineStats.getArcadeGameParentCount()
+        );
+        machineCategoryCount.put(
+            String.format("%s - %s", Language.Manager.getString("parent"), Language.Manager.getString("calculatorComputer")),
+            machineStats.getCalculatorComputerParentCount()
+        );
+        machineCategoryCount.put(
+            String.format("%s - %s", Language.Manager.getString("parent"), Language.Manager.getString("console")),
+            machineStats.getConsoleParentCount()
+        );
 
         this.softwareStats = softwareStats;
         
         softwareCategoryCount = new TreeMap<>();
         softwareStats.getCloneCountByType().forEach((key, value) -> {
-            String cat = "Clone - " + softwareInterfaceToCategory(key);
+            String cat = Language.Manager.getString("clone") + " - " + softwareInterfaceToCategory(key);
             softwareCategoryCount.put(cat, softwareCategoryCount.getOrDefault(cat, 0) + value.intValue());
         });
         softwareStats.getParentCountByType().forEach((key, value) -> {
-            String cat = "Parent - " + softwareInterfaceToCategory(key);
+            String cat = Language.Manager.getString("parent") + " - " + softwareInterfaceToCategory(key);
             softwareCategoryCount.put(cat, softwareCategoryCount.getOrDefault(cat, 0) + value.intValue());
         });
     }
@@ -170,41 +195,57 @@ public class StatisticsPaneController implements Initializable {
         ObservableList<PieChart.Data> pieChartData1 = FXCollections.observableArrayList();
         if (device)
             pieChartData1.add(new PieChart.Data(
-                String.format("Device (%,d - %.1f%%)", machineStats.getDeviceCount(), pct(machineStats.getDeviceCount(), total)),
+                String.format("%s\n%.1f%% %,d", Language.Manager.getString("device"), pct(machineStats.getDeviceCount(), total), machineStats.getDeviceCount()),
                 machineStats.getDeviceCount()
             ));
         if (machine)    
             machineCategoryCount.forEach((key, value) -> {
-                pieChartData1.add(new PieChart.Data(String.format("%s (%,d - %.1f%%)", key, value, pct(value, total)), value));
+                pieChartData1.add(new PieChart.Data(String.format("%s\n%.1f%% %,d", key, pct(value, total), value), value));
             });
         if (software)
             softwareCategoryCount.forEach((key, value) -> {
-                pieChartData1.add(new PieChart.Data(String.format("%s (%,d - %.1f%%)", key, value, pct(value, total)), value));
+                pieChartData1.add(new PieChart.Data(String.format("%s\n%.1f%% %,d", key, pct(value, total), value), value));
             });
         pieChart1.setData(pieChartData1);
         
         ObservableList<PieChart.Data> pieChartData2 = FXCollections.observableArrayList();
         if (device)
-            pieChartData2.add(new PieChart.Data("Device",machineStats.getDeviceCount()));
+            pieChartData2.add(new PieChart.Data(Language.Manager.getString("device"), machineStats.getDeviceCount()));
         if (machine)
             pieChartData2.addAll(
                 new PieChart.Data(
-                    String.format("Machine - Clone (%,d - %.1f%%)", machineStats.getCloneCount(), pct(machineStats.getCloneCount(), total)),
+                    String.format(
+                        "%s - %s\n%.1f%% %,d",
+                        Language.Manager.getString("machine"), Language.Manager.getString("clone"),
+                        pct(machineStats.getCloneCount(), total), machineStats.getCloneCount()
+                    ),
                     machineStats.getCloneCount()
                 ),
                 new PieChart.Data(
-                    String.format("Machine - Parent (%,d - %.1f%%)", machineStats.getParentCount(), pct(machineStats.getParentCount(), total)),
+                    String.format(
+                        "%s - %s\n%.1f%% %,d",
+                        Language.Manager.getString("machine"), Language.Manager.getString("parent"),
+                        pct(machineStats.getParentCount(), total), machineStats.getParentCount()
+                    ),
                     machineStats.getParentCount()
                 )
             );
         if (software)
             pieChartData2.addAll(
                 new PieChart.Data(
-                    String.format("Software - Clone (%,d - %.1f%%)", softwareStats.getCloneCount(), pct(softwareStats.getCloneCount(), total)),
+                    String.format(
+                        "%s - %s\n%.1f%% %,d",
+                        Language.Manager.getString("software"), Language.Manager.getString("clone"),
+                        pct(softwareStats.getCloneCount(), total), softwareStats.getCloneCount()
+                    ),
                     softwareStats.getCloneCount()
                 ),
                 new PieChart.Data(
-                    String.format("Software - Parent (%,d - %.1f%%)", softwareStats.getParentCount(), pct(softwareStats.getParentCount(), total)),
+                    String.format(
+                        "%s - %s\n%.1f%% %,d",
+                        Language.Manager.getString("software"), Language.Manager.getString("parent"),
+                        pct(softwareStats.getParentCount(), total), softwareStats.getParentCount()
+                    ),
                     softwareStats.getParentCount()
                 )
             );
@@ -212,15 +253,23 @@ public class StatisticsPaneController implements Initializable {
         
         ObservableList<PieChart.Data> pieChartData3 = FXCollections.observableArrayList();
         if (device)
-            pieChartData3.add(new PieChart.Data("Device",machineStats.getDeviceCount()));
+            pieChartData3.add(new PieChart.Data(Language.Manager.getString("device"), machineStats.getDeviceCount()));
         if (machine)
             pieChartData3.add(new PieChart.Data(
-                String.format("Machine (%,d - %.1f%%)", machineStats.getTotalCount(), pct(machineStats.getTotalCount(), total)),
+                String.format(
+                    "%s\n%.1f%% %,d",
+                    Language.Manager.getString("machine"),
+                    pct(machineStats.getTotalCount(), total), machineStats.getTotalCount()
+                ),
                 machineStats.getTotalCount()
             ));
         if (software)
             pieChartData3.add(new PieChart.Data(
-                String.format("Software (%,d - %.1f%%)", softwareStats.getTotalCount(), pct(softwareStats.getTotalCount(), total)),
+                String.format(
+                    "%s\n%.1f%% %,d",
+                    Language.Manager.getString("software"),
+                    pct(softwareStats.getTotalCount(), total), softwareStats.getTotalCount()
+                ),
                 softwareStats.getTotalCount()
             ));
         pieChart3.setData(pieChartData3);
@@ -228,7 +277,11 @@ public class StatisticsPaneController implements Initializable {
         ObservableList<PieChart.Data> pieChartData4 = FXCollections.observableArrayList();
         if (device && machine && software)
             pieChartData4.add(new PieChart.Data(
-                String.format("Total (%,d - %.1f%%)", getTotalCount(), pct(getTotalCount(), total)),
+                String.format(
+                    "%s\n%.1f%% %,d",
+                    Language.Manager.getString("total"),
+                    pct(getTotalCount(), total), getTotalCount()
+                ),
                 getTotalCount()
             ));
         pieChart4.setData(pieChartData4);

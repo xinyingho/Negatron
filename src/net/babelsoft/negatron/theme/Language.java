@@ -28,7 +28,6 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
-import net.babelsoft.negatron.util.Strings;
 
 /**
  *

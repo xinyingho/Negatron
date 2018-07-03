@@ -25,6 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     -fx-border-width: 0;
 }
 
+.chart-pie-label {
+    -fx-effect: dropshadow(gaussian, white, 15, 0.75, 0, 0);
+}
+
 #pieChart1 {
     -fx-padding: 5;
 }
@@ -47,8 +51,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pieChart4 {
     -fx-padding: 305;
-}
-
-#pieChart2 .chart-pie-label, #pieChart3 .chart-pie-label, #pieChart4 .chart-pie-label {
-    -fx-effect: dropshadow(gaussian, white, 15, 0.75, 0, 0);
 }
