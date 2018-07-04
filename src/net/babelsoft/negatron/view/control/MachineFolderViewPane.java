@@ -55,4 +55,8 @@ public class MachineFolderViewPane extends TitledWindowPane {
     public void setOnCheckAction(BiConsumer<SortableTreeItem<Machine>, Boolean> onCheckAction) {
         controller.setOnCheckAction(onCheckAction);
     }
+
+    public void initialiseData() {
+        controller.initialiseData();
+    }
 }

@@ -49,6 +49,8 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
         protected boolean loopEnabled;
         protected int windowWidth, windowHeight;
         protected boolean isWindowMaximised, isWindowFullscreen;
+        protected String selectedMachineFolderView;
+        protected Map<String, Void> machineFoldersRemovedFomView; // folder removed from view > dummy data
         
         public Data() {
             treeTableConfiguration = new HashMap<>();
@@ -63,10 +65,12 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
             windowWidth = DEFAULT_WIDTH;
             windowHeight = DEFAULT_HEIGHT;
             isWindowMaximised = isWindowFullscreen = false;
+            machineFoldersRemovedFomView = new HashMap<>();
         }
     }
     
     private Data data;
+    private boolean transaction;
     
     public UIConfigurationCache() throws ClassNotFoundException, IOException {
         super("ui");
@@ -80,6 +84,8 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
                 data.windowWidth = DEFAULT_WIDTH;
                 data.windowHeight = DEFAULT_HEIGHT;
             }
+            if (data.machineFoldersRemovedFomView == null)
+                data.machineFoldersRemovedFomView = new HashMap<>();
         } else
             data = new Data();
     }
@@ -228,6 +234,41 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
 
     public void saveWindowFullscreen(boolean value) throws IOException {
         data.isWindowFullscreen = value;
+        save(data);
+    }
+    
+    public String loadSelectedMachineFolderView() {
+        return data.selectedMachineFolderView;
+    }
+    
+    public void saveSelectedMachineFolderView(String value) throws IOException {
+        data.selectedMachineFolderView = value;
+        data.machineFoldersRemovedFomView.clear();
+        save(data);
+    }
+    
+    public Map<String, Void> loadMachineFoldersRemovedFromView() {
+        return data.machineFoldersRemovedFomView;
+    }
+    
+    public void saveMachineFolderRemovedFromView(String value) throws IOException {
+        data.machineFoldersRemovedFomView.put(value, null);
+        if (!transaction)
+            save(data);
+    }
+    
+    public void saveMachineFolderAddedIntoView(String value) throws IOException {
+        data.machineFoldersRemovedFomView.remove(value);
+        if (!transaction)
+            save(data);
+    }
+    
+    public void beginTransaction() {
+        transaction = true;
+    }
+    
+    public void endTransaction() throws IOException {
+        transaction = false;
         save(data);
     }
 }

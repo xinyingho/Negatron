@@ -60,7 +60,7 @@ public abstract class TreePaneController<T extends NegatronTreeView<I>, I> imple
                 try {
                     Configuration.Manager.updateTreeTableColumnsConfiguration(id, conf);
                 } catch (IOException ex) {
-                    Logger.getLogger(EmulatedItemTreePaneController.class.getName()).log(Level.SEVERE, "Tree table column layout configuration couldn't be saved", ex);
+                    Logger.getLogger(TreePaneController.class.getName()).log(Level.SEVERE, "Tree table column layout configuration couldn't be saved", ex);
                 }
             }
         );

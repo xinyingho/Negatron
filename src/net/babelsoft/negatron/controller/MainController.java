@@ -649,6 +649,7 @@ public class MainController implements Initializable, AlertController, EditContr
     public void initialiseData() {
         cache = new CacheManager(this, (machines, machineStats, softwareStats) -> Platform.runLater(() -> {
             machineTreePane.setItems(machines);
+            machineFolderViewWindow.initialiseData();
             machineFilterWindow.bind(machineTreePane);
             softwareFilterWindow.bind(softwareTreePane);
             statisticsWindow.setStatistics(machineStats, softwareStats);

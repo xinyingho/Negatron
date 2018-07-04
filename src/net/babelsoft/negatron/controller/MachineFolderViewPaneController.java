@@ -32,6 +32,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -44,6 +45,7 @@ import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.MachineFolder;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.view.control.tree.SortableTreeItem;
 
 /**
@@ -89,6 +91,7 @@ public class MachineFolderViewPaneController implements Initializable {
     private IniPath defaultPath;
     private Consumer<Map<SortableTreeItem<Machine>, List<String>>> onFolderViewTypeChanged;
     private BiConsumer<SortableTreeItem<Machine>, Boolean> onCheckAction;
+    private boolean initialising;
     
     /**
      * Initializes the controller class.
@@ -97,7 +100,6 @@ public class MachineFolderViewPaneController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         defaultPath = new IniPath(Language.Manager.getString("parentClone"));
         choice.getItems().add(defaultPath);
-        choice.getSelectionModel().select(0);
         
         Configuration.Manager.getFolderPaths(Property.FOLDER_VIEW).stream().map(
             path -> Paths.get(path)
@@ -113,6 +115,22 @@ public class MachineFolderViewPaneController implements Initializable {
             Logger.getLogger(MachineFolderViewPaneController.class.getName()).log(Level.SEVERE, "Error while initialising view pane", ex);
             // swallow exceptions
         }});
+    }
+
+    public void initialiseData() {
+        initialising = true;
+        
+        String selectedMachineFolderView = Configuration.Manager.getSelectedMachineFolderView();
+        if (Strings.isValid(selectedMachineFolderView))
+            choice.getItems().stream().filter(
+                item -> item.toString().equals(selectedMachineFolderView)
+            ).findAny().ifPresent(
+                item -> choice.getSelectionModel().select(item)
+            );
+        else
+            choice.getSelectionModel().select(0);
+        
+        initialising = false;
     }
     
     public void setOnFolderViewTypeChanged(Consumer<Map<SortableTreeItem<Machine>, List<String>>> onFolderViewTypeChanged) {
@@ -144,9 +162,30 @@ public class MachineFolderViewPaneController implements Initializable {
         
         if (addGraphics) {
             CheckBox check = new CheckBox(name);
-            check.setSelected(true);
             check.setUserData(folder);
-            check.setOnAction(evt -> onCheckAction.accept(folder, check.isSelected()));
+            
+            if (
+                choice.getSelectionModel().getSelectedItem().toString().equals(Configuration.Manager.getSelectedMachineFolderView()) &&
+                Configuration.Manager.getMachineFoldersRemovedFromView().containsKey(name)
+            ) {
+                check.setSelected(false);
+                Platform.runLater(() -> onCheckAction.accept(folder, false));
+            } else
+                check.setSelected(true);
+            
+            check.setOnAction(evt -> {
+                try {
+                    if (check.isSelected())
+                        Configuration.Manager.updateMachineFolderAddedIntoView(name);
+                    else
+                        Configuration.Manager.updateMachineFolderRemovedFromView(name);
+                } catch (IOException ex) {
+                    Logger.getLogger(MachineFolderViewPaneController.class.getName()).log(
+                        Level.SEVERE, "Couldn't save the new status for folder " + name + " in the current folder view", ex
+                    );
+                }
+                onCheckAction.accept(folder, check.isSelected());
+            });
             flow.getChildren().add(check);
         }
         
@@ -154,12 +193,22 @@ public class MachineFolderViewPaneController implements Initializable {
     }
     
     private void setSelected(boolean selected) {
+        Configuration.Manager.beginUIConfigurationTransaction();
+        
         flow.getChildren().stream().map(
             node -> (CheckBox) node
         ).forEach(check -> {
             if (selected != check.isSelected())
                 check.fire();
         });
+        
+        try {
+            Configuration.Manager.endUIConfigurationTransaction();
+        } catch (IOException ex) {
+            Logger.getLogger(MachineFolderViewPaneController.class.getName()).log(
+                Level.SEVERE, "Couldn't save the folders removed from the current folder view", ex
+            );
+        }
     }
     
     @FXML
@@ -211,6 +260,12 @@ public class MachineFolderViewPaneController implements Initializable {
             Logger.getLogger(MachineFolderViewPaneController.class.getName()).log(Level.SEVERE, "Error while processing .ini file", ex);
         }
         
+        try {
+            if (!initialising)
+                Configuration.Manager.updateSelectedMachineFolderView(iniPath.toString());
+        } catch (IOException ex) {
+            Logger.getLogger(MachineFolderViewPaneController.class.getName()).log(Level.SEVERE, "Error while saving the newly selected folder view", ex);
+        }
         if (onFolderViewTypeChanged != null)
             onFolderViewTypeChanged.accept(view);
         

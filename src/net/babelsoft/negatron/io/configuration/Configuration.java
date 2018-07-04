@@ -28,6 +28,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -954,6 +955,18 @@ public enum Configuration {
             return uiConfigurationCache.loadWindowFullscreen();
         return false;
     }
+    
+    public String getSelectedMachineFolderView() {
+        if (uiConfigurationCache != null)
+            return uiConfigurationCache.loadSelectedMachineFolderView();
+        return null;
+    }
+    
+    public Map<String, Void> getMachineFoldersRemovedFromView() {
+        if (uiConfigurationCache != null)
+            return uiConfigurationCache.loadMachineFoldersRemovedFromView();
+        return new HashMap<>();
+    }
 
     public void setMasterConfigPoint() {
         beginMasterConfigTransaction();
@@ -1221,6 +1234,31 @@ public enum Configuration {
     public void updateWindowFullscreen(boolean value) throws IOException {
         if (uiConfigurationCache != null)
             uiConfigurationCache.saveWindowFullscreen(value);
+    }
+    
+    public void updateSelectedMachineFolderView(String value) throws IOException {
+        if (uiConfigurationCache != null)
+            uiConfigurationCache.saveSelectedMachineFolderView(value);
+    }
+    
+    public void updateMachineFolderRemovedFromView(String value) throws IOException {
+        if (uiConfigurationCache != null)
+            uiConfigurationCache.saveMachineFolderRemovedFromView(value);
+    }
+    
+    public void updateMachineFolderAddedIntoView(String value) throws IOException {
+        if (uiConfigurationCache != null)
+            uiConfigurationCache.saveMachineFolderAddedIntoView(value);
+    }
+    
+    public void beginUIConfigurationTransaction() {
+        if (uiConfigurationCache != null)
+            uiConfigurationCache.beginTransaction();
+    }
+    
+    public void endUIConfigurationTransaction() throws IOException {
+        if (uiConfigurationCache != null)
+            uiConfigurationCache.endTransaction();
     }
     
     public void addPath(Property property, String path, String charSet) {
