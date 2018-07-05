@@ -150,7 +150,7 @@ public class CacheManager extends Task<Void> {
             ///// Favourites
             
             if (!isCancelled()) {
-                FavouriteTree favourites = new FavouriteLoader(machines.getMap(), softwareListCache.get()).call();
+                FavouriteTree favourites = new FavouriteLoader(controller, machines.getMap(), softwareListCache.get()).call();
                 if (favourites != null)
                     controller.setFavouriteTree(favourites);
             }
@@ -162,7 +162,7 @@ public class CacheManager extends Task<Void> {
                 // launch tasks
                 Consumer<List<InitialisedCallable<Void>>> load = loaders -> {
                     loaders.forEach(loader -> {
-                        loader.initialise(machines.getMap(), softwareListCache.get());
+                        loader.initialise(controller, machines.getMap(), softwareListCache.get());
                         tasks.add( execService.submit(loader) );
                     });
                 };

@@ -97,7 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <Tooltip text="%help.tooltip" />
                         </tooltip>
                     </Button>
-                    <ProgressIndicator fx:id="notifier" prefWidth="20" prefHeight="20">
+                    <ProgressIndicator fx:id="notifier" prefWidth="20" prefHeight="20" onMouseEntered="#handleNotifierMouseEntered">
                         <tooltip>
                             <Tooltip text="%notifier.tooltip" />
                         </tooltip>

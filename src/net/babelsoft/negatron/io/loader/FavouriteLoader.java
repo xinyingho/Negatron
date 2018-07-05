@@ -59,18 +59,26 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class FavouriteLoader implements Callable<FavouriteTree> {
     
+    private static final String OBS_ID = "favourites";
+    
     final private Map<String, Machine> machines;
     final private Map<String, SoftwareList> softwareLists;
+    private LoadingObserver observer;
 
-    public FavouriteLoader(Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) {
+    public FavouriteLoader(LoadingObserver observer, Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) {
         this.machines = machines;
         this.softwareLists = softwareLists;
+        this.observer = observer;
     }
 
     @Override
     public FavouriteTree call() throws Exception {
-        if (!Files.exists(FavouriteConfiguration.FAV_PATH))
+        observer.begin(OBS_ID, -1);
+        
+        if (!Files.exists(FavouriteConfiguration.FAV_PATH)) {
+            observer.end(OBS_ID);
             return null;
+        }
         
         FavouriteDataHandler dataHandler = new FavouriteDataHandler();
         
@@ -84,6 +92,8 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
         } catch (Exception ex) {
             Logger.getLogger(MachineListLoader.class.getName()).log(Level.SEVERE, "An error occured while loading favourites", ex);
         }
+        
+        observer.end(OBS_ID);
         
         return dataHandler.result();
     }

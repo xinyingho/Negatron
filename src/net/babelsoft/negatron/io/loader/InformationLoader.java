@@ -46,8 +46,11 @@ import net.babelsoft.negatron.util.Strings;
  */
 public class InformationLoader implements InitialisedCallable<Void> {
     
+    public static final String OBS_ID = "information";
+    
     private final InformationCache cache;
     private final Path datFilePath;
+    private LoadingObserver observer;
     
     public InformationLoader(InformationCache cache, Path datFilePath) {
         this.cache = cache;
@@ -55,7 +58,9 @@ public class InformationLoader implements InitialisedCallable<Void> {
     }
 
     @Override
-    public void initialise(Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) { }
+    public void initialise(LoadingObserver observer, Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) {
+        this.observer = observer;
+    }
 
     @Override
     public Void call() throws Exception {
@@ -65,6 +70,8 @@ public class InformationLoader implements InitialisedCallable<Void> {
         ).findAny();
         CharsetDecoder decoder = Charset.forName(encoding.get().getCharSet()).newDecoder();
         decoder.onMalformedInput(CodingErrorAction.REPLACE);
+        
+        observer.begin(OBS_ID, -1);
         
         Map<String, List<String>> systemIndex = new HashMap<>(); // system > system aliases
         Map<String, Map<String, String>> itemIndex = new HashMap<>(); // systems > item > item alias
@@ -169,6 +176,7 @@ public class InformationLoader implements InitialisedCallable<Void> {
         }
 
         cache.save(new InformationData(datFilePath, information, systemIndex, itemIndex));
+        observer.end(OBS_ID);
         return null;
     }
 }

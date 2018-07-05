@@ -76,6 +76,7 @@ import net.babelsoft.negatron.io.cache.CacheManager;
 import net.babelsoft.negatron.io.cache.MachineListCache;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.FavouriteTree;
+import net.babelsoft.negatron.io.loader.LoadingObserver;
 import net.babelsoft.negatron.io.loader.MachineLoader;
 import net.babelsoft.negatron.io.loader.MachineLoader.Mode;
 import net.babelsoft.negatron.model.SoftwareListFilter;
@@ -100,6 +101,7 @@ import net.babelsoft.negatron.view.control.MachineConfigurationPane;
 import net.babelsoft.negatron.view.control.MachineFilterPane;
 import net.babelsoft.negatron.view.control.MachineFolderViewPane;
 import net.babelsoft.negatron.view.control.MachineInformationPane;
+import net.babelsoft.negatron.view.control.NotifierPopup;
 import net.babelsoft.negatron.view.control.SoftwareConfigurationPane;
 import net.babelsoft.negatron.view.control.SoftwareFilterPane;
 import net.babelsoft.negatron.view.control.SoftwareInformationPane;
@@ -113,7 +115,7 @@ import net.babelsoft.negatron.view.control.form.DeviceControl;
  *
  * @author capan
  */
-public class MainController implements Initializable, AlertController, EditController, Disposable {
+public class MainController implements Initializable, AlertController, EditController, LoadingObserver, Disposable {
     
     @FXML
     private SplitPane mainSplitPane;
@@ -196,6 +198,7 @@ public class MainController implements Initializable, AlertController, EditContr
     
     private Application application;
     private CacheManager cache;
+    private NotifierPopup notifierPopup;
     
     private final SimpleBooleanProperty onSucceededProperty;
     private final SimpleDoubleProperty progressProperty;
@@ -647,6 +650,8 @@ public class MainController implements Initializable, AlertController, EditContr
     }
     
     public void initialiseData() {
+        notifierPopup = new NotifierPopup();
+        
         cache = new CacheManager(this, (machines, machineStats, softwareStats) -> Platform.runLater(() -> {
             machineTreePane.setItems(machines);
             machineFolderViewWindow.initialiseData();
@@ -736,6 +741,21 @@ public class MainController implements Initializable, AlertController, EditContr
             cache.cancel();
             cache = null;
         }
+    }
+
+    @Override
+    public void begin(String id, int total) {
+        notifierPopup.begin(id, total);
+    }
+
+    @Override
+    public void notify(String id, int processed) {
+        notifierPopup.notify(id, processed);
+    }
+
+    @Override
+    public void end(String id) {
+        notifierPopup.end(id);
     }
 
     private class SoftwareTreeTableDataFiller implements EventHandler<ActionEvent> {
@@ -1375,5 +1395,10 @@ public class MainController implements Initializable, AlertController, EditContr
         machineTreePane.closeFilterPane();
         machineTreePane.clearSelection();
         machineInformationPane.selectInformationTab();
+    }
+    
+    @FXML
+    private void handleNotifierMouseEntered(MouseEvent event) {
+        notifierPopup.show(notifier);
     }
 }

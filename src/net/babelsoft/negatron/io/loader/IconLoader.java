@@ -49,23 +49,26 @@ import net.babelsoft.negatron.util.function.Delegate;
 public class IconLoader implements InitialisedCallable<Void> {
     
     private final static String ZIP_EXT = ".zip";
+    private final static String OBS_ID = "icons";
     
     private final IconCache cache;
     private Map<String, Machine> machines;
+    private LoadingObserver observer;
     
     public IconLoader(IconCache cache) {
         this.cache = cache;
+    }
+
+    @Override
+    public void initialise(LoadingObserver observer, Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) {
+        this.machines = machines;
+        this.observer = observer;
     }
     
     private void updateUI(String name) {
         Machine machine = machines.get(name);
         if (machine != null)
             machine.setIcon( cache.get(name) );
-    }
-
-    @Override
-    public void initialise(Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) {
-        this.machines = machines;
     }
 
     @Override
@@ -78,10 +81,13 @@ public class IconLoader implements InitialisedCallable<Void> {
             );
         }
         
+        observer.begin(OBS_ID, machines.size());
+        
         // refresh UI with cache content
         cache.getKeys().forEach(
             name -> updateUI(name)
         );
+        observer.notify(OBS_ID, cache.getKeys().size());
         
         boolean isModified = false;
         
@@ -90,6 +96,7 @@ public class IconLoader implements InitialisedCallable<Void> {
         final int cutoffSize = 1000;
         Delegate batchUpdateUI = () -> {
             batch.forEach(id -> updateUI(id));
+            observer.notify(OBS_ID, batch.size());
             batch.clear();
         };
         
@@ -231,6 +238,7 @@ public class IconLoader implements InitialisedCallable<Void> {
         
         if (isModified)
             cache.save();
+        observer.end(OBS_ID);
         
         return null;
     }

@@ -17,16 +17,13 @@
  */
 package net.babelsoft.negatron.io.loader;
 
-import java.util.Map;
-import java.util.concurrent.Callable;
-import net.babelsoft.negatron.model.item.Machine;
-import net.babelsoft.negatron.model.item.SoftwareList;
-
 /**
  *
  * @author capan
  */
-public interface InitialisedCallable<V> extends Callable<V> {
+public interface LoadingObserver {
     
-    void initialise(LoadingObserver observer, Map<String, Machine> machines, Map<String, SoftwareList> softwareLists);
+    void begin(String id, int total);
+    void notify(String id, int processed);
+    void end(String id);
 }

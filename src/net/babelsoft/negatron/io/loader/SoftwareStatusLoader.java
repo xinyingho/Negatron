@@ -34,23 +34,28 @@ import net.babelsoft.negatron.model.item.SoftwareList;
  * @author capan
  */
 public class SoftwareStatusLoader implements InitialisedCallable<Void> {
+    
+    private static final String OBS_ID = "softwareStatuses";
 
     private final StatusCache cache;
     private Map<String, SoftwareList> softwareLists;
+    private LoadingObserver observer;
 
     public SoftwareStatusLoader(StatusCache cache) {
         this.cache = cache;
     }
 
     @Override
-    public void initialise(Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) {
+    public void initialise(LoadingObserver observer, Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) {
         this.softwareLists = softwareLists;
+        this.observer = observer;
     }
     
     private void updateUI(Map<Software, Status> batch) {
         batch.entrySet().forEach(
             entry -> entry.getKey().setStatus(entry.getValue())
         );
+        observer.notify(OBS_ID, batch.size());
         batch.clear();
     }
     
@@ -59,6 +64,11 @@ public class SoftwareStatusLoader implements InitialisedCallable<Void> {
         HashMap<String, HashMap<String, Status>> listStatuses = new HashMap<>();
         Map<Software, Status> batch = new HashMap<>();
         final int cutoffSize = 500;
+        
+        observer.begin(
+            OBS_ID,
+            softwareLists.values().stream().mapToInt(softList -> softList.size()).sum()
+        );
         
         Process process = Mame.newProcess("-verifysoftware");
         try (
@@ -108,6 +118,8 @@ public class SoftwareStatusLoader implements InitialisedCallable<Void> {
             updateUI(batch);
             cache.saveSoftware(listStatuses);
         }
+        
+        observer.end(OBS_ID);
         
         return null;
     }

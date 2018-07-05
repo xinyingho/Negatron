@@ -43,6 +43,14 @@ class StatusVersion implements Serializable {
         romLastCreationTime = Instant.MIN;
         romLastModifiedTime = Instant.MIN;
     }
+    
+    public StatusVersion(StatusVersion original) {
+        mameVersion = original.mameVersion;
+        softlistLastCreationTime = original.softlistLastCreationTime;
+        softlistLastModifiedTime = original.softlistLastModifiedTime;
+        romLastCreationTime = original.romLastCreationTime;
+        romLastModifiedTime = original.romLastModifiedTime;
+    }
 
     /**
      * @return the mameVersion

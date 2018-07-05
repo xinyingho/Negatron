@@ -35,23 +35,31 @@ import net.babelsoft.negatron.model.item.SoftwareList;
  * @author capan
  */
 public class MachineStatusLoader implements InitialisedCallable<Void> {
+    
+    private static final String OBS_ID = "machineStatuses";
 
     private final StatusCache cache;
     private Map<String, Machine> machines;
+    private LoadingObserver observer;
 
     public MachineStatusLoader(StatusCache cache) {
         this.cache = cache;
     }
 
     @Override
-    public void initialise(Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) {
+    public void initialise(LoadingObserver observer, Map<String, Machine> machines, Map<String, SoftwareList> softwareLists) {
         this.machines = machines;
+        this.observer = observer;
     }
     
-    private void updateUI(HashMap<String, Status> statuses, String name) {
-        Machine machine = machines.get(name);
-        if (machine != null)
-            machine.setStatus(statuses.get(name));
+    private void updateUI(List<String> batch, HashMap<String, Status> statuses) {
+        batch.forEach(name -> {
+            Machine machine = machines.get(name);
+            if (machine != null)
+                machine.setStatus(statuses.get(name));
+        });
+        observer.notify(OBS_ID, batch.size());
+        batch.clear();
     }
     
     @Override
@@ -59,6 +67,8 @@ public class MachineStatusLoader implements InitialisedCallable<Void> {
         HashMap<String, Status> statuses = new HashMap<>();
         List<String> batch = new ArrayList<>();
         final int cutoffSize = 500;
+        
+        observer.begin(OBS_ID, machines.size());
         
         Process process = Mame.newProcess("-verifyroms");
         try (
@@ -90,20 +100,19 @@ public class MachineStatusLoader implements InitialisedCallable<Void> {
                 
                 if (!Thread.currentThread().isInterrupted()) {
                     batch.add(name);
-                    if (batch.size() > cutoffSize) {
-                        batch.forEach(id -> updateUI(statuses, id));
-                        batch.clear();
-                    }
+                    if (batch.size() > cutoffSize)
+                        updateUI(batch, statuses);
                 } else
                     process.destroy();
             });
         }
         
         if (!Thread.interrupted()) {    
-            batch.forEach(id -> updateUI(statuses, id));
-            batch.clear();
+            updateUI(batch, statuses);
             cache.saveMachines(statuses);
         }
+        
+        observer.end(OBS_ID);
         
         return null;
     }

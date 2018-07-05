@@ -60,12 +60,10 @@ public class StatusCache extends Cache<StatusCache.Data, StatusVersion> implemen
     }
     
     private Data data;
+    private StatusVersion newVersion;
     
     private final Map<String, Machine> machines;
     private final Map<String, SoftwareList> softwareLists;
-    
-    private int processingItemCount;
-    private AtomicInteger processedItemCount;
     
     public StatusCache(
         Map<String, Machine> machines, Map<String, SoftwareList> softwareLists
@@ -143,40 +141,36 @@ public class StatusCache extends Cache<StatusCache.Data, StatusVersion> implemen
             data = new Data();
         if (version == null)
             version = new StatusVersion();
+        newVersion = new StatusVersion(version);
         
         // check version
         String mameVersion = new MachineListCache().getVersion();
-        if (!mameVersion.equals(version.getMameVersion()))
-            version.setMameVersion(mameVersion);
+        if (!mameVersion.equals(newVersion.getMameVersion()))
+            newVersion.setMameVersion(mameVersion);
         
         checkVersion(
             Configuration.Manager.getFolderPaths(Property.HASH),
-            version::getSoftlistLastCreationTime, version::setSoftlistLastCreationTime,
-            version::getSoftlistLastModifiedTime, version::setSoftlistLastModifiedTime
+            newVersion::getSoftlistLastCreationTime, newVersion::setSoftlistLastCreationTime,
+            newVersion::getSoftlistLastModifiedTime, newVersion::setSoftlistLastModifiedTime
         );
         
         checkVersion(
             Configuration.Manager.getFolderPaths(Property.ROM),
-            version::getRomLastCreationTime, version::setRomLastCreationTime,
-            version::getRomLastModifiedTime, version::setRomLastModifiedTime
+            newVersion::getRomLastCreationTime, newVersion::setRomLastCreationTime,
+            newVersion::getRomLastModifiedTime, newVersion::setRomLastModifiedTime
         );
         
         // create required loaders
         List<InitialisedCallable<Void>> loaders = new ArrayList<>();
         
-        if (version.isMachineModified() || version.isRomModified()) {
+        if (newVersion.isMachineModified() || newVersion.isRomModified())
             loaders.add(new MachineStatusLoader(this));
-            processedItemCount = new AtomicInteger();
-            ++processingItemCount;
-        } else
+        else
             updateMachineUI();
         
-        if (version.isSoftwareListModified() || version.isRomModified()) {
+        if (newVersion.isSoftwareListModified() || newVersion.isRomModified())
             loaders.add(new SoftwareStatusLoader(this));
-            if (processedItemCount == null)
-                processedItemCount = new AtomicInteger();
-            ++processingItemCount;
-        } else
+        else
             updateSoftwareUI();
         
         return loaders;
@@ -184,21 +178,27 @@ public class StatusCache extends Cache<StatusCache.Data, StatusVersion> implemen
 
     public void saveSoftware(HashMap<String, HashMap<String, Status>> listStatuses) throws IOException {
         data.softwareStatuses = listStatuses;
+        version.setMameVersion(newVersion.getMameVersion());
+        version.setSoftlistLastCreationTime(newVersion.getSoftlistLastCreationTime());
+        version.setSoftlistLastModifiedTime(newVersion.getSoftlistLastModifiedTime());
         save();
     }
 
     public void saveMachines(HashMap<String, Status> statuses) throws IOException {
         data.machineStatuses = statuses;
+        version.setMameVersion(newVersion.getMameVersion());
+        version.setRomLastCreationTime(newVersion.getRomLastCreationTime());
+        version.setRomLastModifiedTime(newVersion.getRomLastModifiedTime());
         save();
     }
     
     private void save() throws IOException {
-        if (processedItemCount.incrementAndGet() == processingItemCount) try {
+        synchronized (this) { try {
             save(data);
             saveVersion();
         } catch (Exception ex) {
             Logger.getLogger(StatusCache.class.getName()).log(Level.SEVERE, null, ex);
             throw ex;
-        }
+        } }
     }
 }

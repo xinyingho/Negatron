@@ -115,4 +115,8 @@ public class SoftwareList extends Item {
         else
             return null;
     }
+    
+    public int size() {
+        return softwareMap.size();
+    }
 }
