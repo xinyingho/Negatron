@@ -110,6 +110,7 @@ public enum Configuration {
     private final Map<Property, List<PathCharset>> files;
     private final Map<Property, String> primaryMachineFolders;
     private final Map<Property, String> primarySoftwareFolders;
+    private final Map<String, String> globalConfiguration;
     private UIConfigurationCache uiConfigurationCache;
     
     private boolean disableWrite;
@@ -123,6 +124,7 @@ public enum Configuration {
         files = new LinkedHashMap<>();
         primaryMachineFolders = new LinkedHashMap<>();
         primarySoftwareFolders = new LinkedHashMap<>();
+        globalConfiguration = new HashMap<>();
         
         try {
             uiConfigurationCache = new UIConfigurationCache();
@@ -281,44 +283,46 @@ public enum Configuration {
             boolean mustUpdateMameConfiguration;
             try (BufferedReader reader = Files.newBufferedReader(iniPath)) {
                 mustUpdateMameConfiguration = reader.lines().filter(
-                    line -> !line.trim().startsWith("#")
+                    line -> !line.trim().startsWith("#") && Strings.isValid(line.trim())
                 ).map(
                     line -> splitLine(line)
                 ).map(content -> {
+                    boolean[] processedLine = { false }; // workaround: transform the boolean as a table so that it remains editable from lambda expressions...
+                    
                     // for each MAME paths editable in the global configuration pane, read their values from mame.ini
                     Arrays.stream(Property.values()).filter(
                         property -> property.isMamePath && content[0].equals(property.name)
-                    ).forEach(
-                        property -> {
-                            String defaultFolders = null;
-                            if (shouldUpdateMameConfiguration && property.defaultFolders.size() > 0) {
-                                defaultFolders = property.defaultFolders.stream().map(
-                                    defaultFolder -> Paths.get(extrasPath, defaultFolder).normalize().toString()
-                                ).filter(
-                                    defaultFolder -> {
-                                        String relativePath = null;
-                                        try {
-                                            relativePath = mameRoot.relativize(
-                                                Paths.get(defaultFolder)
-                                            ).toString();
-                                        } catch (IllegalArgumentException ex) {
-                                            // the path cannot be relativised,
-                                            // thus swallow the exception to simply use the current absolute path
-                                        }
-                                        
-                                        return
-                                            !content[1].contains(defaultFolder) &&
-                                            (relativePath == null || !content[1].contains(relativePath))
-                                        ;
+                    ).forEach(property -> {
+                        String defaultFolders = null;
+                        if (shouldUpdateMameConfiguration && property.defaultFolders.size() > 0) {
+                            defaultFolders = property.defaultFolders.stream().map(
+                                defaultFolder -> Paths.get(extrasPath, defaultFolder).normalize().toString()
+                            ).filter(
+                                defaultFolder -> {
+                                    String relativePath = null;
+                                    try {
+                                        relativePath = mameRoot.relativize(
+                                            Paths.get(defaultFolder)
+                                        ).toString();
+                                    } catch (IllegalArgumentException ex) {
+                                        // the path cannot be relativised,
+                                        // thus swallow the exception to simply use the current absolute path
                                     }
-                                ).collect(Collectors.joining(";"));
-                            }
 
-                            folders.put(property, contentToPathArray(
-                                content[1] + (defaultFolders != null ? ";" + defaultFolders : "")
-                            ));
+                                    return
+                                        !content[1].contains(defaultFolder) &&
+                                        (relativePath == null || !content[1].contains(relativePath))
+                                    ;
+                                }
+                            ).collect(Collectors.joining(";"));
                         }
-                    );
+
+                        folders.put(property, contentToPathArray(
+                            content[1] + (defaultFolders != null ? ";" + defaultFolders : "")
+                        ));
+                        
+                        processedLine[0] = true;
+                    });
                     
                     boolean mustUpdate = false;
                     
@@ -330,6 +334,7 @@ public enum Configuration {
                             mustUpdate = true;
                         } else if (cheatMenuEnabled != mameCheatMenuEnabled)
                             mustUpdate = true;
+                        processedLine[0] = true;
                     } else if (content[0].equals(VsyncMethod.DOUBLE_BUFFERING.name)) {
                         boolean doubleBufferingEnabled = digitToBoolean(content[1]);
                         if (vsync == null && doubleBufferingEnabled) {
@@ -337,6 +342,7 @@ public enum Configuration {
                             mustUpdate = true;
                         } else if (vsync == VsyncMethod.DOUBLE_BUFFERING && !doubleBufferingEnabled)
                             mustUpdate = true;
+                        processedLine[0] = true;
                     } else if (content[0].equals(VsyncMethod.TRIPLE_BUFFERING.name)) {
                         boolean tripleBufferingEnabled = digitToBoolean(content[1]);
                         if (vsync == null && tripleBufferingEnabled) {
@@ -344,7 +350,15 @@ public enum Configuration {
                             mustUpdate = true;
                         } else if (vsync == VsyncMethod.TRIPLE_BUFFERING && !tripleBufferingEnabled)
                             mustUpdate = true;
+                        // processedLine[0] = true; // Triple Buffer is a Windows native only MAME option
+                        // So to have a way to detect if triple buffering should be enabled and
+                        // by assuming that SDL MAME doesn't add this option in -cc generated ini files,
+                        // we let the process register the triple buffer line into the global conf dic
                     }
+                    
+                    // memorise not yet processed mame configuration lines into the Global Configuration dictionary
+                    if (!processedLine[0])
+                        globalConfiguration.put(content[0], content.length > 1 ? content[1].trim() : "");
                     
                     return mustUpdate;
                 }).reduce(false, (a, b) -> a || b);
@@ -566,11 +580,12 @@ public enum Configuration {
     }
     
     public void writeMameInitialisationFile() throws IOException, InterruptedException {
-        if (Strings.isEmpty(mamePath) || mameIni == null || !new File(mameIni).canWrite())
+        Path iniPath = Paths.get(mameIni);
+        
+        if (Strings.isEmpty(mamePath) || mameIni == null || !Files.isWritable(iniPath))
             return;
         
         Path mameRoot = Paths.get(mamePath);
-        Path iniPath = Paths.get(mameIni);
         Path tempPath = Files.createTempFile("negatron", "mameini");
 
         try (
@@ -617,6 +632,11 @@ public enum Configuration {
                         lineUpdated = true;
                     } else if (splitLine[0].equals(VsyncMethod.TRIPLE_BUFFERING.name)) {
                         writeConfigurationLine(writer, VsyncMethod.TRIPLE_BUFFERING.name, vsync == VsyncMethod.TRIPLE_BUFFERING);
+                        lineUpdated = true;
+                    }
+                    
+                    if (!lineUpdated && globalConfiguration.containsKey(splitLine[0]) && !globalConfiguration.get(splitLine[0]).equals(splitLine[1])) {
+                        writeConfigurationLine(writer, splitLine[0], globalConfiguration.get(splitLine[0]));
                         lineUpdated = true;
                     }
                 }
@@ -862,6 +882,14 @@ public enum Configuration {
         }
         
         return pathCharsets;
+    }
+    
+    public String getGlobalConfiguration(String key) {
+        return globalConfiguration.get(key);
+    }
+    
+    public boolean isGlobalConfiguration(String key) {
+        return digitToBoolean(globalConfiguration.get(key));
     }
 
     public Map<String, TreeTableColumnConfiguration> getTreeTableColumnsConfiguration(String id) {
@@ -1164,6 +1192,16 @@ public enum Configuration {
             primarySoftwareFolders.put(property, text);
             writeInitialisationFile(property);
         }
+    }
+    
+    public void updateGlobalConfigurationSetting(String key, String value) throws IOException, InterruptedException {
+        globalConfiguration.put(key, value);
+        writeMameInitialisationFile();
+    }
+    
+    public void updateGlobalConfigurationSetting(String key, boolean value) throws IOException, InterruptedException {
+        globalConfiguration.put(key, value ? TRUE : FALSE);
+        writeMameInitialisationFile();
     }
 
     public void updateTreeTableColumnsConfiguration(String id, Map<String, TreeTableColumnConfiguration> conf) throws IOException {

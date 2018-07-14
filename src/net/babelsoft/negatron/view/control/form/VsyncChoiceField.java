@@ -36,6 +36,9 @@ public class VsyncChoiceField extends ChoiceField<VsyncMethod> {
         );
         
         choiceBox.getItems().addAll(Arrays.asList(VsyncMethod.values()));
+        if (Configuration.Manager.getGlobalConfiguration("triplebuffer") == null) // Windows native only MAME option
+            choiceBox.getItems().remove(VsyncMethod.TRIPLE_BUFFERING);
+        
         choiceBox.getSelectionModel().select(Configuration.Manager.getVsyncMethod());
         choiceBox.getSelectionModel().selectedItemProperty().addListener((o, oV, newValue) -> updateVsyncMethod(newValue));
     }
