@@ -101,9 +101,7 @@ public class StatisticsPaneController implements Initializable {
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        root.setOnceOnAnimationEnded(() -> reset(true, true, true));
-    }
+    public void initialize(URL url, ResourceBundle rb) { }
     
     private int getTotalCount() {
         return machineStats.getDeviceCount() + machineStats.getTotalCount() + softwareStats.getTotalCount();
@@ -174,6 +172,8 @@ public class StatisticsPaneController implements Initializable {
             String cat = Language.Manager.getString("parent") + " - " + softwareInterfaceToCategory(key);
             softwareCategoryCount.put(cat, softwareCategoryCount.getOrDefault(cat, 0) + value.intValue());
         });
+        
+        root.setOnceOnAnimationEnded(() -> reset(true, true, true));
     }
     
     private double pct(double value, double total) {

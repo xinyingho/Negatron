@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </ToggleButton>
                 <HBox alignment="CENTER" HBox.hgrow="ALWAYS" style="-fx-spacing: 0.333em;">
                     <children>
-                        <Label fx:id="statusLabel" text="M.A.M.E. v0.162" />
+                        <Label fx:id="statusLabel" text="M.A.M.E." />
                         <ToggleButton fx:id="statisticsButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleStatisticsAction" styleClass="statistics-button" text="%statistics">
                             <tooltip>
                                 <Tooltip text="%statistics.tooltip" />
