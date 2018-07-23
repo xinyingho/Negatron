@@ -635,7 +635,10 @@ public enum Configuration {
                         lineUpdated = true;
                     }
                     
-                    if (!lineUpdated && globalConfiguration.containsKey(splitLine[0]) && !globalConfiguration.get(splitLine[0]).equals(splitLine[1])) {
+                    if (
+                        !lineUpdated && splitLine.length > 1 &&
+                        globalConfiguration.containsKey(splitLine[0]) && !globalConfiguration.get(splitLine[0]).equals(splitLine[1])
+                    ) {
                         writeConfigurationLine(writer, splitLine[0], globalConfiguration.get(splitLine[0]));
                         lineUpdated = true;
                     }
