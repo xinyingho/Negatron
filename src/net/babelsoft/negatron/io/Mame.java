@@ -26,8 +26,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.model.HddGeometry;
+import net.babelsoft.negatron.util.Shell;
 
 /**
  *
@@ -36,6 +38,16 @@ import net.babelsoft.negatron.model.HddGeometry;
 public class Mame {
     
     private Mame() { }
+    
+    private static void escapeEmptyArguments(List<String> arguments) {
+        if (Shell.isWindows())
+            return; // this workaround doesn't apply to Windows
+        
+        final ListIterator<String> li = arguments.listIterator();
+        while (li.hasNext())
+            if (li.next().equals("\"\""))
+                li.set("");
+    }
     
     public static InputStream newInputStream(String... arguments) throws IOException {
         return newProcess(arguments).getInputStream();
@@ -53,6 +65,7 @@ public class Mame {
     }
     
     public static Process newProcess(List<String> arguments) throws IOException {
+        escapeEmptyArguments(arguments);
         arguments.add(0, Configuration.Manager.getMameExecutable());
         
         ProcessBuilder processBuilder = new ProcessBuilder(arguments);
@@ -75,6 +88,7 @@ public class Mame {
     public static void launch(List<String> arguments, String workingFolder, boolean synchronise) throws IOException, InterruptedException {
         if (arguments == null)
             arguments = new ArrayList<>();
+        escapeEmptyArguments(arguments);
         arguments.add(0, Configuration.Manager.getMameExecutable());
         
         Path workingPath = Paths.get(workingFolder);
