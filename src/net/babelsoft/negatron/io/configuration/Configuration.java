@@ -57,10 +57,9 @@ public enum Configuration {
         if (Files.isWritable(root))
             return root;
         else {
-            String osName = System.getProperty("os.name").toLowerCase();
-            if (osName.contains("win"))
+            if (Shell.isWindows())
                 return Paths.get(System.getenv("AppData"), "Negatron");
-            else if (osName.startsWith("mac os x"))
+            else if (Shell.isMacOs())
                 return Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Negatron");
             else // Linux
                 return Paths.get(System.getProperty("user.home"), ".Negatron");

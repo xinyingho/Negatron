@@ -36,12 +36,15 @@ public class Shell {
     private Shell() { }
     
     static {
-        win = System.getProperty("os.name").toLowerCase().contains("win");
-        linux = System.getProperty("os.name").toLowerCase().contains("linux");
+        String os = System.getProperty("os.name").toLowerCase();
+        win = os.contains("win");
+        linux = os.contains("linux");
+        macos = os.contains("mac") || os.contains("darwin");
     }
     
     private static boolean win;
     private static boolean linux;
+    private static boolean macos;
     
     public static boolean isWindows() {
         return win;
@@ -49,6 +52,10 @@ public class Shell {
     
     public static boolean isLinux() {
         return linux;
+    }
+    
+    public static boolean isMacOs() {
+        return macos;
     }
     
     public static boolean isPosix() {
