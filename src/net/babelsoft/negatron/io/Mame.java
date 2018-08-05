@@ -27,9 +27,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.model.HddGeometry;
 import net.babelsoft.negatron.util.Shell;
+import net.babelsoft.negatron.util.Strings;
 
 /**
  *
@@ -123,5 +125,25 @@ public class Mame {
         arguments.add("--output"); arguments.add(hddGeometry.getPath());
         
         new ProcessBuilder(arguments).start().waitFor();
+        
+        if (Strings.isValid(hddGeometry.getManufacturer())) {
+            arguments.clear();
+            
+            arguments.add(Configuration.Manager.getChdmanExecutable());
+            arguments.add("addmeta");
+            arguments.add("--input"); arguments.add(hddGeometry.getPath());
+            arguments.add("--tag"); arguments.add("IDNT");
+            arguments.add("--valuetext");
+            String format = "%-8S %-16S ";
+            if (hddGeometry.getVersion() < 10.0)
+                format += "%.2f";
+            else // if (hddGeometry.getVersion() < 100.0)
+                format += "%.1f";
+            arguments.add(String.format(Locale.US, format,
+                hddGeometry.getManufacturer(), hddGeometry.getModel(), hddGeometry.getVersion()
+            ));
+            
+            new ProcessBuilder(arguments).start().waitFor();
+        }
     }
 }

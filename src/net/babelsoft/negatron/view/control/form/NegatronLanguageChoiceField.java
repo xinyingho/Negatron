@@ -31,18 +31,18 @@ import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.util.Strings;
+import net.babelsoft.negatron.util.function.Delegate;
 
 /**
  *
  * @author capan
  */
-public class LanguageChoiceField extends ChoiceField<Locale> {
+public class NegatronLanguageChoiceField extends ChoiceField<Locale> {
     
     Delegate onRestart;
     
-    public LanguageChoiceField(GridPane grid, int row) {
+    public NegatronLanguageChoiceField(GridPane grid, int row) {
         super(grid, row, Language.Manager.getString("language"), Language.Manager.getString("language.tooltip"));
         
         choiceBox.getItems().add(Locale.UK);
@@ -100,7 +100,7 @@ public class LanguageChoiceField extends ChoiceField<Locale> {
             try {
                 Configuration.Manager.updateLanguage(newValue.toLanguageTag());
             } catch (IOException ex) {
-                Logger.getLogger(LanguageChoiceField.class.getName()).log(Level.SEVERE, "Couldn't save requested language configuration", ex);
+                Logger.getLogger(NegatronLanguageChoiceField.class.getName()).log(Level.SEVERE, "Couldn't save requested language configuration to Negatron", ex);
             }
             Locale.setDefault(newValue);
             onRestart.fire();

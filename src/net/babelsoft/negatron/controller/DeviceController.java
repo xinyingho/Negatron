@@ -288,7 +288,9 @@ public class DeviceController extends MachineComponentController<Device, String,
     @FXML
     private void handleCreateAction(ActionEvent event) {
         if (Strings.isValid(Configuration.Manager.getChdmanExecutable()))
-            new HddCreationDialog(root.getScene().getWindow()).showAndWait().ifPresent(hddGeometry -> {
+            new HddCreationDialog(
+                getMachineComponent().getInterfaceFormats(), root.getScene().getWindow()
+            ).showAndWait().ifPresent(hddGeometry -> {
                 try {
                     Mame.createBlankHdd(hddGeometry);
                     setText(hddGeometry.getPath());

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file is part of Negatron.
+Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!-- Data based on http://wiki.mamedev.org/index.php/Driver:InterPro as of 5 Aug 2018 -->
+<hdd>
+    <manufacturer name="Conner">
+        <model name="CFP2107S" cylinder="3959" head="10" sector="123" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Maxtor">
+        <model name="LXT-213S" cylinder="1314" head="7" sector="53" sectorSize="512" />
+        <model name="LXT-340S" cylinder="1574" head="7" sector="70" sectorSize="512" />
+        <model name="MXT-540SL" cylinder="2466" head="7" sector="87" sectorSize="512" />
+    </manufacturer>
+    <manufacturer name="Seagate">
+        <model name="ST1480" cylinder="1476" head="9" sector="74" sectorSize="512" />
+        <model name="ST11200N" cylinder="1872" head="15" sector="92" sectorSize="512" />
+        <model name="ST34371N" cylinder="5167" head="10" sector="163" sectorSize="512" />
+        <model name="ST19171N" cylinder="5273" head="20" sector="166" sectorSize="512" />
+    </manufacturer>
+</hdd>

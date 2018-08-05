@@ -17,30 +17,25 @@
  */
 package net.babelsoft.negatron.view.control.form;
 
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import net.babelsoft.negatron.io.configuration.Configuration;
+import net.babelsoft.negatron.theme.Language;
 
 /**
  *
  * @author capan
  */
-public class CheckField extends Field {
+public class GlobalConfigurationCheckField extends CheckField {
     
-    protected final CheckBox checkBox;
-    
-    public CheckField(GridPane grid, int row, String text, String prompt) {
-        Label label = new Label(text);
-        grid.add(label, 0, row);
-        
-        checkBox = new CheckBox();
-        checkBox.setTooltip(new Tooltip(prompt));
-        grid.add(checkBox, 1, row);
-
-        // add dummy constraints for current row
-        RowConstraints constraints = new RowConstraints();
-        grid.getRowConstraints().add(constraints);
+    public GlobalConfigurationCheckField(GridPane grid, int row, String key) {
+        super(
+            grid, row,
+            Language.Manager.getString("globalConf." + key),
+            Language.Manager.tryGetString("globalConf." + key + ".tooltip")
+        );
+        checkBox.setSelected(Configuration.Manager.isGlobalConfiguration(key));
+        checkBox.selectedProperty().addListener(
+            (o, oV, newValue) -> updateGlobalConfigurationSetting(key, newValue)
+        );
     }
 }

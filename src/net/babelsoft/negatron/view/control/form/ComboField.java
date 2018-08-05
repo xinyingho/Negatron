@@ -17,27 +17,30 @@
  */
 package net.babelsoft.negatron.view.control.form;
 
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 
 /**
  *
  * @author capan
  */
-public class CheckField extends Field {
+public class ComboField<T> extends Field {
     
-    protected final CheckBox checkBox;
+    protected final ComboBox<T> comboBox;
     
-    public CheckField(GridPane grid, int row, String text, String prompt) {
+    public ComboField(GridPane grid, int row, String text, String prompt) {
         Label label = new Label(text);
         grid.add(label, 0, row);
         
-        checkBox = new CheckBox();
-        checkBox.setTooltip(new Tooltip(prompt));
-        grid.add(checkBox, 1, row);
+        comboBox = new ComboBox<>();
+        comboBox.setTooltip(new Tooltip(prompt));
+        comboBox.setMaxWidth(Double.MAX_VALUE);
+        grid.add(comboBox, 1, row);
+        GridPane.setHgrow(comboBox, Priority.SOMETIMES);
 
         // add dummy constraints for current row
         RowConstraints constraints = new RowConstraints();

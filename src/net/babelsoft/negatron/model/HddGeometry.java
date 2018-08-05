@@ -26,7 +26,8 @@ import java.util.function.Function;
 public class HddGeometry {
         
     private String manufacturer;
-    private String name;
+    private String model;
+    private double version;
     private String path;
     private final long cylinder;
     private final long head;
@@ -44,12 +45,12 @@ public class HddGeometry {
     }
     
     public HddGeometry(
-        String manufacturer, String name,
+        String manufacturer, String model,
         String cylinder, String head, String sector, String sectorSize
     ) {
         this(cylinder, head, sector, sectorSize);
         this.manufacturer = manufacturer;
-        this.name = name;
+        this.model = model;
     }
     
     public HddGeometry(
@@ -59,10 +60,20 @@ public class HddGeometry {
         this(cylinder, head, sector, sectorSize);
         this.path = path;
     }
+    
+    public HddGeometry(
+        String path,
+        String manufacturer, String model, double version,
+        String cylinder, String head, String sector, String sectorSize
+    ) {
+        this(manufacturer, model, cylinder, head, sector, sectorSize);
+        this.version = version;
+        this.path = path;
+    }
 
     @Override
     public String toString() {
-        return String.format("%s %s (%s)", getManufacturer(), getName(), getTotalSize());
+        return String.format("%s %s (%s)", getManufacturer(), getModel(), getTotalSize());
     }
 
     public String getTotalSize() {
@@ -77,10 +88,17 @@ public class HddGeometry {
     }
 
     /**
-     * @return the name
+     * @return the model
      */
-    public String getName() {
-        return name;
+    public String getModel() {
+        return model;
+    }
+
+    /**
+     * @return the version
+     */
+    public double getVersion() {
+        return version;
     }
 
     /**

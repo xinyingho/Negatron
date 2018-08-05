@@ -87,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                               <Label fx:id="optionsLabel" text="MAME" />
                               <GridPane fx:id="optionsGrid" hgap="5.0" vgap="10.0" VBox.vgrow="SOMETIMES">
                                 <columnConstraints>
-                                  <ColumnConstraints prefWidth="90.0" />
+                                  <ColumnConstraints minWidth="90.0" />
                                   <ColumnConstraints hgrow="SOMETIMES" />
                                 </columnConstraints>
                               </GridPane>
@@ -102,7 +102,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                               <Label fx:id="optionsLabel2" text="%negatron" />
                               <GridPane fx:id="optionsGrid2" hgap="5.0" vgap="10.0">
                                 <columnConstraints>
-                                  <ColumnConstraints prefWidth="90.0" />
+                                  <ColumnConstraints minWidth="90.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" />
+                                </columnConstraints>
+                              </GridPane>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </HBox>
+                </ScrollPane>
+            </content>
+          </Tab>
+          <Tab fx:id="graphicsTab" styleClass="graphics" text="%graphics">
+            <content>
+                <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="SOMETIMES">
+                  <padding>
+                    <Insets top="5.0" right="5.0" bottom="5.0" left="5.0" />
+                  </padding>
+                  <HBox styleClass="content" layoutX="116.0" layoutY="77.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="SOMETIMES">
+                           <children>
+                              <GridPane fx:id="graphicsGrid" hgap="5.0" vgap="10.0" VBox.vgrow="SOMETIMES">
+                                <columnConstraints>
+                                  <ColumnConstraints minWidth="90.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" />
+                                </columnConstraints>
+                              </GridPane>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                        <Separator orientation="VERTICAL" prefHeight="200.0" />
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="SOMETIMES">
+                           <children>
+                              <GridPane fx:id="graphicsGrid2" hgap="5.0" vgap="10.0">
+                                <columnConstraints>
+                                  <ColumnConstraints minWidth="90.0" />
                                   <ColumnConstraints hgrow="SOMETIMES" />
                                 </columnConstraints>
                               </GridPane>

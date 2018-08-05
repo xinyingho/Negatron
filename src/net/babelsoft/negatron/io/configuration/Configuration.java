@@ -81,6 +81,8 @@ public enum Configuration {
     private final String LANGUAGE_ENTRY = "language";
     private final String CHEAT_MENU_ENTRY = "cheatmenu";
     private final String VSYNC_ENTRY = "vsync";
+    private final String FONT_FAMILY_ENTRY = "fontFamily";
+    private final String FONT_SIZE_ENTRY = "fontSize";
     private final String SOUND_ENTRY = "sound";
     private final String VIDEO_ENTRY = "video";
     private final String VIEW3D_ENTRY = "view3d";
@@ -102,6 +104,8 @@ public enum Configuration {
     private String language;
     private Boolean cheatMenuEnabled;
     private VsyncMethod vsync;
+    private String fontFamily;
+    private double fontSize;
     private Boolean soundEnabled;
     private Boolean videoEnabled;
     private Boolean view3dEnabled;
@@ -180,6 +184,12 @@ public enum Configuration {
                         vsync = Arrays.stream(VsyncMethod.values()).filter(
                             vsyncMethod -> vsyncMethod.equals(content[1])
                         ).findAny().orElse(null);
+                        break;
+                    case FONT_FAMILY_ENTRY:
+                        fontFamily = content[1].trim();
+                        break;
+                    case FONT_SIZE_ENTRY:
+                        fontSize = Double.parseDouble(content[1]);
                         break;
                     case SOUND_ENTRY:
                         soundEnabled = digitToBoolean(content[1]);
@@ -545,6 +555,10 @@ public enum Configuration {
         writeConfigurationLine(writer, header, Collections.singletonList(content));
     }
     
+    private void writeConfigurationLine(BufferedWriter writer, String header, double content) throws IOException {
+        writeConfigurationLine(writer, header, Collections.singletonList(String.valueOf(content)));
+    }
+    
     private void writeConfigurationLine(BufferedWriter writer, String header, List<String> content) throws IOException {
         writeConfigurationLineHeader(writer, header);
 
@@ -711,6 +725,8 @@ public enum Configuration {
             writeConfigurationLine(writer, LANGUAGE_ENTRY, language);
             writeConfigurationLine(writer, CHEAT_MENU_ENTRY, cheatMenuEnabled);
             writeConfigurationLine(writer, VSYNC_ENTRY, vsync.name);
+            writeConfigurationLine(writer, FONT_FAMILY_ENTRY, fontFamily);
+            writeConfigurationLine(writer, FONT_SIZE_ENTRY, fontSize);
             writeConfigurationLine(writer, SOUND_ENTRY, soundEnabled);
             writeConfigurationLine(writer, VIDEO_ENTRY, videoEnabled);
             writeConfigurationLine(writer, VIEW3D_ENTRY, view3dEnabled);
@@ -807,6 +823,14 @@ public enum Configuration {
 
     public VsyncMethod getVsyncMethod() {
         return vsync;
+    }
+    
+    public String getFontFamily() {
+        return fontFamily;
+    }
+    
+    public double getFontSize() {
+        return fontSize;
     }
     
     /**
@@ -1121,6 +1145,12 @@ public enum Configuration {
         this.vsync = vsync;
         writeNegatronInitialisationFile();
         writeMameInitialisationFile();
+    }
+    
+    public void updateFont(String family, double size) throws IOException, InterruptedException {
+        fontFamily = family;
+        fontSize = size;
+        writeNegatronInitialisationFile();
     }
 
     /**

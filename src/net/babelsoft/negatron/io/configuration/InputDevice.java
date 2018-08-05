@@ -15,32 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.babelsoft.negatron.view.control.form;
-
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+package net.babelsoft.negatron.io.configuration;
 
 /**
  *
  * @author capan
  */
-public class CheckField extends Field {
+public enum InputDevice {
+    NONE("none"),
+    KEYBOARD("keyboard"),
+    MOUSE("mouse"),
+    LIGHTGUN("lightgun"),
+    JOYSTICK("joystick");
     
-    protected final CheckBox checkBox;
+    final String name;
     
-    public CheckField(GridPane grid, int row, String text, String prompt) {
-        Label label = new Label(text);
-        grid.add(label, 0, row);
-        
-        checkBox = new CheckBox();
-        checkBox.setTooltip(new Tooltip(prompt));
-        grid.add(checkBox, 1, row);
-
-        // add dummy constraints for current row
-        RowConstraints constraints = new RowConstraints();
-        grid.getRowConstraints().add(constraints);
+    InputDevice(String name) {
+        this.name = name;
+    }
+    
+    @Override
+    public String toString() {
+        return name;
     }
 }

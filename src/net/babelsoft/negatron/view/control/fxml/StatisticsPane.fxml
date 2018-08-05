@@ -15,13 +15,13 @@
             <PieChart fx:id="pieChart3" legendVisible="false" />
             <PieChart fx:id="pieChart4" legendVisible="false" />
             <HBox alignment="TOP_CENTER" spacing="5.0">
-                <RadioButton mnemonicParsing="false" text="All" selected="true" onAction="#handleAllMode">
+                <RadioButton mnemonicParsing="false" text="%statistics.all" selected="true" onAction="#handleAllMode">
                     <toggleGroup>
                         <ToggleGroup fx:id="modeGroup" />
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton mnemonicParsing="false" text="Machine Only" toggleGroup="$modeGroup" onAction="#handleMachineOnlyMode" />
-                <RadioButton mnemonicParsing="false" text="Software Only" toggleGroup="$modeGroup" onAction="#handleSoftwareOnlyMode" />
+                <RadioButton mnemonicParsing="false" text="%statistics.machinesOnly" toggleGroup="$modeGroup" onAction="#handleMachineOnlyMode" />
+                <RadioButton mnemonicParsing="false" text="%statistics.softwareOnly" toggleGroup="$modeGroup" onAction="#handleSoftwareOnlyMode" />
             </HBox>
         </StackPane>
     </content>

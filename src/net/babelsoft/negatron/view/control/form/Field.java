@@ -33,6 +33,16 @@ import net.babelsoft.negatron.io.configuration.VsyncMethod;
  */
 public abstract class Field {
     
+    private static int rowCount;
+    
+    protected static int getRowCount() {
+        return rowCount++;
+    }
+    
+    public static void resetRowCount() {
+        rowCount = 0;
+    }
+    
     private void alert(Exception ex) {
         Logger.getLogger(Field.class.getName()).log(Level.SEVERE, null, ex);
         Alert alert = new Alert(
@@ -114,6 +124,14 @@ public abstract class Field {
         }
     }
     
+    protected void updateFont(String family, double size) {
+        try {
+            Configuration.Manager.updateFont(family, size);
+        } catch (IOException | InterruptedException ex) {
+            alert(ex);
+        }
+    }
+    
     protected void updateFolderPath(Property property, int index, String path) {
         try {
             Configuration.Manager.updateFolderPath(property, index, path);
@@ -141,6 +159,22 @@ public abstract class Field {
     protected void updateSoftwarePrimaryPath(Property property, String text) {
         try {
             Configuration.Manager.updateSoftwarePrimaryPath(property, text);
+        } catch (IOException | InterruptedException ex) {
+            alert(ex);
+        }
+    }
+    
+    protected void updateGlobalConfigurationSetting(String key, String value) {
+        try {
+            Configuration.Manager.updateGlobalConfigurationSetting(key, value);
+        } catch (IOException | InterruptedException ex) {
+            alert(ex);
+        }
+    }
+    
+    protected void updateGlobalConfigurationSetting(String key, boolean value) {
+        try {
+            Configuration.Manager.updateGlobalConfigurationSetting(key, value);
         } catch (IOException | InterruptedException ex) {
             alert(ex);
         }

@@ -30,17 +30,23 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Domain;
+import net.babelsoft.negatron.io.configuration.InputDevice;
 import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.form.ChdmanPathField;
 import net.babelsoft.negatron.view.control.form.CheatCheckField;
 import net.babelsoft.negatron.view.control.form.ExtrasRootPathField;
+import net.babelsoft.negatron.view.control.form.FontSelectionField;
+import net.babelsoft.negatron.view.control.form.GlobalConfigurationCheckField;
+import net.babelsoft.negatron.view.control.form.GlobalConfigurationChoiceField;
 import net.babelsoft.negatron.view.control.form.GridAdornment;
-import net.babelsoft.negatron.view.control.form.LanguageChoiceField;
 import net.babelsoft.negatron.view.control.form.MameIniField;
+import net.babelsoft.negatron.view.control.form.MameLanguageChoiceField;
 import net.babelsoft.negatron.view.control.form.MamePathField;
 import net.babelsoft.negatron.view.control.form.MultiPathField;
 import net.babelsoft.negatron.view.control.form.MultimediaRootPathField;
+import net.babelsoft.negatron.view.control.form.NegatronLanguageChoiceField;
+import net.babelsoft.negatron.view.control.form.NumberField;
 import net.babelsoft.negatron.view.control.form.SkinChoiceField;
 import net.babelsoft.negatron.view.control.form.VlcPathField;
 import net.babelsoft.negatron.view.control.form.VsyncChoiceField;
@@ -60,6 +66,8 @@ public class GlobalConfigurationPaneController implements Initializable {
     private Tab foldersTab;
     @FXML
     private Tab optionsTab;
+    @FXML
+    private Tab graphicsTab;
     
     @FXML
     private Label foldersLabel;
@@ -77,6 +85,10 @@ public class GlobalConfigurationPaneController implements Initializable {
     private GridPane optionsGrid;
     @FXML
     private GridPane optionsGrid2;
+    @FXML
+    private GridPane graphicsGrid;
+    @FXML
+    private GridPane graphicsGrid2;
 
     private MamePathField mameExec;
     private MameIniField mameIni;
@@ -127,7 +139,8 @@ public class GlobalConfigurationPaneController implements Initializable {
     private VsyncChoiceField vsync;
     
     private SkinChoiceField skin;
-    private LanguageChoiceField language;
+    private FontSelectionField font;
+    private NegatronLanguageChoiceField language;
     
     /**
      * Initializes the controller class.
@@ -154,70 +167,115 @@ public class GlobalConfigurationPaneController implements Initializable {
         
         // Folders: MAME column
         
-        mameExec        = new MamePathField     (foldersGrid,   0, isMess);
-        mameIni         = new MameIniField      (foldersGrid,   1, isMess);
-        chdmanExec      = new ChdmanPathField   (foldersGrid,   2);
+        int rowIdx = 0;
+        mameExec        = new MamePathField     (foldersGrid, rowIdx++, isMess);
+        mameIni         = new MameIniField      (foldersGrid, rowIdx++, isMess);
+        chdmanExec      = new ChdmanPathField   (foldersGrid, rowIdx++);
         
-        GridAdornment.insertSpacing             (foldersGrid,   3, SPACING);
-        artwork         = new MultiPathField    (foldersGrid,   4, Property.ARTWORK,          rb.getString("artwork"), rb.getString("artwork.tooltip"));
-        cheat           = new MultiPathField    (foldersGrid,   5, Property.CHEAT,            rb.getString("cheat"), rb.getString("cheat.tooltip"), compressedArchives, "*.7z; *.zip");
-        controller      = new MultiPathField    (foldersGrid,   6, Property.CONTROLLER,       rb.getString("controllerDefinition"), rb.getString("controllerDefinition.tooltip"));
-        rom             = new MultiPathField    (foldersGrid,   7, Property.ROM,              rb.getString("rom"), rb.getString("rom.tooltip"));
-        sample          = new MultiPathField    (foldersGrid,   8, Property.SAMPLE,           rb.getString("sample"), rb.getString("sample.tooltip"));
+        GridAdornment.insertSpacing             (foldersGrid, rowIdx++, SPACING);
+        artwork         = new MultiPathField    (foldersGrid, rowIdx++, Property.ARTWORK,          rb.getString("artwork"), rb.getString("artwork.tooltip"));
+        cheat           = new MultiPathField    (foldersGrid, rowIdx++, Property.CHEAT,            rb.getString("cheat"), rb.getString("cheat.tooltip"), compressedArchives, "*.7z; *.zip");
+        controller      = new MultiPathField    (foldersGrid, rowIdx++, Property.CONTROLLER,       rb.getString("controllerDefinition"), rb.getString("controllerDefinition.tooltip"));
+        rom             = new MultiPathField    (foldersGrid, rowIdx++, Property.ROM,              rb.getString("rom"), rb.getString("rom.tooltip"));
+        sample          = new MultiPathField    (foldersGrid, rowIdx++, Property.SAMPLE,           rb.getString("sample"), rb.getString("sample.tooltip"));
         
-        GridAdornment.insertSpacing             (foldersGrid,   9, SPACING);
-        GridAdornment.insertTitle               (foldersGrid,  10, SPACING,                   isMess ? rb.getString("mameExtrasHistoryVersioning").replaceFirst("MAME", "MESS") : rb.getString("mameExtrasHistoryVersioning"));
-        information     = new MultiPathField    (foldersGrid,  11, Property.INFORMATION,      rb.getString("information"), rb.getString("information.tooltip"), rb.getString("dataFiles"), "*.dat");
-        folderView      = new MultiPathField    (foldersGrid,  12, Property.FOLDER_VIEW,      rb.getString("folderView"), rb.getString("folderView.tooltip"));
+        GridAdornment.insertSpacing             (foldersGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (foldersGrid, rowIdx++, SPACING,                   isMess ? rb.getString("mameExtrasHistoryVersioning").replaceFirst("MAME", "MESS") : rb.getString("mameExtrasHistoryVersioning"));
+        information     = new MultiPathField    (foldersGrid, rowIdx++, Property.INFORMATION,      rb.getString("information"), rb.getString("information.tooltip"), rb.getString("dataFiles"), "*.dat");
+        folderView      = new MultiPathField    (foldersGrid, rowIdx++, Property.FOLDER_VIEW,      rb.getString("folderView"), rb.getString("folderView.tooltip"));
         
-        GridAdornment.insertSpacing             (foldersGrid,  13, SPACING);
-        GridAdornment.insertTitle               (foldersGrid,  14, SPACING,                   rb.getString("miscellaneous"));
-        vlcPath         = new VlcPathField      (foldersGrid,  15);
+        GridAdornment.insertSpacing             (foldersGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (foldersGrid, rowIdx++, SPACING,                   rb.getString("miscellaneous"));
+        vlcPath         = new VlcPathField      (foldersGrid, rowIdx++);
         
         // Folders: EXTRAs column
         
-        mameExtras      = new ExtrasRootPathField    (foldersGrid2,  0, isMess);
-        mameMultimedia  = new MultimediaRootPathField(foldersGrid2,  1);
+        rowIdx = 0;
+        mameExtras      = new ExtrasRootPathField    (foldersGrid2, rowIdx++, isMess);
+        mameMultimedia  = new MultimediaRootPathField(foldersGrid2, rowIdx++);
         
-        GridAdornment.insertHeader              (foldersGrid2,  2, SPACING, Domain.EXTRAS_MACHINE_SOFTWARE);
-        icon            = new MultiPathField    (foldersGrid2,  3, Property.ICON,             rb.getString("icon"), rb.getString("icon.tooltip"), compressedArchives, "*.zip");
-        manual          = new MultiPathField    (foldersGrid2,  4, Property.MANUAL,           rb.getString("manual"), rb.getString("manual.tooltip"), compressedArchives, "*.zip");
-        snapshot        = new MultiPathField    (foldersGrid2,  5, Property.SNAPSHOT,         rb.getString("snapshot"), rb.getString("snapshot.tooltip"), compressedArchives, "*.zip");
-        title           = new MultiPathField    (foldersGrid2,  6, Property.TITLE,            rb.getString("title"), rb.getString("title.tooltip"), compressedArchives, "*.zip");
-        videoPreview    = new MultiPathField    (foldersGrid2,  7, Property.VIDEO_PREVIEW,    rb.getString("videoPreview"), rb.getString("videoPreview.tooltip"));
+        GridAdornment.insertHeader              (foldersGrid2, rowIdx++, SPACING, Domain.EXTRAS_MACHINE_SOFTWARE);
+        icon            = new MultiPathField    (foldersGrid2, rowIdx++, Property.ICON,             rb.getString("icon"), rb.getString("icon.tooltip"), compressedArchives, "*.zip");
+        manual          = new MultiPathField    (foldersGrid2, rowIdx++, Property.MANUAL,           rb.getString("manual"), rb.getString("manual.tooltip"), compressedArchives, "*.zip");
+        snapshot        = new MultiPathField    (foldersGrid2, rowIdx++, Property.SNAPSHOT,         rb.getString("snapshot"), rb.getString("snapshot.tooltip"), compressedArchives, "*.zip");
+        title           = new MultiPathField    (foldersGrid2, rowIdx++, Property.TITLE,            rb.getString("title"), rb.getString("title.tooltip"), compressedArchives, "*.zip");
+        videoPreview    = new MultiPathField    (foldersGrid2, rowIdx++, Property.VIDEO_PREVIEW,    rb.getString("videoPreview"), rb.getString("videoPreview.tooltip"));
         
-        GridAdornment.insertHeader              (foldersGrid2,  8, SPACING, Domain.EXTRAS_MACHINE_ONLY);
-        artworkPreview  = new MultiPathField    (foldersGrid2,  9, Property.ARTWORK_PREVIEW,  rb.getString("artworkPreview"), rb.getString("artworkPreview.tooltip"), compressedArchives, "*.zip");
-        boss            = new MultiPathField    (foldersGrid2, 10, Property.BOSS,             rb.getString("boss"), rb.getString("boss.tooltip"), compressedArchives, "*.zip");
-        cabinet         = new MultiPathField    (foldersGrid2, 11, Property.CABINET,          rb.getString("cabinet"), rb.getString("cabinet.tooltip"), compressedArchives, "*.zip");
-        controlPanel    = new MultiPathField    (foldersGrid2, 12, Property.CONTROL_PANEL,    rb.getString("controlPanel"), rb.getString("controlPanel.tooltip"), compressedArchives, "*.zip");
-        device          = new MultiPathField    (foldersGrid2, 13, Property.DEVICE,           rb.getString("device"), rb.getString("device.tooltip"), compressedArchives, "*.zip");
-        end             = new MultiPathField    (foldersGrid2, 14, Property.END,              rb.getString("end"), rb.getString("end.tooltip"), compressedArchives, "*.zip");
-        flyer           = new MultiPathField    (foldersGrid2, 15, Property.FLYER,            rb.getString("flyer"), rb.getString("flyer.tooltip"), compressedArchives, "*.zip");
-        gameOver        = new MultiPathField    (foldersGrid2, 16, Property.GAME_OVER,        rb.getString("gameOver"), rb.getString("gameOver.tooltip"), compressedArchives, "*.zip");
-        howTo           = new MultiPathField    (foldersGrid2, 17, Property.HOW_TO,           rb.getString("howTo"), rb.getString("howTo.tooltip"), compressedArchives, "*.zip");
-        logo            = new MultiPathField    (foldersGrid2, 18, Property.LOGO,             rb.getString("logo"), rb.getString("logo.tooltip"), compressedArchives, "*.zip");
-        marquee         = new MultiPathField    (foldersGrid2, 19, Property.MARQUEE,          rb.getString("marquee"), rb.getString("marquee.tooltip"), compressedArchives, "*.zip");
-        pcb             = new MultiPathField    (foldersGrid2, 20, Property.PCB,              rb.getString("pcb"), rb.getString("pcb.tooltip"), compressedArchives, "*.zip");
-        score           = new MultiPathField    (foldersGrid2, 21, Property.SCORE,            rb.getString("score"), rb.getString("score.tooltip"), compressedArchives, "*.zip");
-        select          = new MultiPathField    (foldersGrid2, 22, Property.SELECT,           rb.getString("select"), rb.getString("select.tooltip"), compressedArchives, "*.zip");
-        soundtrack      = new MultiPathField    (foldersGrid2, 23, Property.SOUNDTRACK,       rb.getString("soundtrack"), rb.getString("soundtrack.tooltip"));
-        versus          = new MultiPathField    (foldersGrid2, 24, Property.VERSUS,           rb.getString("versus"), rb.getString("versus.tooltip"), compressedArchives, "*.zip");
+        GridAdornment.insertHeader              (foldersGrid2, rowIdx++, SPACING, Domain.EXTRAS_MACHINE_ONLY);
+        artworkPreview  = new MultiPathField    (foldersGrid2, rowIdx++, Property.ARTWORK_PREVIEW,  rb.getString("artworkPreview"), rb.getString("artworkPreview.tooltip"), compressedArchives, "*.zip");
+        boss            = new MultiPathField    (foldersGrid2, rowIdx++, Property.BOSS,             rb.getString("boss"), rb.getString("boss.tooltip"), compressedArchives, "*.zip");
+        cabinet         = new MultiPathField    (foldersGrid2, rowIdx++, Property.CABINET,          rb.getString("cabinet"), rb.getString("cabinet.tooltip"), compressedArchives, "*.zip");
+        controlPanel    = new MultiPathField    (foldersGrid2, rowIdx++, Property.CONTROL_PANEL,    rb.getString("controlPanel"), rb.getString("controlPanel.tooltip"), compressedArchives, "*.zip");
+        device          = new MultiPathField    (foldersGrid2, rowIdx++, Property.DEVICE,           rb.getString("device"), rb.getString("device.tooltip"), compressedArchives, "*.zip");
+        end             = new MultiPathField    (foldersGrid2, rowIdx++, Property.END,              rb.getString("end"), rb.getString("end.tooltip"), compressedArchives, "*.zip");
+        flyer           = new MultiPathField    (foldersGrid2, rowIdx++, Property.FLYER,            rb.getString("flyer"), rb.getString("flyer.tooltip"), compressedArchives, "*.zip");
+        gameOver        = new MultiPathField    (foldersGrid2, rowIdx++, Property.GAME_OVER,        rb.getString("gameOver"), rb.getString("gameOver.tooltip"), compressedArchives, "*.zip");
+        howTo           = new MultiPathField    (foldersGrid2, rowIdx++, Property.HOW_TO,           rb.getString("howTo"), rb.getString("howTo.tooltip"), compressedArchives, "*.zip");
+        logo            = new MultiPathField    (foldersGrid2, rowIdx++, Property.LOGO,             rb.getString("logo"), rb.getString("logo.tooltip"), compressedArchives, "*.zip");
+        marquee         = new MultiPathField    (foldersGrid2, rowIdx++, Property.MARQUEE,          rb.getString("marquee"), rb.getString("marquee.tooltip"), compressedArchives, "*.zip");
+        pcb             = new MultiPathField    (foldersGrid2, rowIdx++, Property.PCB,              rb.getString("pcb"), rb.getString("pcb.tooltip"), compressedArchives, "*.zip");
+        score           = new MultiPathField    (foldersGrid2, rowIdx++, Property.SCORE,            rb.getString("score"), rb.getString("score.tooltip"), compressedArchives, "*.zip");
+        select          = new MultiPathField    (foldersGrid2, rowIdx++, Property.SELECT,           rb.getString("select"), rb.getString("select.tooltip"), compressedArchives, "*.zip");
+        soundtrack      = new MultiPathField    (foldersGrid2, rowIdx++, Property.SOUNDTRACK,       rb.getString("soundtrack"), rb.getString("soundtrack.tooltip"));
+        versus          = new MultiPathField    (foldersGrid2, rowIdx++, Property.VERSUS,           rb.getString("versus"), rb.getString("versus.tooltip"), compressedArchives, "*.zip");
         
-        GridAdornment.insertHeader              (foldersGrid2, 25, SPACING, Domain.EXTRAS_SOFTWARE_ONLY);
-        boxArt          = new MultiPathField    (foldersGrid2, 26, Property.BOX_ART,          rb.getString("boxArt"), rb.getString("boxArt.tooltip"));
-        cover           = new MultiPathField    (foldersGrid2, 27, Property.COVER,            rb.getString("cover"), rb.getString("cover.tooltip"), compressedArchives, "*.zip");
-        media           = new MultiPathField    (foldersGrid2, 28, Property.MEDIA,            rb.getString("media"), rb.getString("media.tooltip"));
+        GridAdornment.insertHeader              (foldersGrid2, rowIdx++, SPACING, Domain.EXTRAS_SOFTWARE_ONLY);
+        boxArt          = new MultiPathField    (foldersGrid2, rowIdx++, Property.BOX_ART,          rb.getString("boxArt"), rb.getString("boxArt.tooltip"));
+        cover           = new MultiPathField    (foldersGrid2, rowIdx++, Property.COVER,            rb.getString("cover"), rb.getString("cover.tooltip"), compressedArchives, "*.zip");
+        media           = new MultiPathField    (foldersGrid2, rowIdx++, Property.MEDIA,            rb.getString("media"), rb.getString("media.tooltip"));
         
         // Options: MAME column
         
-        cheatCheck      = new CheatCheckField   (optionsGrid,   0, isMess);
-        vsync           = new VsyncChoiceField  (optionsGrid,   1, isMess);
+        rowIdx = 0;
+        cheatCheck      = new CheatCheckField   (optionsGrid, rowIdx++, isMess);
+        vsync           = new VsyncChoiceField  (optionsGrid, rowIdx++, isMess);
+        new MameLanguageChoiceField             (optionsGrid, rowIdx++);
+        
+        GridAdornment.insertSpacing             (optionsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (optionsGrid, rowIdx++, SPACING, "Global Input Options");
+        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "mouse");
+        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "joystick");
+        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "lightgun");
+        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "multikeyboard");
+        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "multimouse");
+        // Windows native only MAME options
+        if (Configuration.Manager.getGlobalConfiguration("global_inputs") != null)
+            new GlobalConfigurationCheckField   (optionsGrid, rowIdx++, "global_inputs");
+        
+        GridAdornment.insertSpacing             (optionsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (optionsGrid, rowIdx++, SPACING, "Light Gun Specific Options");
+        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "offscreen_reload");
+        // Windows native only MAME options
+        if (Configuration.Manager.getGlobalConfiguration("dual_lightgun") != null)
+            new GlobalConfigurationCheckField   (optionsGrid, rowIdx++, "dual_lightgun");        
         
         // Options: Negatron column
         
-        skin            = new SkinChoiceField   (optionsGrid2,  0);
-        language        = new LanguageChoiceField(optionsGrid2, 1);
+        rowIdx = 0;
+        skin            = new SkinChoiceField            (optionsGrid2, rowIdx++);
+        font            = new FontSelectionField         (optionsGrid2, rowIdx++);
+        language        = new NegatronLanguageChoiceField(optionsGrid2, rowIdx++);
+        
+        GridAdornment.insertSpacing              (optionsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle                (optionsGrid2, rowIdx++, SPACING, "Machine Input Specific Options");
+        InputDevice[] inputDevices = InputDevice.values();
+        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "paddle_device",     inputDevices);
+        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "adstick_device",    inputDevices);
+        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "pedal_device",      inputDevices);
+        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "dial_device",       inputDevices);
+        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "trackball_device",  inputDevices);
+        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "lightgun_device",   inputDevices);
+        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "positional_device", inputDevices);
+        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "mouse_device",      inputDevices);
+        
+        // Graphics
+        
+        rowIdx = 0;
+        GridAdornment.insertTitle                (graphicsGrid, rowIdx++, SPACING, "Screen Options");
+        new NumberField                          (graphicsGrid, rowIdx++, "brightness",         "%.2f", 0.0, 2.0, 0.5, 4, 0.1);
+        new NumberField                          (graphicsGrid, rowIdx++, "contrast",           "%.2f", 0.0, 2.0, 0.5, 4, 0.1);
+        new NumberField                          (graphicsGrid, rowIdx++, "gamma",              "%.2f", 0.0, 3.0, 0.5, 4, 0.1);
+        new NumberField                          (graphicsGrid, rowIdx++, "pause_brightness",   "%.2f", 0.0, 1.0, 0.1, 1, 0.05);
     }
     
     public void setOnRestart(Delegate delegate) {
