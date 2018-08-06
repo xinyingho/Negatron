@@ -57,7 +57,7 @@ To compile Negatron:
 2. Within this root folder, download the source code of Negatron, Negatron-Preloader, TwelveMonkeys, vlcj-experimental and OpenViewerFX using git. It's important to have them all inside the same root folder as some dependencies will only be available in \<root\>/Negatron/lib/ and the projects are configured with relative paths.
 3. Switch vlcj-experimental to its "experimental" branch with the command `git checkout experimental`.
 4. Ensure that you have the latest version of JDK 1.8. For now, Negatron won't work on Java 9 or newer, only on Java 8. Migration to Java 9+ will be done at a later time.
-5. The following instructions have been tested against Netbeans 8.2. But it should also work with other IDEs.
+5. The following instructions have been tested against Apache Netbeans 9.0. But it should also work with other IDEs.
 6. Open all the 5 Java projects in Netbeans. *Do not import them*, simply use "File > Open Projects...". Netbeans may issue some warnings. Ignore them as they will be solved by compiling the projects.
 7. Compile them in this order and you're done:
    1. TwelveMonkeys
