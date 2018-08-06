@@ -227,6 +227,7 @@ public class GlobalConfigurationPaneController implements Initializable {
         // Options: MAME column
         
         rowIdx = 0;
+        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "skip_gameinfo");
         cheatCheck      = new CheatCheckField   (optionsGrid, rowIdx++, isMess);
         vsync           = new VsyncChoiceField  (optionsGrid, rowIdx++, isMess);
         new MameLanguageChoiceField             (optionsGrid, rowIdx++);
