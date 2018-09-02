@@ -403,6 +403,8 @@ public enum Configuration {
             language = "";
         if (vsync == null)
             vsync = VsyncMethod.NONE;
+        if (fontFamily == null)
+            fontFamily = "";
         if (soundEnabled == null)
             soundEnabled = true;
         if (videoEnabled == null)
