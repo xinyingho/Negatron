@@ -279,7 +279,10 @@ public class MainController implements Initializable, AlertController, EditContr
         machineFilterWindow.setOnClose(() -> machineTreePane.setFilterButtonSelected(false));
         machineFolderViewWindow.setOnClose(() -> machineTreePane.setViewButtonSelected(false));
         softwareFilterWindow.setOnClose(() -> softwareTreePane.setFilterButtonSelected(false));
-        favouriteTreeWindow.setOnClose(() -> favouriteViewButton.setSelected(false));
+        favouriteTreeWindow.setOnClose(() -> {
+            favouriteViewButton.setSelected(false);
+            machineConfigurationWindow.hide();
+        });
         statisticsWindow.setOnClose(() -> statisticsButton.setSelected(false));
         globalConfigurationWindow.setOnClose(() -> globalConfigurationButton.setSelected(false));
         globalConfigurationWindow.setOnRestart(() -> { try {
@@ -306,8 +309,10 @@ public class MainController implements Initializable, AlertController, EditContr
         machineTreePane.setOnAction(() -> handleLaunchAction(new ActionEvent()));
         machineTreePane.setOnSpaceKeyPressed(() -> handleMachineConfigurationAction(null));
         machineTreePane.setOnTreeMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY)
+            if (event.getButton() == MouseButton.SECONDARY) {
                 handleMachineConfigurationAction(null);
+                machineConfigurationPane.setEditable(true);
+            }
         });
         machineTreePane.setOnMoreViews(selected -> {
             if (selected)
@@ -358,6 +363,7 @@ public class MainController implements Initializable, AlertController, EditContr
                 );
             }
         });
+        machineTreePane.setEditableControl(machineConfigurationPane);
         
         machineConfigurationPane.setOnDataUpdated(origin -> {
             if (displayingSoftwareConfiguration == null && !isDoingMachineTreeWiseOperation && !isDoingSoftwareTreeWiseOperation)
@@ -505,21 +511,19 @@ public class MainController implements Initializable, AlertController, EditContr
                 softwareConfigurationWindow.setContent(softwareConfigurationTable);
             }
             favouriteTreePane.cancelEdit();
+            if (machineConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+                machineConfigurationWindow.close();
             if (favouriteViewButton.isSelected())
                 favouriteViewButton.setSelected(false);
             displayingSoftwareConfiguration = null;
             
-            if (softwareConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
-                softwareConfigurationTable.requestTableFocus();
-            else if (softwareTreeWindow.getDisplayMode() != DisplayMode.HIDDEN)
-                softwareTreePane.requestTreeFocus();
-            else
-                machineTreePane.requestTreeFocus();
+            machineTreePane.requestTreeFocus();
             
             machineInformationPane.setFavouriteEnabled(true);
             softwareInformationWindow.setFavouriteEnabled(true);
         });
         favouriteTreePane.setEditController(this);
+        favouriteTreePane.setEditableControl(machineConfigurationPane);
         favouriteTreePane.setOnCommitted(favourite -> {
             SoftwareConfiguration softwareConfiguration = favourite.getSoftwareConfiguration();
             if (softwareConfiguration != null) {
@@ -1322,11 +1326,14 @@ public class MainController implements Initializable, AlertController, EditContr
     private void handleFavouriteViewAction(ActionEvent event) {
         if (favouriteViewButton.isSelected()) {
             favouriteTreeWindow.showMaximised();
+            machineTreePane.clearSelection();
+            favouriteTreePane.clearSelection();
             
             machineInformationPane.setFavouriteEnabled(false);
             softwareInformationWindow.setFavouriteEnabled(false);
         } else {
             favouriteTreeWindow.close();
+            favouriteTreePane.clearSelection();
             
             machineInformationPane.setFavouriteEnabled(true);
             softwareInformationWindow.setFavouriteEnabled(true);

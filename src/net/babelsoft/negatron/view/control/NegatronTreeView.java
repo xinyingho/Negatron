@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -28,6 +29,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import net.babelsoft.negatron.util.Editable;
 import net.babelsoft.negatron.util.function.Delegate;
 
 /**
@@ -39,6 +41,7 @@ public abstract class NegatronTreeView<T> extends TreeTableView<T> implements In
     private Delegate onAction;
     protected TreeItem<T> selectedTreeItem;
     private Consumer<Boolean> onTreeWiseOperation;
+    protected Editable editableControl;
     
     public NegatronTreeView() {
         super();
@@ -123,6 +126,17 @@ public abstract class NegatronTreeView<T> extends TreeTableView<T> implements In
     
     public void collapseAll() {
         setAllExpanded(false);
+    }
+    
+    public void setEditableControl(Editable editable) {
+        this.editableControl = editable;
+    }
+    
+    @Override
+    public void edit(int i, TreeTableColumn<T, ?> ttc) {
+        super.edit(i, ttc);
+        if (editableControl != null)
+            editableControl.setEditable(true);
     }
     
     protected void handleAction() {

@@ -17,11 +17,10 @@
  */
 package net.babelsoft.negatron.controller;
 
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.beans.InvalidationListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -47,6 +46,8 @@ public class SlotController extends ChoiceController<SlotOption> {
     private HBox biosHBox;
     @FXML
     private ChoiceBox<BiosSet> biosChoiceBox;
+    @FXML
+    private Button biosDefaultButton;
     
     @Override
     public void setMachineComponent(Choice<SlotOption> choice) {
@@ -96,6 +97,13 @@ public class SlotController extends ChoiceController<SlotOption> {
         super.dispose();
         if (biosChoiceBoxListener != null)
             biosChoiceBox.getSelectionModel().selectedItemProperty().removeListener(biosChoiceBoxListener);
+    }
+    
+    @Override
+    public void setEditable(boolean editable) {
+        super.setEditable(editable);
+        biosChoiceBox.setDisable(!editable);
+        biosDefaultButton.setVisible(editable);
     }
     
     @FXML

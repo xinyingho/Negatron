@@ -41,6 +41,7 @@ import net.babelsoft.negatron.model.item.Software.Requirement;
 import net.babelsoft.negatron.model.item.SoftwareList;
 import net.babelsoft.negatron.theme.Components;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.Editable;
 import net.babelsoft.negatron.util.function.TriConsumer;
 import net.babelsoft.negatron.view.control.adapter.FocusData;
 import net.babelsoft.negatron.view.control.form.Control;
@@ -49,7 +50,7 @@ import net.babelsoft.negatron.view.control.form.Control;
  *
  * @author capan
  */
-public class MachineConfigurationPane extends GridPane {
+public class MachineConfigurationPane extends GridPane implements Editable {
     
     private static final Image NEW_BADGE = new Image(Components.class.getResourceAsStream(
         "/net/babelsoft/negatron/resource/icon/device/new.png"
@@ -64,6 +65,7 @@ public class MachineConfigurationPane extends GridPane {
     private FocusData focusData;
     private boolean mustDoAnimation;
     private Consumer<String> onDataUpdated;
+    private boolean editable;
     
     private final Label noSettingsLabel;
     
@@ -75,6 +77,8 @@ public class MachineConfigurationPane extends GridPane {
         noSettingsLabel = new Label(Language.Manager.getString("noSettings"));
         noSettingsLabel.setAlignment(Pos.CENTER);
         noSettingsLabel.setMaxWidth(Double.MAX_VALUE);
+        
+        editable = true;
     }
     
     private void reset() {
@@ -88,6 +92,10 @@ public class MachineConfigurationPane extends GridPane {
         );
         controllers.clear();
         getChildren().clear();
+    }
+    
+    private void performEditable() {
+        controllers.forEach(ctl -> ctl.setEditable(editable));
     }
     
     public void setOnDataUpdated(Consumer<String> consumer) {
@@ -173,6 +181,8 @@ public class MachineConfigurationPane extends GridPane {
                 controller.requestFocus(focusData);
             }
         );
+        
+        performEditable();
         
         if (mustDoAnimation || controllers.size() <= 0) {
             if (controllers.size() <= 0) {
@@ -308,5 +318,11 @@ public class MachineConfigurationPane extends GridPane {
         ).ifPresent(
             device -> device.showList()
         );
+    }
+    
+    @Override
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        performEditable();
     }
 }

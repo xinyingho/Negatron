@@ -82,6 +82,8 @@ public class DeviceController extends MachineComponentController<Device, String,
     private Button createButton;
     @FXML
     private ToggleButton listButton;
+    @FXML
+    private Button browseButton;
     
     private ChangeListener<String> textListener;
     private ChangeListener<String> valueListener;
@@ -183,6 +185,17 @@ public class DeviceController extends MachineComponentController<Device, String,
         List<String> extensions = device.getExtensions();
         if (!extensions.contains("*.zip"))
             extensions.add("*.zip");
+    }
+    
+    @Override
+    public void setEditable(boolean editable) {
+        text.setDisable(!editable);
+        combo.setDisable(!editable);
+        if (createButton != null)
+            createButton.setVisible(editable);
+        if (listButton != null)
+            listButton.setVisible(editable);
+        browseButton.setVisible(editable);
     }
 
     @Override

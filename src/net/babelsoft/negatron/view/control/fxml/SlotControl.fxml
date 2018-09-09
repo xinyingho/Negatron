@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        <HBox alignment="CENTER_LEFT" spacing="5.0">
            <children>
                <ChoiceBox fx:id="choiceBox" maxWidth="1.7976931348623157E308" HBox.hgrow="SOMETIMES" />
-               <Button mnemonicParsing="false" onAction="#handleDefaultAction" text="%default" />
+               <Button fx:id="defaultButton" mnemonicParsing="false" onAction="#handleDefaultAction" text="%default" />
            </children>
        </HBox>
        <HBox fx:id="biosHBox" alignment="CENTER_LEFT" spacing="5.0">
@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </ImageView>
             <Label text="bios" />
                <ChoiceBox fx:id="biosChoiceBox" maxWidth="1.7976931348623157E308" HBox.hgrow="SOMETIMES" />
-               <Button mnemonicParsing="false" onAction="#handleDefaultBiosAction" text="%default" />
+               <Button fx:id="biosDefaultButton" mnemonicParsing="false" onAction="#handleDefaultBiosAction" text="%default" />
            </children>
        </HBox>
    </children>

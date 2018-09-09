@@ -55,6 +55,7 @@ import javafx.util.Duration;
 import net.babelsoft.negatron.model.favourites.Favourite;
 import net.babelsoft.negatron.model.favourites.Folder;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.Editable;
 import net.babelsoft.negatron.util.ReversedIterator;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem;
@@ -482,6 +483,13 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         onDragDone = delegate;
     }
     
+    @Override
+    public void edit(int i, TreeTableColumn<Favourite, ?> ttc) {
+        super.edit(i, ttc);
+        if (i < 0)
+            editableControl.setEditable(false);
+    }
+    
     public void cancelEdit() {
         edit(-1, null);
     }
@@ -507,9 +515,10 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
             if (getSelectionModel().isEmpty())
                 getSelectionModel().select(cell.getIndex());
             edit(cell.getIndex(), cell.getTableColumn());
-        } else if (event.getClickCount() == 1)
+        } else if (event.getClickCount() == 1) {
             getSelectionModel().clearAndSelect(cell.getIndex(), cell.getTableColumn());
-        else if (cell.getTreeTableRow().getItem() != null && cell.getTreeTableRow().getItem().getMachine() != null)
+            editableControl.setEditable(false);
+        } else if (cell.getTreeTableRow().getItem() != null && cell.getTreeTableRow().getItem().getMachine() != null)
             if (!cell.getTreeTableRow().getItem().mustMigrate())
                 super.handleMouseClicked(event);
             else

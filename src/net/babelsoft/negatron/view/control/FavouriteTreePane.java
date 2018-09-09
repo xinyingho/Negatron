@@ -28,6 +28,7 @@ import net.babelsoft.negatron.model.favourites.Favourite;
 import net.babelsoft.negatron.model.favourites.SoftwareConfiguration;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.Editable;
 import net.babelsoft.negatron.util.function.Delegate;
 
 /**
@@ -59,6 +60,10 @@ public class FavouriteTreePane extends SplitPane {
         controller.setEditController(editController);
     }
     
+    public void setEditableControl(Editable editable) {
+        controller.setEditableControl(editable);
+    }
+    
     public boolean isEditing() {
         return controller.isEditing();
     }
@@ -73,6 +78,10 @@ public class FavouriteTreePane extends SplitPane {
     
     public boolean isEditingConfiguration() {
         return controller.isEditingConfiguration();
+    }
+    
+    public void clearSelection() {
+        controller.clearSelection();
     }
     
     public void setOnCommitted(Consumer<Favourite> onCommitted) {

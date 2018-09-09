@@ -24,13 +24,14 @@ import javafx.beans.property.Property;
 import javafx.fxml.Initializable;
 import net.babelsoft.negatron.model.component.MachineComponent;
 import net.babelsoft.negatron.util.Disposable;
+import net.babelsoft.negatron.util.Editable;
 import net.babelsoft.negatron.view.control.adapter.FocusData;
 
 /**
  *
  * @author capan
  */
-public abstract class MachineComponentController<T extends MachineComponent<S, P>, S, P extends Property<S>> implements Initializable, Disposable {
+public abstract class MachineComponentController<T extends MachineComponent<S, P>, S, P extends Property<S>> implements Initializable, Editable, Disposable {
 
     private T machineComponent;
     private Consumer<String> onDataUpdated;

@@ -60,6 +60,7 @@ import net.babelsoft.negatron.model.favourites.Separator;
 import net.babelsoft.negatron.model.favourites.SoftwareConfiguration;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.Editable;
 import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.FavouriteTreeView;
@@ -142,6 +143,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     private FavouriteTreeTableCell hoveredCell;
     private FavouriteTreeTableCell editingCell;
     private EditController editController;
+    private Editable editableControl;
     private boolean isInserting;
     private boolean committing;
     private boolean isHidingMachineList;
@@ -253,6 +255,8 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
             root.setExpanded(true);
             root.getValue().setIcon(rootIcon);
             treeView.setRoot(root);
+            if (editableControl != null)
+                editableControl.setEditable(true);
         }
         
         initialTree = null;
@@ -265,6 +269,11 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     
     public void setEditController(EditController controller) {
         editController = controller;
+    }
+    
+    public void setEditableControl(Editable editable) {
+        editableControl = editable;
+        treeView.setEditableControl(editable);
     }
     
     public void setHoveredCell(FavouriteTreeTableCell hoveredCell) {
@@ -289,6 +298,10 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     
     public boolean isEditingConfiguration() {
         return editingCell != null && editingCell instanceof MachineConfigurationTreeTableCell;
+    }
+
+    public void clearSelection() {
+        treeView.getSelectionModel().clearSelection();
     }
     
     public void setOnCommitted(Consumer<Favourite> onCommitted) {

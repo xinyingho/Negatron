@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 import javafx.beans.InvalidationListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.SingleSelectionModel;
 import net.babelsoft.negatron.model.Option;
@@ -41,6 +42,8 @@ public class ChoiceController<T extends Option<T>> extends MachineComponentContr
     
     @FXML
     private ChoiceBox<T> choiceBox;
+    @FXML
+    private Button defaultButton;
 
     /**
      * Initializes the controller class.
@@ -98,6 +101,12 @@ public class ChoiceController<T extends Option<T>> extends MachineComponentContr
             return true;
         } else
             return false;
+    }
+    
+    @Override
+    public void setEditable(boolean editable) {
+        choiceBox.setDisable(!editable);
+        defaultButton.setVisible(editable);
     }
 
     @FXML

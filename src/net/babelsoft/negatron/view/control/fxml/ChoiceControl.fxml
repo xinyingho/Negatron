@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <fx:root type="javafx.scene.layout.HBox" alignment="CENTER_LEFT" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.ChoiceController">
    <children>
       <ChoiceBox fx:id="choiceBox" HBox.hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
-      <Button mnemonicParsing="false" onAction="#handleDefaultAction" text="%default" />
+      <Button fx:id="defaultButton" mnemonicParsing="false" onAction="#handleDefaultAction" text="%default" />
    </children>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

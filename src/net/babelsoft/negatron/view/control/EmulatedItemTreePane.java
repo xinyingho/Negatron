@@ -35,6 +35,7 @@ import net.babelsoft.negatron.controller.EmulatedItemTreePaneController;
 import net.babelsoft.negatron.controller.FilterPaneController;
 import net.babelsoft.negatron.model.item.EmulatedItem;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.Editable;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.tree.SortableTreeItem;
 
@@ -187,5 +188,9 @@ public class EmulatedItemTreePane<T extends EmulatedItem<T>> extends VBox {
     
     public void setFolderVisible(SortableTreeItem<T> folder, boolean visible) {
         controller.setFolderVisible(folder, visible);
+    }
+
+    public void setEditableControl(Editable editable) {
+        tree.setEditableControl(editable);
     }
 }

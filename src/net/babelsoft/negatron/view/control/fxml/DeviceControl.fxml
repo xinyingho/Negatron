@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <ComboBox fx:id="combo" editable="true" HBox.hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
       <Button fx:id="createButton" mnemonicParsing="false" onAction="#handleCreateAction" text="%create..." />
       <ToggleButton fx:id="listButton" mnemonicParsing="false" text="%list..." />
-      <Button mnemonicParsing="false" onAction="#handleBrowseAction" text="%browse..." />
+      <Button fx:id="browseButton" mnemonicParsing="false" onAction="#handleBrowseAction" text="%browse..." />
    </children>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
