@@ -22,6 +22,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -36,17 +38,19 @@ import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.form.ChdmanPathField;
 import net.babelsoft.negatron.view.control.form.CheatCheckField;
 import net.babelsoft.negatron.view.control.form.ExtrasRootPathField;
+import net.babelsoft.negatron.view.control.form.FloatingNumberField;
 import net.babelsoft.negatron.view.control.form.FontSelectionField;
-import net.babelsoft.negatron.view.control.form.GlobalConfigurationCheckField;
-import net.babelsoft.negatron.view.control.form.GlobalConfigurationChoiceField;
+import net.babelsoft.negatron.view.control.form.GenericCheckField;
+import net.babelsoft.negatron.view.control.form.GenericChoiceField;
 import net.babelsoft.negatron.view.control.form.GridAdornment;
+import net.babelsoft.negatron.view.control.form.IntegerNumberField;
+import net.babelsoft.negatron.view.control.form.KeyField;
 import net.babelsoft.negatron.view.control.form.MameIniField;
 import net.babelsoft.negatron.view.control.form.MameLanguageChoiceField;
 import net.babelsoft.negatron.view.control.form.MamePathField;
 import net.babelsoft.negatron.view.control.form.MultiPathField;
 import net.babelsoft.negatron.view.control.form.MultimediaRootPathField;
 import net.babelsoft.negatron.view.control.form.NegatronLanguageChoiceField;
-import net.babelsoft.negatron.view.control.form.NumberField;
 import net.babelsoft.negatron.view.control.form.SkinChoiceField;
 import net.babelsoft.negatron.view.control.form.VlcPathField;
 import net.babelsoft.negatron.view.control.form.VsyncChoiceField;
@@ -67,6 +71,8 @@ public class GlobalConfigurationPaneController implements Initializable {
     @FXML
     private Tab optionsTab;
     @FXML
+    private Tab inputsTab;
+    @FXML
     private Tab graphicsTab;
     
     @FXML
@@ -85,6 +91,10 @@ public class GlobalConfigurationPaneController implements Initializable {
     private GridPane optionsGrid;
     @FXML
     private GridPane optionsGrid2;
+    @FXML
+    private GridPane inputsGrid;
+    @FXML
+    private GridPane inputsGrid2;
     @FXML
     private GridPane graphicsGrid;
     @FXML
@@ -141,6 +151,16 @@ public class GlobalConfigurationPaneController implements Initializable {
     private SkinChoiceField skin;
     private FontSelectionField font;
     private NegatronLanguageChoiceField language;
+    
+    private GenericCheckField keepaspect;
+    private GenericCheckField unevenstretch;
+    private GenericCheckField intoverscan;
+    private IntegerNumberField intscalex;
+    private IntegerNumberField intscaley;
+    
+    private GenericCheckField throttle;
+    private GenericCheckField sleep;
+    private FloatingNumberField speed;
     
     /**
      * Initializes the controller class.
@@ -227,28 +247,12 @@ public class GlobalConfigurationPaneController implements Initializable {
         // Options: MAME column
         
         rowIdx = 0;
-        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "skip_gameinfo");
+        new GenericCheckField       (optionsGrid, rowIdx++, "skip_gameinfo");
         cheatCheck      = new CheatCheckField   (optionsGrid, rowIdx++, isMess);
         vsync           = new VsyncChoiceField  (optionsGrid, rowIdx++, isMess);
         new MameLanguageChoiceField             (optionsGrid, rowIdx++);
         
         GridAdornment.insertSpacing             (optionsGrid, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (optionsGrid, rowIdx++, SPACING, "Global Input Options");
-        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "mouse");
-        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "joystick");
-        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "lightgun");
-        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "multikeyboard");
-        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "multimouse");
-        // Windows native only MAME options
-        if (Configuration.Manager.getGlobalConfiguration("global_inputs") != null)
-            new GlobalConfigurationCheckField   (optionsGrid, rowIdx++, "global_inputs");
-        
-        GridAdornment.insertSpacing             (optionsGrid, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (optionsGrid, rowIdx++, SPACING, "Light Gun Specific Options");
-        new GlobalConfigurationCheckField       (optionsGrid, rowIdx++, "offscreen_reload");
-        // Windows native only MAME options
-        if (Configuration.Manager.getGlobalConfiguration("dual_lightgun") != null)
-            new GlobalConfigurationCheckField   (optionsGrid, rowIdx++, "dual_lightgun");        
         
         // Options: Negatron column
         
@@ -257,26 +261,119 @@ public class GlobalConfigurationPaneController implements Initializable {
         font            = new FontSelectionField         (optionsGrid2, rowIdx++);
         language        = new NegatronLanguageChoiceField(optionsGrid2, rowIdx++);
         
-        GridAdornment.insertSpacing              (optionsGrid2, rowIdx++, SPACING);
-        GridAdornment.insertTitle                (optionsGrid2, rowIdx++, SPACING, "Machine Input Specific Options");
+        GridAdornment.insertSpacing             (optionsGrid2, rowIdx++, SPACING);
+        
+        // Inputs
+        
+        rowIdx = 0;
+        GridAdornment.insertTitle               (inputsGrid, rowIdx++, SPACING, "Global Input Options");
+        new GenericCheckField                   (inputsGrid, rowIdx++, "mouse");
+        new GenericCheckField                   (inputsGrid, rowIdx++, "joystick");
+        new GenericCheckField                   (inputsGrid, rowIdx++, "lightgun");
+        new GenericCheckField                   (inputsGrid, rowIdx++, "multikeyboard");
+        new GenericCheckField                   (inputsGrid, rowIdx++, "multimouse");
+        // Windows native only MAME options
+        if (Configuration.Manager.getGlobalConfiguration("global_inputs") != null)
+            new GenericCheckField               (inputsGrid, rowIdx++, "global_inputs");
+        
+        GridAdornment.insertSpacing             (inputsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (inputsGrid, rowIdx++, SPACING, "Coin Specific Options");
+        new GenericCheckField                   (inputsGrid, rowIdx++, "coin_lockout");
+        new IntegerNumberField                  (inputsGrid, rowIdx++, "coin_impulse",                 0, 60, 10, 9, 1);
+        
+        GridAdornment.insertSpacing             (inputsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (inputsGrid, rowIdx++, SPACING, "Light Gun Specific Options");
+        new GenericCheckField                   (inputsGrid, rowIdx++, "offscreen_reload");
+        // Windows native only MAME options
+        if (Configuration.Manager.getGlobalConfiguration("dual_lightgun") != null)
+            new GenericCheckField               (inputsGrid, rowIdx++, "dual_lightgun");
+        
+        rowIdx = 0;
+        GridAdornment.insertTitle               (inputsGrid2, rowIdx++, SPACING, "Machine Input Specific Options");
         InputDevice[] inputDevices = InputDevice.values();
-        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "paddle_device",     inputDevices);
-        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "adstick_device",    inputDevices);
-        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "pedal_device",      inputDevices);
-        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "dial_device",       inputDevices);
-        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "trackball_device",  inputDevices);
-        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "lightgun_device",   inputDevices);
-        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "positional_device", inputDevices);
-        new GlobalConfigurationChoiceField<InputDevice>(optionsGrid2, rowIdx++, "mouse_device",      inputDevices);
+        new GenericChoiceField<InputDevice>     (inputsGrid2, rowIdx++, "paddle_device",     inputDevices);
+        new GenericChoiceField<InputDevice>     (inputsGrid2, rowIdx++, "adstick_device",    inputDevices);
+        new GenericChoiceField<InputDevice>     (inputsGrid2, rowIdx++, "pedal_device",      inputDevices);
+        new GenericChoiceField<InputDevice>     (inputsGrid2, rowIdx++, "dial_device",       inputDevices);
+        new GenericChoiceField<InputDevice>     (inputsGrid2, rowIdx++, "trackball_device",  inputDevices);
+        new GenericChoiceField<InputDevice>     (inputsGrid2, rowIdx++, "lightgun_device",   inputDevices);
+        new GenericChoiceField<InputDevice>     (inputsGrid2, rowIdx++, "positional_device", inputDevices);
+        new GenericChoiceField<InputDevice>     (inputsGrid2, rowIdx++, "mouse_device",      inputDevices);
+        //new KeyField                            (inputsGrid2, rowIdx++, "uimodekey");
         
         // Graphics
         
         rowIdx = 0;
-        GridAdornment.insertTitle                (graphicsGrid, rowIdx++, SPACING, "Screen Options");
-        new NumberField                          (graphicsGrid, rowIdx++, "brightness",         "%.2f", 0.0, 2.0, 0.5, 4, 0.1);
-        new NumberField                          (graphicsGrid, rowIdx++, "contrast",           "%.2f", 0.0, 2.0, 0.5, 4, 0.1);
-        new NumberField                          (graphicsGrid, rowIdx++, "gamma",              "%.2f", 0.0, 3.0, 0.5, 4, 0.1);
-        new NumberField                          (graphicsGrid, rowIdx++, "pause_brightness",   "%.2f", 0.0, 1.0, 0.1, 1, 0.05);
+        GridAdornment.insertTitle               (graphicsGrid, rowIdx++, SPACING, "Screen Options");
+        new FloatingNumberField                 (graphicsGrid, rowIdx++, "brightness",         "%.2f", 0.0, 2.0, 0.5, 4, 0.1);
+        new FloatingNumberField                 (graphicsGrid, rowIdx++, "contrast",           "%.2f", 0.0, 2.0, 0.5, 4, 0.1);
+        new FloatingNumberField                 (graphicsGrid, rowIdx++, "gamma",              "%.2f", 0.0, 3.0, 0.5, 4, 0.1);
+        new FloatingNumberField                 (graphicsGrid, rowIdx++, "pause_brightness",   "%.2f", 0.0, 1.0, 0.1, 1, 0.05);
+        
+        GridAdornment.insertSpacing             (graphicsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (graphicsGrid, rowIdx++, SPACING, "Rendering Options");
+        keepaspect = new GenericCheckField      (graphicsGrid, rowIdx++, "keepaspect");
+        unevenstretch = new GenericCheckField   (graphicsGrid, rowIdx++, "unevenstretch");
+        new GenericCheckField                   (graphicsGrid, rowIdx++, "unevenstretchx");
+        new GenericCheckField                   (graphicsGrid, rowIdx++, "unevenstretchy");
+        new GenericCheckField                   (graphicsGrid, rowIdx++, "autostretchxy");
+        intoverscan = new GenericCheckField     (graphicsGrid, rowIdx++, "intoverscan");
+        intscalex = new IntegerNumberField      (graphicsGrid, rowIdx++, "intscalex",                 0, 10, 2, 1, 1);
+        intscaley = new IntegerNumberField      (graphicsGrid, rowIdx++, "intscaley",                 0, 10, 2, 1, 1);
+        
+        InvalidationListener listener = (o) -> {
+            if (keepaspect.isSelected() || unevenstretch.isSelected()) {
+                intoverscan.setDisable(true);
+                intscalex.setDisable(true);
+                intscaley.setDisable(true);
+            } else {
+                intoverscan.setDisable(false);
+                intscalex.setDisable(false);
+                intscaley.setDisable(false);
+            }
+        };
+        listener.invalidated(null);
+        keepaspect.selectedProperty().addListener(listener);
+        unevenstretch.selectedProperty().addListener(listener);
+        
+        GridAdornment.insertSpacing             (graphicsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (graphicsGrid, rowIdx++, SPACING, "Vector Options");
+        new FloatingNumberField                 (graphicsGrid, rowIdx++, "beam_width_min",          "%.2f", 0.0, 1.0, 0.1, 1, 0.1);
+        new FloatingNumberField                 (graphicsGrid, rowIdx++, "beam_width_max",          "%.2f", 1.0, 10.0, 1.0, 5, 0.1);
+        new FloatingNumberField                 (graphicsGrid, rowIdx++, "beam_intensity_weight",   "%.2f", -10.0, 10.0, 2.0, 5, 0.1);
+        new FloatingNumberField                 (graphicsGrid, rowIdx++, "flicker",                 "%.2f", 0.0, 100.0, 10, 4, 1.0);
+        
+        rowIdx = 0;
+        GridAdornment.insertTitle               (graphicsGrid2, rowIdx++, SPACING, "Performance Options");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "autoframeskip");
+        new IntegerNumberField                  (graphicsGrid2, rowIdx++, "frameskip",                 0, 12, 2, 1, 1);
+        throttle = new GenericCheckField        (graphicsGrid2, rowIdx++, "throttle");
+        sleep = new GenericCheckField           (graphicsGrid2, rowIdx++, "sleep");
+        speed = new FloatingNumberField         (graphicsGrid2, rowIdx++, "speed",             "%.2f", 0.0, 4.0, 0.5, 4, 0.1);
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "refreshspeed");
+        throttle.selectedProperty().addListener((o, oV, newValue) -> {
+            sleep.setDisable(!newValue);
+            speed.setDisable(!newValue);
+        });
+        
+        GridAdornment.insertSpacing             (graphicsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (graphicsGrid2, rowIdx++, SPACING, "Rotation Options");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "rotate");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "ror");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "rol");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "autoror");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "autorol");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "flipx");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "flipy");
+        
+        GridAdornment.insertSpacing             (graphicsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (graphicsGrid2, rowIdx++, SPACING, "Artwork Options");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "artwork_crop");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_backdrops");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_overlays");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_bezels");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_cpanels");
+        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_marquees");
     }
     
     public void setOnRestart(Delegate delegate) {

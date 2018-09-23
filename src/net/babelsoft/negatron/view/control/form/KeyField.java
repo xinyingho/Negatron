@@ -17,25 +17,36 @@
  */
 package net.babelsoft.negatron.view.control.form;
 
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.view.control.adapter.KeyCodeConverter;
 
 /**
  *
  * @author capan
  */
-public class GlobalConfigurationCheckField extends CheckField {
+public class KeyField extends Field {
     
-    public GlobalConfigurationCheckField(GridPane grid, int row, String key) {
-        super(
-            grid, row,
-            Language.Manager.getString("globalConf." + key),
-            Language.Manager.tryGetString("globalConf." + key + ".tooltip")
-        );
-        checkBox.setSelected(Configuration.Manager.isGlobalConfiguration(key));
-        checkBox.selectedProperty().addListener(
-            (o, oV, newValue) -> updateGlobalConfigurationSetting(key, newValue)
-        );
+    private final TextField text;
+    
+    public KeyField(GridPane grid, int row, String key) {
+        Label label = new Label(Language.Manager.getString("globalConf." + key));
+        grid.add(label, 0, row);
+        
+        text = new TextField(Configuration.Manager.getGlobalConfiguration(key));
+        text.setTooltip(new Tooltip(Language.Manager.tryGetString("globalConf." + key + ".tooltip")));
+        text.setOnKeyReleased(evt -> {
+            String code = KeyCodeConverter.convert(evt.getCode());
+            text.setText(code);
+            evt.consume();
+        });
+        grid.add(text, 1, row);
+        
+        // TODO: enable this with low-level keyboard input management
+        text.setDisable(true);
     }
 }

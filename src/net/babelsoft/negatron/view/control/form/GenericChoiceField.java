@@ -28,9 +28,9 @@ import net.babelsoft.negatron.theme.Language;
  *
  * @author capan
  */
-public class GlobalConfigurationChoiceField<T extends Enum> extends ChoiceField<T> {
+public class GenericChoiceField<T extends Enum> extends ChoiceField<T> {
     
-    public GlobalConfigurationChoiceField(GridPane grid, int row, String key, T[] values) {
+    public GenericChoiceField(GridPane grid, int row, String key, T[] values) {
         super(
             grid, row, 
             Language.Manager.getString("globalConf." + key),

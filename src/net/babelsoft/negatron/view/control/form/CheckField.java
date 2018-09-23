@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.view.control.form;
 
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -42,5 +43,17 @@ public class CheckField extends Field {
         // add dummy constraints for current row
         RowConstraints constraints = new RowConstraints();
         grid.getRowConstraints().add(constraints);
+    }
+    
+    public ReadOnlyBooleanProperty selectedProperty() {
+        return checkBox.selectedProperty();
+    }
+    
+    public void setDisable(boolean value) {
+        checkBox.setDisable(value);
+    }
+    
+    public boolean isSelected() {
+        return checkBox.isSelected();
     }
 }

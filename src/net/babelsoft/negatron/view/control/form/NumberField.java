@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.view.control.form;
 
+import java.util.IllegalFormatConversionException;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
@@ -24,63 +25,59 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
 
 /**
  *
  * @author capan
  */
-public class NumberField extends Field {
+public abstract class NumberField<T extends Number> extends Field {
     
     private final HBox pane;
-    private final Slider slider;
-    private final Spinner<Double> spinner;
+    protected Slider slider;
+    protected Spinner<T> spinner;
     
-    private boolean updating;
+    protected boolean updating;
     
-    public NumberField(GridPane grid, int row, String key, String format, double minValue, double maxValue, double majorTickUnit, int minorTickCount, double step) {
+    protected NumberField() {
+        pane = new HBox(5.0);
+    }
+    
+    public void initialise(GridPane grid, int row, String key, String format) {
         Label label = new Label(Language.Manager.getString("globalConf." + key));
         grid.add(label, 0, row);
         
-        double currentValue = Double.parseDouble(Configuration.Manager.getGlobalConfiguration(key));
+        Tooltip tooltip = new Tooltip(Language.Manager.tryGetString("globalConf." + key + ".tooltip"));
         
-        slider = new Slider(minValue, maxValue, currentValue);
         slider.setMaxWidth(Double.MAX_VALUE);
         slider.setShowTickLabels(true);
         slider.setShowTickMarks(true);
         slider.setSnapToTicks(true);
-        slider.setMajorTickUnit(majorTickUnit);
-        slider.setMinorTickCount(minorTickCount);
-        slider.setTooltip(new Tooltip(Language.Manager.tryGetString("globalConf." + key + ".tooltip")));
+        slider.setTooltip(tooltip);
         
-        spinner = new Spinner<>(minValue, maxValue, currentValue, step);
         spinner.setEditable(true);
+        spinner.setTooltip(tooltip);
         
-        pane = new HBox(5.0);
         pane.getChildren().addAll(slider, spinner);
         HBox.setHgrow(slider, Priority.SOMETIMES);
         grid.add(pane, 1, row);
         
-        slider.valueProperty().addListener((o, oV, newValue) -> {
-            if (!updating) {
-                updating = true;
-                spinner.getValueFactory().setValue(newValue.doubleValue());
-                updateGlobalConfigurationSetting(key, String.format(format, newValue));
-                updating = false;
-            }
-        });
         spinner.valueProperty().addListener((o, oV, newValue) -> {
             if (!updating) {
                 updating = true;
-                slider.setValue(newValue);
-                updateGlobalConfigurationSetting(key, String.format(format, newValue));
+                slider.setValue(newValue.doubleValue());
+                try {
+                    updateGlobalConfigurationSetting(key, String.format(format, newValue));
+                } catch (IllegalFormatConversionException ex) {
+                    
+                }
                 updating = false;
             }
         });
-        spinner.getEditor().focusedProperty().addListener((o, oV, newValue) -> {
-            if (!newValue.booleanValue())
-                spinner.getValueFactory().setValue(Double.valueOf(spinner.getEditor().getText()));
-        });
+    }
+    
+    public void setDisable(boolean value) {
+        slider.setDisable(value);
+        spinner.setDisable(value);
     }
 }
