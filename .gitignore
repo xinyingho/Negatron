@@ -25,6 +25,9 @@ tomcat
 # Maven 
 target/
 
+# Gradle
+.gradle/
+
 # IntelliJ project files 
 *.iml
 *.iws
