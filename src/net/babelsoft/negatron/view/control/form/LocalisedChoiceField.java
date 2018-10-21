@@ -17,28 +17,19 @@
  */
 package net.babelsoft.negatron.view.control.form;
 
-import java.util.Arrays;
-import java.util.List;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
-import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
 
 /**
  *
  * @author capan
  */
-public class GenericChoiceField<T extends Enum> extends ChoiceField<T> {
+public class LocalisedChoiceField<T extends Enum> extends ValueChoiceField<T> {
     
-    public GenericChoiceField(GridPane grid, int row, String key, T[] values) {
-        super(
-            grid, row, 
-            Language.Manager.getString("globalConf." + key),
-            Language.Manager.tryGetString("globalConf." + key + ".tooltip")
-        );
+    public LocalisedChoiceField(GridPane grid, int row, String key, T[] values) {
+        super(grid, row, key, values);
         
-        List<T> list = Arrays.asList(values);
-        choiceBox.getItems().addAll(list);
         choiceBox.setConverter(new StringConverter<T>() {
             @Override
             public String toString(T object) {
@@ -55,17 +46,6 @@ public class GenericChoiceField<T extends Enum> extends ChoiceField<T> {
             public T fromString(String string) {
                 throw new UnsupportedOperationException("Should never be called.");
             }
-        });
-        
-        String init = Configuration.Manager.getGlobalConfiguration(key);
-        list.stream().filter(
-            constant -> init.equals(constant.toString())
-        ).findAny().ifPresent(
-            constant -> choiceBox.getSelectionModel().select(constant)
-        );
-        
-        choiceBox.getSelectionModel().selectedItemProperty().addListener((o, oV, newValue) -> {
-            updateGlobalConfigurationSetting(key, newValue.toString());
         });
     }
 }
