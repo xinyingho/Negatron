@@ -12,6 +12,8 @@ plugins {
 	id 'nebula.ospackage' version '5.0.2'
 }
 
+def negatronVersion = '0.99.4'
+
 // Define the main class for the application
 mainClassName = 'net.babelsoft.negatron.NegatronApp'
 
@@ -40,7 +42,7 @@ jar {
 		attributes(
 			'Manifest-Version'     	: '1.0',
 			'Implementation-Title' 	: 'Negatron',
-			'Implementation-Version': '0.99.5',
+			'Implementation-Version': negatronVersion,
 			'Implementation-Vendor'	: 'BabelSoft',
 			'JavaFX-Preloader-Class': 'net.babelsoft.negatron.preloader.NegatronPreloader',
 			'Permissions'			: 'all-permissions',
@@ -54,7 +56,7 @@ jar {
 ospackage {
 	packageName 'negatron'
 	packageDescription 'Negatron: a user-friendly front-end for MAME'
-	version '0.99.5'
+	version negatronVersion
 	release '1'
 	type= BINARY
 	license 'GPL-3'
@@ -64,11 +66,30 @@ ospackage {
 	user 'root'
 	permissionGroup 'root'
 	into '/opt/negatron'
-	url 'http://www.babelsoft.net/products/negatron/'
+	url 'http://www.babelsoft.net/products/negatron.htm'
 	from (configurations.compile) {
 		into('lib')
 	}
+	from ('lib/bcmail-jdk15on-152.jar') {
+		into('lib')
+	}
+	from ('lib/bcpg-jdk15on-152.jar') {
+		into('lib')
+	}
+	from ('lib/bcpkix-jdk15on-152.jar') {
+		into('lib')
+	}
+	from ('lib/rhino-1.7.6.jar') {
+		into('lib')
+	}
 	from (jar)
+	from ('theme') {
+		into('theme')
+	}
+	from ('Negatron.sh')
+	from ('Negatron Manual v' + negatronVersion + '.pdf')
+	from ('readme-v' + negatronVersion + '.txt')
+	from ('license.txt')
 }
 
 buildRpm {
