@@ -505,9 +505,13 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
                 int from = 0;
                 if (content.startsWith("\n")) {
                     from = content.indexOf("\n", 1);
-                    Text text = new Text(content.substring(1, from));
-                    text.getStyleClass().add("h1");
-                    nodes.add(text);
+                    String title = content.substring(1, from);
+                    if (!title.endsWith(":")) {
+                        Text text = new Text(content.substring(1, from));
+                        text.getStyleClass().add("h1");
+                        nodes.add(text);
+                    } else
+                        from = 1;
                 }
                 
                 Pattern pattern = Pattern.compile("https?:\\/\\/\\S+[\\w/]|- ([A-Z\\d]+ )+-|={6} (\\S+ )+={6}|={5} (\\S+ )+={5}|={2} (\\S+ )+={2}");

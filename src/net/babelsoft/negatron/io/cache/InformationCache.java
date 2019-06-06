@@ -104,7 +104,7 @@ public class InformationCache extends Cache<InformationCache.Data, InformationCa
                 if (index != null)
                     systemAliases = index.get(system);
             }
-            if (systemAliases == null)
+            if (systemAliases == null || systemAliases.isEmpty())
                 systemAliases = Collections.singletonList(system);
             
             Optional<String> optionalContent = systemAliases.stream().map(systemAlias -> {
