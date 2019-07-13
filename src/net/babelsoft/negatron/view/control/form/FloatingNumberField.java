@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.view.control.form;
 
+import java.util.Locale;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.GridPane;
@@ -39,7 +40,7 @@ public class FloatingNumberField extends NumberField<Double> {
                 updating = true;
                 
                 spinner.getValueFactory().setValue(newValue.doubleValue());
-                updateGlobalConfigurationSetting(key, String.format(format, newValue));
+                updateGlobalConfigurationSetting(key, String.format(Locale.UK, format, newValue));
                 
                 updating = false;
             }
