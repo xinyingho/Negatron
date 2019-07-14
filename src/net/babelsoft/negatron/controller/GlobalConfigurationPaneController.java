@@ -22,13 +22,18 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
+import javafx.util.Duration;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Domain;
 import net.babelsoft.negatron.io.configuration.InputDevice;
@@ -43,6 +48,7 @@ import net.babelsoft.negatron.view.control.form.FontSelectionField;
 import net.babelsoft.negatron.view.control.form.GenericCheckField;
 import net.babelsoft.negatron.view.control.form.GridAdornment;
 import net.babelsoft.negatron.view.control.form.IntegerNumberField;
+import net.babelsoft.negatron.view.control.form.IntegerSpinnerField;
 import net.babelsoft.negatron.view.control.form.LocalisedChoiceField;
 import net.babelsoft.negatron.view.control.form.MameIniField;
 import net.babelsoft.negatron.view.control.form.MameLanguageChoiceField;
@@ -51,6 +57,7 @@ import net.babelsoft.negatron.view.control.form.MultiPathField;
 import net.babelsoft.negatron.view.control.form.MultimediaRootPathField;
 import net.babelsoft.negatron.view.control.form.NegatronLanguageChoiceField;
 import net.babelsoft.negatron.view.control.form.SkinChoiceField;
+import net.babelsoft.negatron.view.control.form.TextField;
 import net.babelsoft.negatron.view.control.form.ValueChoiceField;
 import net.babelsoft.negatron.view.control.form.VlcPathField;
 import net.babelsoft.negatron.view.control.form.VsyncChoiceField;
@@ -63,7 +70,7 @@ import net.babelsoft.negatron.view.control.form.VsyncChoiceField;
 public class GlobalConfigurationPaneController implements Initializable {
     
     private final static double SPACING = 16.0;
-
+    
     @FXML
     private TabPane tabPane;
     @FXML
@@ -74,6 +81,8 @@ public class GlobalConfigurationPaneController implements Initializable {
     private Tab inputsTab;
     @FXML
     private Tab graphicsTab;
+    @FXML
+    private Tab osdTab;
     
     @FXML
     private Label foldersLabel;
@@ -255,6 +264,7 @@ public class GlobalConfigurationPaneController implements Initializable {
         new GenericCheckField                   (optionsGrid, rowIdx++, "autosave");
         vsync           = new VsyncChoiceField  (optionsGrid, rowIdx++, isMess);
         new MameLanguageChoiceField             (optionsGrid, rowIdx++);
+        new IntegerNumberField                  (optionsGrid, rowIdx++, "seconds_to_run",           0, 600, 60, 1, 1);
         
         GridAdornment.insertSpacing             (optionsGrid, rowIdx++, SPACING);
         GridAdornment.insertTitle               (optionsGrid, rowIdx++, SPACING, rb.getString("soundOptions"));
@@ -263,6 +273,15 @@ public class GlobalConfigurationPaneController implements Initializable {
         new GenericCheckField                   (optionsGrid, rowIdx++, "samples");
         new IntegerNumberField                  (optionsGrid, rowIdx++, "volume",                 -32, 0, 2, 1, 1);
         
+        GridAdornment.insertSpacing             (optionsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle               (optionsGrid, rowIdx++, SPACING, rb.getString("commOptions"));
+        new TextField                           (optionsGrid, rowIdx++, "comm_localhost");
+        new IntegerSpinnerField                 (optionsGrid, rowIdx++, "comm_localport", 65535); // 65535 = 2^16 - 1
+        new TextField                           (optionsGrid, rowIdx++, "comm_remotehost");
+        new IntegerSpinnerField                 (optionsGrid, rowIdx++, "comm_remoteport", 65535);
+        if (Configuration.Manager.getGlobalConfiguration("comm_framesync") != null)
+            new GenericCheckField               (optionsGrid, rowIdx++, "comm_framesync");
+
         // Options: Negatron column
         
         rowIdx = 0;
@@ -400,6 +419,42 @@ public class GlobalConfigurationPaneController implements Initializable {
         new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_bezels");
         new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_cpanels");
         new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_marquees");
+    }
+    
+    private void addRemoveTab(Tab tab) {
+        if (tab.getTabPane() == tabPane)
+            tabPane.getTabs().remove(tab);
+        else
+            tabPane.getTabs().add(tab);
+    }
+    
+    private void addRemoveFoldersGridField(MultiPathField field) {
+        Node node = field.getNode();
+        if (node.getParent() != null) {
+            foldersGrid.getChildren().removeAll(node, field.getLabel());
+        } else
+            foldersGrid.getChildren().addAll(node, field.getLabel());
+    }
+    
+    private void addRemoveGridFields(GridPane grid, int rowCutoff) {
+        grid.getChildren().forEach(node -> {
+            int rowIndex = GridPane.getRowIndex(node);
+            if (rowIndex > rowCutoff)
+                node.setVisible(!node.isVisible());
+        });
+    }
+    
+    @FXML
+    private void handleOnAdvancedOptions(ActionEvent event) {
+        addRemoveTab(inputsTab);
+        addRemoveTab(graphicsTab);
+        addRemoveTab(osdTab);
+        addRemoveFoldersGridField(artwork);
+        addRemoveFoldersGridField(cheat);
+        addRemoveFoldersGridField(controller);
+        addRemoveGridFields(foldersGrid, 7);
+        addRemoveGridFields(foldersGrid2, 1);
+        addRemoveGridFields(optionsGrid, 4);
     }
     
     public void setOnRestart(Delegate delegate) {

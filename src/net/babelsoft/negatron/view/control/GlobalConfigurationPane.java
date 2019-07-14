@@ -18,7 +18,14 @@
 package net.babelsoft.negatron.view.control;
 
 import java.io.IOException;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
 import net.babelsoft.negatron.controller.GlobalConfigurationPaneController;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.function.Delegate;
@@ -29,6 +36,10 @@ import net.babelsoft.negatron.util.function.Delegate;
  */
 public class GlobalConfigurationPane extends TitledWindowPane {
     
+    private String titleButtonText;
+    private String titleButtonStyleClass;
+    private String titleButtonTooltip;
+    private EventHandler<ActionEvent> onTitleButtonAction;
     private final GlobalConfigurationPaneController controller;
     
     public GlobalConfigurationPane() {
@@ -38,9 +49,50 @@ public class GlobalConfigurationPane extends TitledWindowPane {
         try {
             fxmlLoader.load();
             controller = fxmlLoader.getController();
+            
+            Button titleButton = new Button(titleButtonText);
+            titleButton.getStyleClass().add(titleButtonStyleClass);
+            titleButton.setTooltip(new Tooltip(titleButtonTooltip));
+            titleButton.setOnAction(onTitleButtonAction);
+            titleButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            titleButton.setMnemonicParsing(false);
+            HBox.setMargin(titleButton, new Insets(0, 0, 0, 4));
+            setHeader(titleButton);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+    }
+    
+    public void setTitleButtonText(String text) {
+        titleButtonText = text;
+    }
+    
+    public String getTitleButtonText() {
+        return titleButtonText;
+    }
+    
+    public void setTitleButtonStyleClass(String styleClass) {
+        titleButtonStyleClass = styleClass;
+    }
+    
+    public String getTitleButtonStyleClass() {
+        return titleButtonStyleClass;
+    }
+    
+    public void setTitleButtonTooltip(String tooltip) {
+        titleButtonTooltip = tooltip;
+    }
+    
+    public String getTitleButtonTooltip() {
+        return titleButtonTooltip;
+    }
+    
+    public void setOnTitleButtonAction(EventHandler<ActionEvent> event) {
+        onTitleButtonAction = event;
+    }
+    
+    public EventHandler<ActionEvent> getOnTitleButtonAction() {
+        return onTitleButtonAction;
     }
     
     public void setOnRestart(Delegate delegate) {

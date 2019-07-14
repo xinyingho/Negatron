@@ -34,6 +34,7 @@ import net.babelsoft.negatron.util.function.Delegate;
  * @author capan
  */
 public class TitledWindowPane extends VBox {
+    
     public static final String PROP_TEXT = "PROP_TEXT";
     public static final String PROP_GRAPHIC = "PROP_GRAPHIC";
     public static final String PROP_HEADER = "PROP_HEADER";

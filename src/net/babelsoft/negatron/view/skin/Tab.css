@@ -55,3 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .titled-pane .tab-pane > .tab-header-area > .headers-region > .tab.graphics > .tab-container > .tab-label {
     -fx-graphic: url("/net/babelsoft/negatron/resource/icon/tab/applications-graphics.png");
 }
+
+.titled-pane .tab-pane > .tab-header-area > .headers-region > .tab.osd > .tab-container > .tab-label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/tab/video-display.png");
+}

@@ -181,6 +181,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/favorites.png");
 }
 
+.advanced-options-button {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/kdevelop.png");
+}
+
 .minimise-button, .maximise-button, .restore-button, .close-button {
     -fx-padding: 0.333333em 0.666667em;
     -fx-font-size: 0;

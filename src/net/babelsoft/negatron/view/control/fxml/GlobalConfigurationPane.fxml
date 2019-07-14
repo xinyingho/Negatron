@@ -25,7 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root type="net.babelsoft.negatron.view.control.TitledWindowPane" text="%globalConfiguration" prefHeight="600" prefWidth="800" stylesheets="@../../skin/TextField.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.GlobalConfigurationPaneController">
+<fx:root type="net.babelsoft.negatron.view.control.GlobalConfigurationPane" text="%globalConfiguration" prefHeight="600" prefWidth="800" stylesheets="@../../skin/TextField.css"
+         titleButtonText="%advancedOptions" titleButtonStyleClass="advanced-options-button" titleButtonTooltip="%advancedOptions.tooltip" onTitleButtonAction="#handleOnAdvancedOptions"
+         xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.GlobalConfigurationPaneController">
     <stylesheets>
         <URL value="@../../skin/Tab.css" />
     </stylesheets>
@@ -181,6 +183,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="SOMETIMES">
                            <children>
                               <GridPane fx:id="graphicsGrid2" hgap="5.0" vgap="10.0">
+                                <columnConstraints>
+                                  <ColumnConstraints minWidth="90.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" />
+                                </columnConstraints>
+                              </GridPane>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </HBox>
+                </ScrollPane>
+            </content>
+          </Tab>
+          <Tab fx:id="osdTab" styleClass="osd" text="%osd">
+            <content>
+                <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="SOMETIMES">
+                  <padding>
+                    <Insets top="5.0" right="5.0" bottom="5.0" left="5.0" />
+                  </padding>
+                  <HBox styleClass="content" layoutX="116.0" layoutY="77.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="SOMETIMES">
+                           <children>
+                              <GridPane fx:id="osdGrid" hgap="5.0" vgap="10.0" VBox.vgrow="SOMETIMES">
+                                <columnConstraints>
+                                  <ColumnConstraints minWidth="90.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" />
+                                </columnConstraints>
+                              </GridPane>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                        <Separator orientation="VERTICAL" prefHeight="200.0" />
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="SOMETIMES">
+                           <children>
+                              <GridPane fx:id="osdGrid2" hgap="5.0" vgap="10.0">
                                 <columnConstraints>
                                   <ColumnConstraints minWidth="90.0" />
                                   <ColumnConstraints hgrow="SOMETIMES" />

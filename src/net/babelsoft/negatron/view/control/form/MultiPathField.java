@@ -58,6 +58,7 @@ public class MultiPathField extends Field {
         return list;
     }
 
+    private final Label label;
     private final GridPane internalGrid;
     private final ToggleGroup machineToggleGroup;
     private final ToggleGroup softwareToggleGroup;
@@ -135,7 +136,7 @@ public class MultiPathField extends Field {
         RowConstraints constraints = new RowConstraints();
         grid.getRowConstraints().add(constraints);
         
-        Label label = new Label(text);
+        label = new Label(text);
         label.setWrapText(true);
         grid.add(label, 0, row);
         
@@ -393,6 +394,14 @@ public class MultiPathField extends Field {
     
     public List<TextField> getPathFields() {
         return pathFields;
+    }
+    
+    public Label getLabel() {
+        return label;
+    }
+    
+    public Node getNode() {
+        return internalGrid;
     }
     
     private File getInitialDirectory(TextField pathField) {
