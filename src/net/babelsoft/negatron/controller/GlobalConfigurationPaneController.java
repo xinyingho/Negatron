@@ -20,10 +20,9 @@ package net.babelsoft.negatron.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,7 +32,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
-import javafx.util.Duration;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Domain;
 import net.babelsoft.negatron.io.configuration.InputDevice;
@@ -174,6 +172,8 @@ public class GlobalConfigurationPaneController implements Initializable {
     private GenericCheckField sleep;
     private FloatingNumberField speed;
     
+    private int rowIdx;
+    
     /**
      * Initializes the controller class.
      */
@@ -199,7 +199,7 @@ public class GlobalConfigurationPaneController implements Initializable {
         
         // Folders: MAME column
         
-        int rowIdx = 0;
+        rowIdx = 0;
         mameExec        = new MamePathField     (foldersGrid, rowIdx++, isMess);
         mameIni         = new MameIniField      (foldersGrid, rowIdx++, isMess);
         chdmanExec      = new ChdmanPathField   (foldersGrid, rowIdx++);
@@ -259,87 +259,85 @@ public class GlobalConfigurationPaneController implements Initializable {
         // Options: MAME column
         
         rowIdx = 0;
-        new GenericCheckField                   (optionsGrid, rowIdx++, "skip_gameinfo");
-        cheatCheck      = new CheatCheckField   (optionsGrid, rowIdx++, isMess);
-        new GenericCheckField                   (optionsGrid, rowIdx++, "autosave");
-        vsync           = new VsyncChoiceField  (optionsGrid, rowIdx++, isMess);
-        new MameLanguageChoiceField             (optionsGrid, rowIdx++);
-        new IntegerNumberField                  (optionsGrid, rowIdx++, "seconds_to_run",           0, 600, 60, 1, 1);
+        check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "skip_gameinfo");
+        cheatCheck      = new CheatCheckField               (optionsGrid, rowIdx++, isMess);
+        check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "autosave");
+        vsync           = new VsyncChoiceField              (optionsGrid, rowIdx++, isMess);
+        new MameLanguageChoiceField                         (optionsGrid, rowIdx++);
+        check(s -> new IntegerNumberField                   (optionsGrid, rowIdx++, s, 0, 600, 60, 1, 1),                   "seconds_to_run");
         
-        GridAdornment.insertSpacing             (optionsGrid, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (optionsGrid, rowIdx++, SPACING, rb.getString("soundOptions"));
+        GridAdornment.insertSpacing                         (optionsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (optionsGrid, rowIdx++, SPACING, rb.getString("soundOptions"));
         SampleRate[] sampleRates = SampleRate.values();
-        new ValueChoiceField<SampleRate>        (optionsGrid, rowIdx++, "samplerate",     sampleRates);
-        new GenericCheckField                   (optionsGrid, rowIdx++, "samples");
-        new IntegerNumberField                  (optionsGrid, rowIdx++, "volume",                 -32, 0, 2, 1, 1);
+        check(s -> new ValueChoiceField<>                   (optionsGrid, rowIdx++, s, sampleRates),                        "samplerate");
+        check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "samples");
+        check(s -> new IntegerNumberField                   (optionsGrid, rowIdx++, s, -32, 0, 2, 1, 1),                    "volume");
         
-        GridAdornment.insertSpacing             (optionsGrid, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (optionsGrid, rowIdx++, SPACING, rb.getString("commOptions"));
-        new TextField                           (optionsGrid, rowIdx++, "comm_localhost");
-        new IntegerSpinnerField                 (optionsGrid, rowIdx++, "comm_localport", 65535); // 65535 = 2^16 - 1
-        new TextField                           (optionsGrid, rowIdx++, "comm_remotehost");
-        new IntegerSpinnerField                 (optionsGrid, rowIdx++, "comm_remoteport", 65535);
-        if (Configuration.Manager.getGlobalConfiguration("comm_framesync") != null)
-            new GenericCheckField               (optionsGrid, rowIdx++, "comm_framesync");
+        GridAdornment.insertSpacing                         (optionsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (optionsGrid, rowIdx++, SPACING, rb.getString("commOptions"));
+        check(s -> new TextField                            (optionsGrid, rowIdx++, s),                                     "comm_localhost");
+        check(s -> new IntegerSpinnerField                  (optionsGrid, rowIdx++, s, 65535),                              "comm_localport"); // 65535 = 2^16 - 1
+        check(s -> new TextField                            (optionsGrid, rowIdx++, s),                                     "comm_remotehost");
+        check(s -> new IntegerSpinnerField                  (optionsGrid, rowIdx++, s, 65535),                              "comm_remoteport");
+        check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "comm_framesync");
 
         // Options: Negatron column
         
         rowIdx = 0;
-        skin            = new SkinChoiceField            (optionsGrid2, rowIdx++);
-        font            = new FontSelectionField         (optionsGrid2, rowIdx++);
-        language        = new NegatronLanguageChoiceField(optionsGrid2, rowIdx++);
+        skin            = new SkinChoiceField               (optionsGrid2, rowIdx++);
+        font            = new FontSelectionField            (optionsGrid2, rowIdx++);
+        language        = new NegatronLanguageChoiceField   (optionsGrid2, rowIdx++);
         
-        GridAdornment.insertSpacing             (optionsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertSpacing                         (optionsGrid2, rowIdx++, SPACING);
         
         // Inputs
         
         rowIdx = 0;
-        GridAdornment.insertTitle               (inputsGrid, rowIdx++, SPACING, rb.getString("globalInputOptions"));
-        new GenericCheckField                   (inputsGrid, rowIdx++, "mouse");
-        new GenericCheckField                   (inputsGrid, rowIdx++, "joystick");
-        lightgun = new GenericCheckField        (inputsGrid, rowIdx++, "lightgun");
-        new GenericCheckField                   (inputsGrid, rowIdx++, "multikeyboard");
-        new GenericCheckField                   (inputsGrid, rowIdx++, "multimouse");
+        GridAdornment.insertTitle                           (inputsGrid, rowIdx++, SPACING, rb.getString("globalInputOptions"));
+        check(s -> new GenericCheckField                    (inputsGrid, rowIdx++, s),                                      "mouse");
+        check(s -> new GenericCheckField                    (inputsGrid, rowIdx++, s),                                      "joystick");
+        lightgun = check(s -> new GenericCheckField         (inputsGrid, rowIdx++, s),                                      "lightgun");
+        check(s -> new GenericCheckField                    (inputsGrid, rowIdx++, s),                                      "multikeyboard");
+        check(s -> new GenericCheckField                    (inputsGrid, rowIdx++, s),                                      "multimouse");
         // Windows native only MAME options
-        if (Configuration.Manager.getGlobalConfiguration("global_inputs") != null)
-            new GenericCheckField               (inputsGrid, rowIdx++, "global_inputs");
+        check(s -> new GenericCheckField                    (inputsGrid, rowIdx++, s),                                      "global_inputs");
         
-        GridAdornment.insertSpacing             (inputsGrid, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (inputsGrid, rowIdx++, SPACING, rb.getString("keyboardSpecificOptions"));
-        new GenericCheckField                   (inputsGrid, rowIdx++, "steadykey");
-        //new KeyField                            (inputsGrid, rowIdx++, "uimodekey");
-        new GenericCheckField                   (inputsGrid, rowIdx++, "ui_active");
-        new GenericCheckField                   (inputsGrid, rowIdx++, "natural");
+        GridAdornment.insertSpacing                         (inputsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (inputsGrid, rowIdx++, SPACING, rb.getString("keyboardSpecificOptions"));
+        check(s -> new GenericCheckField                    (inputsGrid, rowIdx++, s),                                      "steadykey");
+        //check(s -> new KeyField                           (inputsGrid, rowIdx++, s),                                      "uimodekey");
+        check(s -> new GenericCheckField                    (inputsGrid, rowIdx++, s),                                      "ui_active");
+        check(s -> new GenericCheckField                    (inputsGrid, rowIdx++, s),                                      "natural");
         
-        GridAdornment.insertSpacing             (inputsGrid, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (inputsGrid, rowIdx++, SPACING, rb.getString("joystickSpecificOptions"));
-        new FloatingNumberField                 (inputsGrid, rowIdx++, "joystick_deadzone",    "%.1f", 0.0, 1.0, 0.5, 4, 0.1);
-        new FloatingNumberField                 (inputsGrid, rowIdx++, "joystick_saturation",  "%.2f", 0.0, 1.0, 0.1, 1, 0.05);
-        new GenericCheckField                   (inputsGrid, rowIdx++, "joystick_contradictory");
+        GridAdornment.insertSpacing                         (inputsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (inputsGrid, rowIdx++, SPACING, rb.getString("joystickSpecificOptions"));
+        check(s -> new FloatingNumberField                  (inputsGrid, rowIdx++, s, "%.1f", 0.0, 1.0, 0.5, 4, 0.1),       "joystick_deadzone");
+        check(s -> new FloatingNumberField                  (inputsGrid, rowIdx++, s, "%.2f", 0.0, 1.0, 0.1, 1, 0.05),      "joystick_saturation");
+        check(s -> new GenericCheckField                    (inputsGrid, rowIdx++, s),                                      "joystick_contradictory");
         
         rowIdx = 0;
-        GridAdornment.insertTitle               (inputsGrid2, rowIdx++, SPACING, rb.getString("machineInputSpecificOptions"));
+        GridAdornment.insertTitle                           (inputsGrid2, rowIdx++, SPACING, rb.getString("machineInputSpecificOptions"));
         InputDevice[] inputDevices = InputDevice.values();
-        new LocalisedChoiceField<InputDevice>   (inputsGrid2, rowIdx++, "paddle_device",     inputDevices);
-        new LocalisedChoiceField<InputDevice>   (inputsGrid2, rowIdx++, "adstick_device",    inputDevices);
-        new LocalisedChoiceField<InputDevice>   (inputsGrid2, rowIdx++, "pedal_device",      inputDevices);
-        new LocalisedChoiceField<InputDevice>   (inputsGrid2, rowIdx++, "dial_device",       inputDevices);
-        new LocalisedChoiceField<InputDevice>   (inputsGrid2, rowIdx++, "trackball_device",  inputDevices);
-        new LocalisedChoiceField<InputDevice>   (inputsGrid2, rowIdx++, "lightgun_device",   inputDevices);
-        new LocalisedChoiceField<InputDevice>   (inputsGrid2, rowIdx++, "positional_device", inputDevices);
-        new LocalisedChoiceField<InputDevice>   (inputsGrid2, rowIdx++, "mouse_device",      inputDevices);
+        check(s -> new LocalisedChoiceField<>               (inputsGrid2, rowIdx++, s, inputDevices),                       "paddle_device");
+        check(s -> new LocalisedChoiceField<>               (inputsGrid2, rowIdx++, s, inputDevices),                       "adstick_device");
+        check(s -> new LocalisedChoiceField<>               (inputsGrid2, rowIdx++, s, inputDevices),                       "pedal_device");
+        check(s -> new LocalisedChoiceField<>               (inputsGrid2, rowIdx++, s, inputDevices),                       "dial_device");
+        check(s -> new LocalisedChoiceField<>               (inputsGrid2, rowIdx++, s, inputDevices),                       "trackball_device");
+        check(s -> new LocalisedChoiceField<>               (inputsGrid2, rowIdx++, s, inputDevices),                       "lightgun_device");
+        check(s -> new LocalisedChoiceField<>               (inputsGrid2, rowIdx++, s, inputDevices),                       "positional_device");
+        check(s -> new LocalisedChoiceField<>               (inputsGrid2, rowIdx++, s, inputDevices),                       "mouse_device");
         
-        GridAdornment.insertSpacing             (inputsGrid2, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (inputsGrid2, rowIdx++, SPACING, rb.getString("coinSpecificOptions"));
-        new GenericCheckField                   (inputsGrid2, rowIdx++, "coin_lockout");
-        new IntegerNumberField                  (inputsGrid2, rowIdx++, "coin_impulse",                0, 60, 10, 9, 1);
+        GridAdornment.insertSpacing                         (inputsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (inputsGrid2, rowIdx++, SPACING, rb.getString("coinSpecificOptions"));
+        check(s -> new GenericCheckField                    (inputsGrid2, rowIdx++, s),                                     "coin_lockout");
+        check(s -> new IntegerNumberField                   (inputsGrid2, rowIdx++, s, 0, 60, 10, 9, 1),                    "coin_impulse");
         
-        GridAdornment.insertSpacing             (inputsGrid2, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (inputsGrid2, rowIdx++, SPACING, rb.getString("lightGunSpecificOptions"));
-        new GenericCheckField                   (inputsGrid2, rowIdx++, "offscreen_reload");
+        GridAdornment.insertSpacing                         (inputsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (inputsGrid2, rowIdx++, SPACING, rb.getString("lightGunSpecificOptions"));
+        check(s -> new GenericCheckField                    (inputsGrid2, rowIdx++, s),                                     "offscreen_reload");
         // Windows native only MAME options
-        if (Configuration.Manager.getGlobalConfiguration("dual_lightgun") != null) {
-            dualLightgun = new GenericCheckField(inputsGrid2, rowIdx++, "dual_lightgun");
+        dualLightgun    = check(s -> new GenericCheckField  (inputsGrid2, rowIdx++, s),                                     "dual_lightgun");
+        if (dualLightgun != null && lightgun != null) {
             lightgun.selectedProperty().addListener((o, oV, newValue) -> {
                 dualLightgun.setDisable(!newValue);
             });
@@ -349,22 +347,22 @@ public class GlobalConfigurationPaneController implements Initializable {
         // Graphics
         
         rowIdx = 0;
-        GridAdornment.insertTitle               (graphicsGrid, rowIdx++, SPACING, rb.getString("screenOptions"));
-        new FloatingNumberField                 (graphicsGrid, rowIdx++, "brightness",         "%.2f", 0.0, 2.0, 0.5, 4, 0.1);
-        new FloatingNumberField                 (graphicsGrid, rowIdx++, "contrast",           "%.2f", 0.0, 2.0, 0.5, 4, 0.1);
-        new FloatingNumberField                 (graphicsGrid, rowIdx++, "gamma",              "%.2f", 0.0, 3.0, 0.5, 4, 0.1);
-        new FloatingNumberField                 (graphicsGrid, rowIdx++, "pause_brightness",   "%.2f", 0.0, 1.0, 0.1, 1, 0.05);
+        GridAdornment.insertTitle                           (graphicsGrid, rowIdx++, SPACING, rb.getString("screenOptions"));
+        check(s -> new FloatingNumberField                  (graphicsGrid, rowIdx++, s, "%.2f", 0.0, 2.0, 0.5, 4, 0.1),     "brightness");
+        check(s -> new FloatingNumberField                  (graphicsGrid, rowIdx++, s, "%.2f", 0.0, 2.0, 0.5, 4, 0.1),     "contrast");
+        check(s -> new FloatingNumberField                  (graphicsGrid, rowIdx++, s, "%.2f", 0.0, 3.0, 0.5, 4, 0.1),     "gamma");
+        check(s -> new FloatingNumberField                  (graphicsGrid, rowIdx++, s, "%.2f", 0.0, 1.0, 0.1, 1, 0.05),    "pause_brightness");
         
-        GridAdornment.insertSpacing             (graphicsGrid, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (graphicsGrid, rowIdx++, SPACING, rb.getString("renderingOptions"));
-        keepaspect = new GenericCheckField      (graphicsGrid, rowIdx++, "keepaspect");
-        unevenstretch = new GenericCheckField   (graphicsGrid, rowIdx++, "unevenstretch");
-        new GenericCheckField                   (graphicsGrid, rowIdx++, "unevenstretchx");
-        new GenericCheckField                   (graphicsGrid, rowIdx++, "unevenstretchy");
-        new GenericCheckField                   (graphicsGrid, rowIdx++, "autostretchxy");
-        intoverscan = new GenericCheckField     (graphicsGrid, rowIdx++, "intoverscan");
-        intscalex = new IntegerNumberField      (graphicsGrid, rowIdx++, "intscalex",                 0, 10, 2, 1, 1);
-        intscaley = new IntegerNumberField      (graphicsGrid, rowIdx++, "intscaley",                 0, 10, 2, 1, 1);
+        GridAdornment.insertSpacing                         (graphicsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (graphicsGrid, rowIdx++, SPACING, rb.getString("renderingOptions"));
+        keepaspect      = check(s -> new GenericCheckField  (graphicsGrid, rowIdx++, s),                                    "keepaspect");
+        unevenstretch   = check(s -> new GenericCheckField  (graphicsGrid, rowIdx++, s),                                    "unevenstretch");
+        check(s -> new GenericCheckField                    (graphicsGrid, rowIdx++, s),                                    "unevenstretchx");
+        check(s -> new GenericCheckField                    (graphicsGrid, rowIdx++, s),                                    "unevenstretchy");
+        check(s -> new GenericCheckField                    (graphicsGrid, rowIdx++, s),                                    "autostretchxy");
+        intoverscan     = check(s -> new GenericCheckField  (graphicsGrid, rowIdx++, s),                                    "intoverscan");
+        intscalex       = check(s -> new IntegerNumberField (graphicsGrid, rowIdx++, s, 0, 10, 2, 1, 1),                    "intscalex");
+        intscaley       = check(s -> new IntegerNumberField (graphicsGrid, rowIdx++, s, 0, 10, 2, 1, 1),                    "intscaley");
         
         InvalidationListener listener = (o) -> {
             if (keepaspect.isSelected() || unevenstretch.isSelected()) {
@@ -381,44 +379,52 @@ public class GlobalConfigurationPaneController implements Initializable {
         keepaspect.selectedProperty().addListener(listener);
         unevenstretch.selectedProperty().addListener(listener);
         
-        GridAdornment.insertSpacing             (graphicsGrid, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (graphicsGrid, rowIdx++, SPACING, rb.getString("vectorOptions"));
-        new FloatingNumberField                 (graphicsGrid, rowIdx++, "beam_width_min",          "%.2f", 0.0, 1.0, 0.1, 1, 0.1);
-        new FloatingNumberField                 (graphicsGrid, rowIdx++, "beam_width_max",          "%.2f", 1.0, 10.0, 1.0, 5, 0.1);
-        new FloatingNumberField                 (graphicsGrid, rowIdx++, "beam_intensity_weight",   "%.2f", -10.0, 10.0, 2.0, 5, 0.1);
-        new FloatingNumberField                 (graphicsGrid, rowIdx++, "flicker",                 "%.2f", 0.0, 100.0, 10.0, 4, 1.0);
+        GridAdornment.insertSpacing                         (graphicsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (graphicsGrid, rowIdx++, SPACING, rb.getString("vectorOptions"));
+        check(s -> new FloatingNumberField                  (graphicsGrid, rowIdx++, s, "%.2f", 0.0, 1.0, 0.1, 1, 0.1),     "beam_width_min");
+        check(s -> new FloatingNumberField                  (graphicsGrid, rowIdx++, s, "%.2f", 1.0, 10.0, 1.0, 5, 0.1),    "beam_width_max");
+        check(s -> new FloatingNumberField                  (graphicsGrid, rowIdx++, s, "%.2f", -10.0, 10.0, 2.0, 5, 0.1),  "beam_intensity_weight");
+        check(s -> new FloatingNumberField                  (graphicsGrid, rowIdx++, s, "%.2f", 0.0, 100.0, 10.0, 4, 1.0),  "flicker");
         
         rowIdx = 0;
-        GridAdornment.insertTitle               (graphicsGrid2, rowIdx++, SPACING, rb.getString("performanceOptions"));
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "autoframeskip");
-        new IntegerNumberField                  (graphicsGrid2, rowIdx++, "frameskip",                 0, 10, 2, 1, 1);
-        throttle = new GenericCheckField        (graphicsGrid2, rowIdx++, "throttle");
-        sleep = new GenericCheckField           (graphicsGrid2, rowIdx++, "sleep");
-        speed = new FloatingNumberField         (graphicsGrid2, rowIdx++, "speed",             "%.2f", 0.0, 100.0, 10.0, 4, 1.0);
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "refreshspeed");
-        throttle.selectedProperty().addListener((o, oV, newValue) -> {
-            sleep.setDisable(!newValue);
-            speed.setDisable(!newValue);
-        });
+        GridAdornment.insertTitle                           (graphicsGrid2, rowIdx++, SPACING, rb.getString("performanceOptions"));
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "autoframeskip");
+        check(s -> new IntegerNumberField                   (graphicsGrid2, rowIdx++, s, 0, 10, 2, 1, 1),                   "frameskip");
+        throttle        = check(s -> new GenericCheckField  (graphicsGrid2, rowIdx++, s),                                   "throttle");
+        sleep           = check(s -> new GenericCheckField  (graphicsGrid2, rowIdx++, s),                                   "sleep");
+        speed           = check(s -> new FloatingNumberField(graphicsGrid2, rowIdx++, s, "%.2f", 0.0, 100.0, 10.0, 4, 1.0), "speed");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "refreshspeed");
+        if (throttle != null)
+            throttle.selectedProperty().addListener((o, oV, newValue) -> {
+                sleep.setDisable(!newValue);
+                speed.setDisable(!newValue);
+            });
         
-        GridAdornment.insertSpacing             (graphicsGrid2, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (graphicsGrid2, rowIdx++, SPACING, rb.getString("rotationOptions"));
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "rotate");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "ror");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "rol");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "autoror");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "autorol");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "flipx");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "flipy");
+        GridAdornment.insertSpacing                         (graphicsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (graphicsGrid2, rowIdx++, SPACING, rb.getString("rotationOptions"));
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "rotate");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "ror");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "rol");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "autoror");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "autorol");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "flipx");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "flipy");
         
-        GridAdornment.insertSpacing             (graphicsGrid2, rowIdx++, SPACING);
-        GridAdornment.insertTitle               (graphicsGrid2, rowIdx++, SPACING, rb.getString("artworkOptions"));
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "artwork_crop");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_backdrops");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_overlays");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_bezels");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_cpanels");
-        new GenericCheckField                   (graphicsGrid2, rowIdx++, "use_marquees");
+        GridAdornment.insertSpacing                         (graphicsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (graphicsGrid2, rowIdx++, SPACING, rb.getString("artworkOptions"));
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "artwork_crop");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_backdrops");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_overlays");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_bezels");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_cpanels");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_marquees");
+    }
+    
+    // if the option is in mame.ini, instantiate the related control else do nothing
+    private <R> R check(Function<String, R> instantiate, String option) {
+        if (Configuration.Manager.getGlobalConfiguration(option) != null)
+            return instantiate.apply(option);
+        return null;
     }
     
     private void addRemoveTab(Tab tab) {
