@@ -35,8 +35,17 @@ import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Domain;
 import net.babelsoft.negatron.io.configuration.InputDevice;
+import net.babelsoft.negatron.io.configuration.JoystickProvider;
+import net.babelsoft.negatron.io.configuration.KeyboardProvider;
+import net.babelsoft.negatron.io.configuration.LightgunProvider;
+import net.babelsoft.negatron.io.configuration.MonitorProvider;
+import net.babelsoft.negatron.io.configuration.MouseProvider;
+import net.babelsoft.negatron.io.configuration.Output;
 import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.io.configuration.SampleRate;
+import net.babelsoft.negatron.io.configuration.Sound;
+import net.babelsoft.negatron.io.configuration.UIFontProvider;
+import net.babelsoft.negatron.io.configuration.Video;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.form.ChdmanPathField;
 import net.babelsoft.negatron.view.control.form.CheatCheckField;
@@ -54,6 +63,7 @@ import net.babelsoft.negatron.view.control.form.MamePathField;
 import net.babelsoft.negatron.view.control.form.MultiPathField;
 import net.babelsoft.negatron.view.control.form.MultimediaRootPathField;
 import net.babelsoft.negatron.view.control.form.NegatronLanguageChoiceField;
+import net.babelsoft.negatron.view.control.form.OSDChoiceField;
 import net.babelsoft.negatron.view.control.form.SkinChoiceField;
 import net.babelsoft.negatron.view.control.form.TextField;
 import net.babelsoft.negatron.view.control.form.ValueChoiceField;
@@ -106,6 +116,10 @@ public class GlobalConfigurationPaneController implements Initializable {
     private GridPane graphicsGrid;
     @FXML
     private GridPane graphicsGrid2;
+    @FXML
+    private GridPane osdGrid;
+    @FXML
+    private GridPane osdGrid2;
 
     private MamePathField mameExec;
     private MameIniField mameIni;
@@ -268,8 +282,7 @@ public class GlobalConfigurationPaneController implements Initializable {
         
         GridAdornment.insertSpacing                         (optionsGrid, rowIdx++, SPACING);
         GridAdornment.insertTitle                           (optionsGrid, rowIdx++, SPACING, rb.getString("soundOptions"));
-        SampleRate[] sampleRates = SampleRate.values();
-        check(s -> new ValueChoiceField<>                   (optionsGrid, rowIdx++, s, sampleRates),                        "samplerate");
+        check(s -> new ValueChoiceField<>                   (optionsGrid, rowIdx++, s, SampleRate.values()),                "samplerate");
         check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "samples");
         check(s -> new IntegerNumberField                   (optionsGrid, rowIdx++, s, -32, 0, 2, 1, 1),                    "volume");
         
@@ -402,22 +415,57 @@ public class GlobalConfigurationPaneController implements Initializable {
         
         GridAdornment.insertSpacing                         (graphicsGrid2, rowIdx++, SPACING);
         GridAdornment.insertTitle                           (graphicsGrid2, rowIdx++, SPACING, rb.getString("rotationOptions"));
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "rotate");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "ror");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "rol");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "autoror");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "autorol");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "flipx");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "flipy");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "rotate");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "ror");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "rol");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "autoror");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "autorol");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "flipx");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "flipy");
         
         GridAdornment.insertSpacing                         (graphicsGrid2, rowIdx++, SPACING);
         GridAdornment.insertTitle                           (graphicsGrid2, rowIdx++, SPACING, rb.getString("artworkOptions"));
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "artwork_crop");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_backdrops");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_overlays");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_bezels");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_cpanels");
-        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s), "use_marquees");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "artwork_crop");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "use_backdrops");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "use_overlays");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "use_bezels");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "use_cpanels");
+        check(s -> new GenericCheckField                    (graphicsGrid2, rowIdx++, s),                                   "use_marquees");
+        
+        rowIdx = 0;
+        GridAdornment.insertTitle                           (osdGrid, rowIdx++, SPACING, rb.getString("osdInputOptions"));
+        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, KeyboardProvider.values()),              "keyboardprovider");
+        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, MouseProvider.values()),                 "mouseprovider");
+        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, LightgunProvider.values()),              "lightgunprovider");
+        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, JoystickProvider.values()),              "joystickprovider");
+        
+        GridAdornment.insertSpacing                         (osdGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (osdGrid, rowIdx++, SPACING, rb.getString("osdOutputOptions"));
+        check(s -> new LocalisedChoiceField<>               (osdGrid, rowIdx++, s, Output.values()),                        "output");
+        
+        GridAdornment.insertSpacing                         (osdGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (osdGrid, rowIdx++, SPACING, rb.getString("osdVideoOptions"));
+        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, UIFontProvider.values()),                "uifontprovider");
+        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, Video.values()),                         "video");
+        check(s -> new IntegerNumberField                   (osdGrid, rowIdx++, s, 1, 4, 1, 0, 1),                          "numscreens");
+        check(s -> new GenericCheckField                    (osdGrid, rowIdx++, s),                                         "window");
+        check(s -> new GenericCheckField                    (osdGrid, rowIdx++, s),                                         "maximize");
+        check(s -> new GenericCheckField                    (osdGrid, rowIdx++, s),                                         "switchres");
+        check(s -> new FloatingNumberField                  (osdGrid, rowIdx++, s, "%.2f", 0.0, 2.0, 0.5, 4, 0.1),          "full_screen_brightness");
+        check(s -> new FloatingNumberField                  (osdGrid, rowIdx++, s, "%.2f", 0.0, 2.0, 0.5, 4, 0.1),          "full_screen_contrast");
+        check(s -> new FloatingNumberField                  (osdGrid, rowIdx++, s, "%.2f", 0.0, 3.0, 0.5, 4, 0.1),          "full_screen_gamma");
+        check(s -> new GenericCheckField                    (osdGrid, rowIdx++, s),                                         "syncrefresh");
+        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, MonitorProvider.values()),               "monitorprovider");
+        
+        rowIdx = 0;
+        GridAdornment.insertTitle                           (osdGrid2, rowIdx++, SPACING, rb.getString("osdAcceleratedVideoOptions"));
+        check(s -> new GenericCheckField                    (osdGrid2, rowIdx++, s),                                        "filter");
+        check(s -> new IntegerNumberField                   (osdGrid2, rowIdx++, s, 1, 3, 1, 0, 1),                         "prescale");
+        
+        GridAdornment.insertSpacing                         (osdGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (osdGrid2, rowIdx++, SPACING, rb.getString("osdSoundOptions"));
+        check(s -> new OSDChoiceField<>                     (osdGrid2, rowIdx++, s, Sound.values()),                        "sound");
+        check(s -> new IntegerNumberField                   (osdGrid2, rowIdx++, s, 1, 5, 1, 0, 1),                         "audio_latency");
     }
     
     // if the option is in mame.ini, instantiate the related control else do nothing

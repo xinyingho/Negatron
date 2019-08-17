@@ -21,15 +21,17 @@ import java.util.Arrays;
 import java.util.List;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
+import net.babelsoft.negatron.io.configuration.OSD;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.Shell;
 
 /**
  *
  * @author capan
  */
-public class ValueChoiceField<T extends Enum> extends ChoiceField<T> {
+public class OSDChoiceField<T extends OSD> extends ChoiceField<T> {
     
-    public ValueChoiceField(GridPane grid, int row, String key, T[] values) {
+    public OSDChoiceField(GridPane grid, int row, String key, T[] values) {
         super(
             grid, row, 
             Language.Manager.getString("globalConf." + key),
@@ -37,17 +39,23 @@ public class ValueChoiceField<T extends Enum> extends ChoiceField<T> {
         );
         
         List<T> list = Arrays.asList(values);
-        choiceBox.getItems().addAll(list);
+        list.stream().filter(item ->
+            item.isWindowsCompatible() && Shell.isWindows() ||
+            item.isMacCompatible() && Shell.isMacOs() ||
+            item.isLinuxCompatible() && Shell.isLinux()
+        ).forEach(
+            item -> choiceBox.getItems().add(item)
+        );
         
         String init = Configuration.Manager.getGlobalConfiguration(key);
         list.stream().filter(
-            constant -> init.equals(constant.toString())
+            constant -> init.equals(constant.getName())
         ).findAny().ifPresent(
             constant -> choiceBox.getSelectionModel().select(constant)
         );
         
         choiceBox.getSelectionModel().selectedItemProperty().addListener((o, oV, newValue) -> {
-            updateGlobalConfigurationSetting(key, newValue.toString());
+            updateGlobalConfigurationSetting(key, newValue.getName());
         });
     }
 }
