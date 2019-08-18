@@ -31,6 +31,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Domain;
@@ -535,10 +536,27 @@ public class GlobalConfigurationPaneController implements Initializable {
         addRemoveGridFields(foldersGrid2, 1);
         addRemoveGridFields(optionsGrid, 5);
         addRemoveGridFields(optionsGrid2, 3);
+        
+        try {
+            Configuration.Manager.updateGlobalAdvancedOptionsEnabled(
+                osdTab.getTabPane() != null
+            );
+        } catch (IOException ex) {
+            Logger.getLogger(GlobalConfigurationPaneController.class.getName()).log(
+                Level.SEVERE, "Couldn't save the flag about whether the global advanced options are enabled or not", ex
+            );
+        }
     }
     
     public void setOnRestart(Delegate delegate) {
         language.setOnRestart(delegate);
+    }
+
+    public void initialise(ToggleButton titleButton) {
+        if (!Configuration.Manager.isGlobalAdvancedOptionsEnabled())
+            handleOnAdvancedOptions(null);
+        else
+            titleButton.setSelected(true);
     }
 
     public void selectOptionsTab() {

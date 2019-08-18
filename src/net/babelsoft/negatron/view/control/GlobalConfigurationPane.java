@@ -22,8 +22,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import net.babelsoft.negatron.controller.GlobalConfigurationPaneController;
@@ -50,7 +51,7 @@ public class GlobalConfigurationPane extends TitledWindowPane {
             fxmlLoader.load();
             controller = fxmlLoader.getController();
             
-            Button titleButton = new Button(titleButtonText);
+            ToggleButton titleButton = new ToggleButton(titleButtonText);
             titleButton.getStyleClass().add(titleButtonStyleClass);
             titleButton.setTooltip(new Tooltip(titleButtonTooltip));
             titleButton.setOnAction(onTitleButtonAction);
@@ -58,6 +59,8 @@ public class GlobalConfigurationPane extends TitledWindowPane {
             titleButton.setMnemonicParsing(false);
             HBox.setMargin(titleButton, new Insets(0, 0, 0, 4));
             setHeader(titleButton);
+            
+            controller.initialise(titleButton);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }

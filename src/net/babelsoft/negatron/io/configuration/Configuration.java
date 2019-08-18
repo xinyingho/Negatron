@@ -1023,6 +1023,12 @@ public enum Configuration {
             return uiConfigurationCache.loadMachineFoldersRemovedFromView();
         return new HashMap<>();
     }
+    
+    public boolean isGlobalAdvancedOptionsEnabled() {
+        if (uiConfigurationCache != null)
+            return uiConfigurationCache.loadGlobalAdvancedOptionsEnabled();
+        return false;
+    }
 
     public void setMasterConfigPoint() {
         beginMasterConfigTransaction();
@@ -1321,6 +1327,11 @@ public enum Configuration {
     public void updateMachineFolderAddedIntoView(String value) throws IOException {
         if (uiConfigurationCache != null)
             uiConfigurationCache.saveMachineFolderAddedIntoView(value);
+    }
+    
+    public void updateGlobalAdvancedOptionsEnabled(boolean value) throws IOException {
+        if (uiConfigurationCache != null)
+            uiConfigurationCache.saveGlobalAdvancedOptionsEnabled(value);
     }
     
     public void beginUIConfigurationTransaction() {

@@ -51,6 +51,7 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
         protected boolean isWindowMaximised, isWindowFullscreen;
         protected String selectedMachineFolderView;
         protected Map<String, Void> machineFoldersRemovedFomView; // folder removed from view > dummy data
+        protected boolean isGlobalAdvancedOptionsEnabled;
         
         public Data() {
             treeTableConfiguration = new HashMap<>();
@@ -66,6 +67,7 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
             windowHeight = DEFAULT_HEIGHT;
             isWindowMaximised = isWindowFullscreen = false;
             machineFoldersRemovedFomView = new HashMap<>();
+            isGlobalAdvancedOptionsEnabled = false;
         }
     }
     
@@ -261,6 +263,15 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
         data.machineFoldersRemovedFomView.remove(value);
         if (!transaction)
             save(data);
+    }
+
+    public boolean loadGlobalAdvancedOptionsEnabled() {
+        return data.isGlobalAdvancedOptionsEnabled;
+    }
+
+    public void saveGlobalAdvancedOptionsEnabled(boolean value) throws IOException {
+        data.isGlobalAdvancedOptionsEnabled = value;
+        save(data);
     }
     
     public void beginTransaction() {
