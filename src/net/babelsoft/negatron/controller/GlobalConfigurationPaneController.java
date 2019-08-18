@@ -193,10 +193,10 @@ public class GlobalConfigurationPaneController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        tabPane.getSelectionModel().select(Configuration.Manager.getSoftwareInformationTabIndex());
+        tabPane.getSelectionModel().select(Configuration.Manager.getGlobalConfigurationTabIndex());
         tabPane.getSelectionModel().selectedIndexProperty().addListener((o, oV, newValue) -> {
             try {
-                Configuration.Manager.updateSoftwareInformationTabIndex(newValue.intValue());
+                Configuration.Manager.updateGlobalConfigurationTabIndex(newValue.intValue());
             } catch (IOException ex) {
                 Logger.getLogger(GlobalConfigurationPaneController.class.getName()).log(Level.SEVERE, "Couldn't save global conf tab index", ex);
             }
@@ -469,28 +469,28 @@ public class GlobalConfigurationPaneController implements Initializable {
         check(s -> new LocalisedChoiceField<>               (osdGrid, rowIdx++, s, Output.values()),                        "output");
         
         GridAdornment.insertSpacing                         (osdGrid, rowIdx++, SPACING);
-        GridAdornment.insertTitle                           (osdGrid, rowIdx++, SPACING, rb.getString("osdVideoOptions"));
-        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, UIFontProvider.values()),                "uifontprovider");
-        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, Video.values()),                         "video");
-        check(s -> new IntegerNumberField                   (osdGrid, rowIdx++, s, 1, 4, 1, 0, 1),                          "numscreens");
-        check(s -> new GenericCheckField                    (osdGrid, rowIdx++, s),                                         "window");
-        check(s -> new GenericCheckField                    (osdGrid, rowIdx++, s),                                         "maximize");
-        check(s -> new GenericCheckField                    (osdGrid, rowIdx++, s),                                         "switchres");
-        check(s -> new FloatingNumberField                  (osdGrid, rowIdx++, s, "%.2f", 0.0, 2.0, 0.5, 4, 0.1),          "full_screen_brightness");
-        check(s -> new FloatingNumberField                  (osdGrid, rowIdx++, s, "%.2f", 0.0, 2.0, 0.5, 4, 0.1),          "full_screen_contrast");
-        check(s -> new FloatingNumberField                  (osdGrid, rowIdx++, s, "%.2f", 0.0, 3.0, 0.5, 4, 0.1),          "full_screen_gamma");
-        check(s -> new GenericCheckField                    (osdGrid, rowIdx++, s),                                         "syncrefresh");
-        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, MonitorProvider.values()),               "monitorprovider");
-        
+        GridAdornment.insertTitle                           (osdGrid, rowIdx++, SPACING, rb.getString("osdSoundOptions"));
+        check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, Sound.values()),                         "sound");
+        check(s -> new IntegerNumberField                   (osdGrid, rowIdx++, s, 1, 5, 1, 0, 1),                          "audio_latency");
+
         rowIdx = 0;
+        GridAdornment.insertTitle                           (osdGrid2, rowIdx++, SPACING, rb.getString("osdVideoOptions"));
+        check(s -> new OSDChoiceField<>                     (osdGrid2, rowIdx++, s, UIFontProvider.values()),               "uifontprovider");
+        check(s -> new OSDChoiceField<>                     (osdGrid2, rowIdx++, s, Video.values()),                        "video");
+        check(s -> new IntegerNumberField                   (osdGrid2, rowIdx++, s, 1, 4, 1, 0, 1),                         "numscreens");
+        check(s -> new GenericCheckField                    (osdGrid2, rowIdx++, s),                                        "window");
+        check(s -> new GenericCheckField                    (osdGrid2, rowIdx++, s),                                        "maximize");
+        check(s -> new GenericCheckField                    (osdGrid2, rowIdx++, s),                                        "switchres");
+        check(s -> new FloatingNumberField                  (osdGrid2, rowIdx++, s, "%.2f", 0.0, 2.0, 0.5, 4, 0.1),         "full_screen_brightness");
+        check(s -> new FloatingNumberField                  (osdGrid2, rowIdx++, s, "%.2f", 0.0, 2.0, 0.5, 4, 0.1),         "full_screen_contrast");
+        check(s -> new FloatingNumberField                  (osdGrid2, rowIdx++, s, "%.2f", 0.0, 3.0, 0.5, 4, 0.1),         "full_screen_gamma");
+        check(s -> new GenericCheckField                    (osdGrid2, rowIdx++, s),                                        "syncrefresh");
+        check(s -> new OSDChoiceField<>                     (osdGrid2, rowIdx++, s, MonitorProvider.values()),              "monitorprovider");
+        
+        GridAdornment.insertSpacing                         (osdGrid2, rowIdx++, SPACING);
         GridAdornment.insertTitle                           (osdGrid2, rowIdx++, SPACING, rb.getString("osdAcceleratedVideoOptions"));
         check(s -> new GenericCheckField                    (osdGrid2, rowIdx++, s),                                        "filter");
         check(s -> new IntegerNumberField                   (osdGrid2, rowIdx++, s, 1, 3, 1, 0, 1),                         "prescale");
-        
-        GridAdornment.insertSpacing                         (osdGrid2, rowIdx++, SPACING);
-        GridAdornment.insertTitle                           (osdGrid2, rowIdx++, SPACING, rb.getString("osdSoundOptions"));
-        check(s -> new OSDChoiceField<>                     (osdGrid2, rowIdx++, s, Sound.values()),                        "sound");
-        check(s -> new IntegerNumberField                   (osdGrid2, rowIdx++, s, 1, 5, 1, 0, 1),                         "audio_latency");
     }
     
     // if the option is in mame.ini, instantiate the related control else do nothing
@@ -533,7 +533,8 @@ public class GlobalConfigurationPaneController implements Initializable {
         addRemoveFoldersGridField(controller);
         addRemoveGridFields(foldersGrid, 7);
         addRemoveGridFields(foldersGrid2, 1);
-        addRemoveGridFields(optionsGrid, 4);
+        addRemoveGridFields(optionsGrid, 5);
+        addRemoveGridFields(optionsGrid2, 3);
     }
     
     public void setOnRestart(Delegate delegate) {
