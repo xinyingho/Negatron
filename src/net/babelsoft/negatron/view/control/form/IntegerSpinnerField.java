@@ -24,6 +24,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.Strings;
 
 /**
  *
@@ -43,7 +44,8 @@ public class IntegerSpinnerField extends Field {
         
         Tooltip tooltip = new Tooltip(Language.Manager.tryGetString("globalConf." + key + ".tooltip"));
         
-        int currentValue = Integer.parseInt(Configuration.Manager.getGlobalConfiguration(key));
+        String sValue = Configuration.Manager.getGlobalConfiguration(key);
+        int currentValue = Strings.isValid(sValue) ? Integer.parseInt(sValue) : 0;
         spinner = new Spinner<>(minValue, maxValue, currentValue, step);
         // by default, user must type on Enter to validate a modified value when typing it instead of using the up / down arrows.
         // here, set up Negatron to automatically save any modifications.

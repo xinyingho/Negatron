@@ -208,7 +208,6 @@ public class GlobalConfigurationPaneController implements Initializable {
             foldersLabel.setText(foldersLabel.getText().replace("MAME", "MESS"));
             foldersLabel2.setText(foldersLabel2.getText().replace("MAME", "MESS"));
             optionsLabel.setText(optionsLabel.getText().replace("MAME", "MESS"));
-            //optionsLabel2.setText(optionsLabel2.getText().replace("MAME", "MESS"));
         }
         
         // Folders: MAME column
@@ -274,6 +273,7 @@ public class GlobalConfigurationPaneController implements Initializable {
         
         rowIdx = 0;
         check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "skip_gameinfo");
+        check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "confirm_quit");
         cheatCheck      = new CheatCheckField               (optionsGrid, rowIdx++, isMess);
         check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "autosave");
         vsync           = new VsyncChoiceField              (optionsGrid, rowIdx++, isMess);
@@ -293,6 +293,12 @@ public class GlobalConfigurationPaneController implements Initializable {
         check(s -> new TextField                            (optionsGrid, rowIdx++, s),                                     "comm_remotehost");
         check(s -> new IntegerSpinnerField                  (optionsGrid, rowIdx++, s, 65535),                              "comm_remoteport");
         check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "comm_framesync");
+        
+        GridAdornment.insertSpacing                         (optionsGrid, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (optionsGrid, rowIdx++, SPACING, rb.getString("httpServerOptions"));
+        check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "http");
+        check(s -> new IntegerSpinnerField                  (optionsGrid, rowIdx++, s, 65535),                              "http_port"); // 65535 = 2^16 - 1
+        check(s -> new TextField                            (optionsGrid, rowIdx++, s),                                     "http_root");
 
         // Options: Negatron column
         
@@ -302,6 +308,25 @@ public class GlobalConfigurationPaneController implements Initializable {
         language        = new NegatronLanguageChoiceField   (optionsGrid2, rowIdx++);
         
         GridAdornment.insertSpacing                         (optionsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (optionsGrid2, rowIdx++, SPACING, isMess ? "MESS" : "MAME");
+        check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "drc");
+        check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "drc_use_c");
+        check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "drc_log_uml");
+        check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "drc_log_native");
+        check(s -> new TextField                            (optionsGrid2, rowIdx++, s),                                    "bios");
+        check(s -> new IntegerSpinnerField                  (optionsGrid2, rowIdx++, s, 2147483647),                        "ramsize"); // 2 147 483 647 = 2^32 - 1 = max int value
+        check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "nvram_save");
+        check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "dtd");
+        
+        GridAdornment.insertSpacing                         (optionsGrid2, rowIdx++, SPACING);
+        GridAdornment.insertTitle                           (optionsGrid2, rowIdx++, SPACING, rb.getString("scriptingOptions"));
+        check(s -> new TextField                            (optionsGrid2, rowIdx++, s),                                    "autoboot_command");
+        check(s -> new IntegerSpinnerField                  (optionsGrid2, rowIdx++, s, 2147483647),                        "autoboot_delay"); // 2 147 483 647 = 2^32 - 1 = max int value
+        check(s -> new TextField                            (optionsGrid2, rowIdx++, s),                                    "autoboot_script");
+        check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "console");
+        check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "plugins");
+        check(s -> new TextField                            (optionsGrid2, rowIdx++, s),                                    "plugin");
+        check(s -> new TextField                            (optionsGrid2, rowIdx++, s),                                    "noplugin");
         
         // Inputs
         
