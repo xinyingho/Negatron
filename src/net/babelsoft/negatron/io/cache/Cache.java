@@ -46,14 +46,6 @@ public class Cache<T, S> {
     protected static final String CACHE_EXTENSION = ".cache";
     public static final Path ROOT_FOLDER = Paths.get(Configuration.getRootFolder().toString(), "Cache");
     
-    public static void initialise() {
-        if (Files.notExists(ROOT_FOLDER)) try {
-            Files.createDirectory(ROOT_FOLDER);
-        } catch (IOException ex) {
-            Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, "Couldn't create cache root folder", ex);
-        }
-    }
-    
     public static void clearAll() throws IOException {
         Cache cache = new Cache();
         cache.clear(Cache.ROOT_FOLDER);
@@ -66,12 +58,22 @@ public class Cache<T, S> {
     private Cache() {
         cachePath = null;
         versionPath = null;
+        initialise();
     }
     
     protected Cache(String path) throws ClassNotFoundException, IOException {
         this.cachePath = Paths.get(ROOT_FOLDER.toString(), path + CACHE_EXTENSION);
         this.versionPath = Paths.get(ROOT_FOLDER.toString(), path + VERSION_EXTENSION);
+        initialise();
         version = loadVersion();
+    }
+    
+    private void initialise() {
+        if (Files.notExists(ROOT_FOLDER)) try {
+            Files.createDirectory(ROOT_FOLDER);
+        } catch (IOException ex) {
+            Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, "Couldn't create cache root folder", ex);
+        }
     }
     
     public boolean exists() {

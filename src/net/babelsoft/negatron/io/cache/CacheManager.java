@@ -96,8 +96,6 @@ public class CacheManager extends Task<Void> {
             return threadFactory.newThread(runnable);
         });
         execService = new ExecutorCompletionService<>(service);
-        
-        Cache.initialise();
     }
     
     public void execute() {
