@@ -403,20 +403,22 @@ public class GlobalConfigurationPaneController implements Initializable {
         intscalex       = check(s -> new IntegerNumberField (graphicsGrid, rowIdx++, s, 0, 10, 2, 1, 1),                    "intscalex");
         intscaley       = check(s -> new IntegerNumberField (graphicsGrid, rowIdx++, s, 0, 10, 2, 1, 1),                    "intscaley");
         
-        InvalidationListener listener = (o) -> {
-            if (keepaspect.isSelected() || unevenstretch.isSelected()) {
-                intoverscan.setDisable(true);
-                intscalex.setDisable(true);
-                intscaley.setDisable(true);
-            } else {
-                intoverscan.setDisable(false);
-                intscalex.setDisable(false);
-                intscaley.setDisable(false);
-            }
-        };
-        listener.invalidated(null);
-        keepaspect.selectedProperty().addListener(listener);
-        unevenstretch.selectedProperty().addListener(listener);
+        if (keepaspect != null && unevenstretch != null && intoverscan != null && intscalex != null && intscaley != null) {
+            InvalidationListener listener = (o) -> {
+                if (keepaspect.isSelected() || unevenstretch.isSelected()) {
+                    intoverscan.setDisable(true);
+                    intscalex.setDisable(true);
+                    intscaley.setDisable(true);
+                } else {
+                    intoverscan.setDisable(false);
+                    intscalex.setDisable(false);
+                    intscaley.setDisable(false);
+                }
+            };
+            listener.invalidated(null);
+            keepaspect.selectedProperty().addListener(listener);
+            unevenstretch.selectedProperty().addListener(listener);
+        }
         
         GridAdornment.insertSpacing                         (graphicsGrid, rowIdx++, SPACING);
         GridAdornment.insertTitle                           (graphicsGrid, rowIdx++, SPACING, rb.getString("vectorOptions"));
