@@ -157,6 +157,11 @@ public class EmulatedItemTreePane<T extends EmulatedItem<T>> extends VBox {
     public void setViewButtonSelected(boolean selected) {
         controller.setViewButtonSelected(selected);
     }
+
+    public void closeViewPane() {
+        if (controller.isViewButtonSelected())
+            controller.fireViewButton();
+    }
     
     public void setConfigurationIcon(Image icon) {
         tree.setConfigurationIcon(icon);

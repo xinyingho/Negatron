@@ -1268,6 +1268,7 @@ public class MainController implements Initializable, AlertController, EditContr
                 break;
             default:
                 machineTreePane.closeFilterPane();
+                machineTreePane.closeViewPane();
                 machineConfigurationWindow.show();
                 machineConfigurationButton.setSelected(true);
                 break;

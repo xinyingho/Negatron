@@ -128,9 +128,17 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
     public void setOnMoreViews(Consumer<Boolean> onMoreViews) {
         this.onMoreViews = onMoreViews;
     }
+    
+    public boolean isViewButtonSelected() {
+        return viewButton.isSelected();
+    }
 
     public void setViewButtonSelected(boolean selected) {
         viewButton.setSelected(selected);
+    }
+
+    public void fireViewButton() {
+        viewButton.fire();
     }
 
     public Property<String> filterProperty() {
