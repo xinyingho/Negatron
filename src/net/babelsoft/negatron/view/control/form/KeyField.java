@@ -19,10 +19,10 @@ package net.babelsoft.negatron.view.control.form;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.view.control.Infotip;
 import net.babelsoft.negatron.view.control.adapter.KeyCodeConverter;
 
 /**
@@ -38,7 +38,7 @@ public class KeyField extends Field {
         grid.add(label, 0, row);
         
         text = new TextField(Configuration.Manager.getGlobalConfiguration(key));
-        text.setTooltip(new Tooltip(Language.Manager.tryGetString("globalConf." + key + ".tooltip")));
+        text.setTooltip(new Infotip(Language.Manager.tryGetString("globalConf." + key + ".tooltip")));
         text.setOnKeyReleased(evt -> {
             String code = KeyCodeConverter.convert(evt.getCode());
             text.setText(code);

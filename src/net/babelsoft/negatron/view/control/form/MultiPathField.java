@@ -32,7 +32,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
@@ -45,6 +44,7 @@ import net.babelsoft.negatron.io.configuration.PathPrimary;
 import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.Strings;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  *
@@ -203,7 +203,7 @@ public class MultiPathField extends Field {
         
         TextField pathField = new TextField();
         pathField.setPromptText(promptText);
-        pathField.setTooltip(new Tooltip(promptText));
+        pathField.setTooltip(new Infotip(promptText));
         internalGrid.add(pathField, column++, internalCount);
         GridPane.setHgrow(pathField, Priority.SOMETIMES);
         pathFields.add(pathField);

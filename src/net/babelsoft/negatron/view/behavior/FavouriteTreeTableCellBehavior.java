@@ -35,15 +35,15 @@ public class FavouriteTreeTableCellBehavior<S,T> extends TreeTableCellBehavior<S
     @Override
     protected void handleClicks(MouseButton button, int clickCount, boolean isAlreadySelected) {
         // handle editing, which only occurs with the middle mouse button
-        TreeItem<S> treeItem = getControl().getTreeTableRow().getTreeItem();
+        TreeItem<S> treeItem = getNode().getTreeTableRow().getTreeItem();
         if (button == MouseButton.MIDDLE && clickCount == 1 && isAlreadySelected) {
-            edit(getControl());
+            edit(getNode());
         } else if ((button == MouseButton.PRIMARY || button == MouseButton.MIDDLE) && clickCount == 1) {
             // cancel editing
             edit(null);
         } else if (button == MouseButton.MIDDLE && clickCount == 2 && treeItem.isLeaf()) {
             // attempt to edit
-            edit(getControl());
+            edit(getNode());
         } else if (button == MouseButton.MIDDLE && clickCount % 2 == 0) {
             // try to expand/collapse branch tree item
             treeItem.setExpanded(! treeItem.isExpanded());

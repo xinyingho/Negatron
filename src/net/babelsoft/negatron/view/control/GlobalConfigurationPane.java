@@ -24,7 +24,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import net.babelsoft.negatron.controller.GlobalConfigurationPaneController;
 import net.babelsoft.negatron.theme.Language;
@@ -52,7 +51,7 @@ public class GlobalConfigurationPane extends TitledWindowPane {
             
             ToggleButton titleButton = new ToggleButton(titleButtonText);
             titleButton.getStyleClass().add(titleButtonStyleClass);
-            titleButton.setTooltip(new Tooltip(titleButtonTooltip));
+            titleButton.setTooltip(new Infotip(titleButtonTooltip));
             titleButton.setOnAction(onTitleButtonAction);
             titleButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             titleButton.setMnemonicParsing(false);

@@ -17,17 +17,8 @@
  */
 package net.babelsoft.negatron.theme;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Locale;
 import java.util.MissingResourceException;
-import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
-import java.util.ResourceBundle.Control;
 
 /**
  *
@@ -36,39 +27,13 @@ import java.util.ResourceBundle.Control;
 public enum Language {
     Manager;
     
-    private static class FileResourceControl extends Control {
-
-        @Override
-        public ResourceBundle newBundle(
-            String baseName, Locale locale, String format, ClassLoader loader, boolean reload
-        ) throws IllegalAccessException, InstantiationException, IOException {
-            String bundleName = toBundleName(baseName, locale);
-            java.util.ResourceBundle bundle = null;
-
-            final String resourceName = toResourceName(bundleName, "properties");
-            if (resourceName == null) {
-                return bundle;
-            }
-            
-            final Path path = Paths.get(resourceName);
-            if (Files.exists(path)) try (
-                InputStream stream = Files.newInputStream(path);
-                InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-            ) {
-                bundle = new PropertyResourceBundle(reader);
-            }
-
-            return bundle;
-        }
-    }
-    
-    private final Control CONTROL = new FileResourceControl();
     public final String ROOT_PATH = "theme/language";
     public final String MASK = "ui.*\\.properties";
-    private final String FILE_PATH = ROOT_PATH + "/ui";
+    public final String FILE_PATH = ROOT_PATH + "/ui";
+    private final String RESOURCE_BUNDLE_SPI = "net.babelsoft.negatron.theme.LanguageUi";
     
     public ResourceBundle getBundle() {
-        return ResourceBundle.getBundle(FILE_PATH, CONTROL);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_SPI);
     }
     
     public String getString(String key) {

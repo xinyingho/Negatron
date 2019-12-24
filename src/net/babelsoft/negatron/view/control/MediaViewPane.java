@@ -17,7 +17,6 @@
  */
 package net.babelsoft.negatron.view.control;
 
-import com.sun.javafx.event.EventDispatchChainImpl;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -55,10 +54,9 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseButton;
@@ -75,15 +73,18 @@ import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.util.Disposable;
 import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.util.function.Delegate;
-import uk.co.caprica.vlcj.component.DirectMediaPlayerComponent;
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.TrackInfo;
-import uk.co.caprica.vlcj.player.TrackType;
-import uk.co.caprica.vlcj.player.VideoTrackInfo;
-import uk.co.caprica.vlcj.player.direct.BufferFormat;
-import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
-import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
-import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
+import net.babelsoft.negatron.view.behavior.EventDispatchChainImpl;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.media.VideoTrackInfo;
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormatCallback;
+import uk.co.caprica.vlcj.player.embedded.videosurface.CallbackVideoSurface;
+import uk.co.caprica.vlcj.player.embedded.videosurface.VideoSurfaceAdapters;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.RenderCallback;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.format.RV32BufferFormat;
 
 /**
  * Used Oracle's Overlay Media Player code for the layout, and vlcj to replace Oracle's GStreamer back-end.
@@ -93,50 +94,50 @@ import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
  */
 public class MediaViewPane extends Region implements Disposable {
     
-    private class CanvasPlayerComponent extends DirectMediaPlayerComponent {
-        
-        private final WritablePixelFormat<ByteBuffer> pixelFormat;
-        
-        public CanvasPlayerComponent() {
-            super(new CanvasBufferFormatCallback());
-            pixelFormat = PixelFormat.getByteBgraPreInstance();
+    private class CanvasCallbackVideoSurface extends CallbackVideoSurface {
+        CanvasCallbackVideoSurface() {
+            super(new CanvasBufferFormatCallback(), new CanvasRenderCallback(), true, VideoSurfaceAdapters.getVideoSurfaceAdapter());
         }
-        
-        @Override
-        public void display(DirectMediaPlayer mediaPlayer, ByteBuffer[] nativeBuffers, BufferFormat bufferFormat) {
-            if (writableImage == null)
-                return;
-            
-            Platform.runLater(() -> {/*
-                try {
-                    ByteBuffer[] byteBuffers = mediaPlayer.lock();
-                    if (byteBuffers != null) {
-                        ByteBuffer byteBuffer = byteBuffers[0];
-                        pixelWriter.setPixels(0, 0, bufferFormat.getWidth(), bufferFormat.getHeight(), pixelFormat, byteBuffer, bufferFormat.getPitches()[0]);
-                    }
-                } finally {
-                    mediaPlayer.unlock();
-                }*/
-                ByteBuffer byteBuffer = nativeBuffers[0];
-                pixelWriter.setPixels(0, 0, bufferFormat.getWidth(), bufferFormat.getHeight(), pixelFormat, byteBuffer, bufferFormat.getPitches()[0]);
-            });
-        }
-        
+    }
+    
+    private class CanvasMediaPlayerEventAdapter extends MediaPlayerEventAdapter {
         @Override
         public void finished(MediaPlayer mediaPlayer) {
-            if (!mediaPlayer.getRepeat()) {
-                _stop();
-                hideMediaView();
-            }
+            Platform.runLater(() -> {
+                if (!mediaPlayer.controls().getRepeat()) {
+                    _stop();
+                    hideMediaView();
+                }
+            });
         }
     }
     
     private class CanvasBufferFormatCallback implements BufferFormatCallback {
+        private int sourceWidth;
+        private int sourceHeight;
         
         @Override
         public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
-            Platform.runLater(() -> initializeImageView(sourceWidth, sourceHeight));
+            this.sourceWidth = sourceWidth;
+            this.sourceHeight = sourceHeight;
             return new RV32BufferFormat(sourceWidth, sourceHeight);
+        }
+
+        @Override
+        public void allocatedBuffers(ByteBuffer[] buffers) {
+            assert buffers[0].capacity() == sourceWidth * sourceHeight * 4;
+            Platform.runLater(() -> {
+                initializeImageView(buffers[0], sourceWidth, sourceHeight);
+            });
+        }
+    }
+    
+    private class CanvasRenderCallback implements RenderCallback {
+        @Override
+        public void display(MediaPlayer mediaPlayer, ByteBuffer[] nativeBuffers, BufferFormat bufferFormat) {
+            Platform.runLater(() -> {
+                videoPixelBuffer.updateBuffer(pb -> null);
+            });
         }
     }
     
@@ -155,12 +156,12 @@ public class MediaViewPane extends Region implements Disposable {
 
     private static final PseudoClass CSS_PLAYING = PseudoClass.getPseudoClass("playing");
     
-    private final DirectMediaPlayerComponent mediaPlayerComponent;
-    private final MediaPlayer mediaPlayer;
-    private double displayAspectRatio;
-    private WritableImage writableImage;
+    private final MediaPlayerFactory mediaPlayerFactory;
+    private final EmbeddedMediaPlayer mediaPlayer;
     private ImageView mediaView;
-    private PixelWriter pixelWriter;
+    private WritableImage videoImage;
+    private PixelBuffer<ByteBuffer> videoPixelBuffer;
+    private double displayAspectRatio;
     
     private final ToolBar mediaButtonBar;
     private final HBox mediaBottomBar;
@@ -196,8 +197,10 @@ public class MediaViewPane extends Region implements Disposable {
         setStyle("-fx-background-color: rgba(0,0,0,0)");
         
         if (Video.isEnabled()) {
-            mediaPlayerComponent = new CanvasPlayerComponent();
-            mediaPlayer = mediaPlayerComponent.getMediaPlayer();
+            mediaPlayerFactory = new MediaPlayerFactory();
+            mediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
+            mediaPlayer.videoSurface().set(new CanvasCallbackVideoSurface());
+            mediaPlayer.events().addMediaPlayerEventListener(new CanvasMediaPlayerEventAdapter());
             displayAspectRatio = 3.0f / 4.0f;
             
             parentProperty().addListener((o, oV, newParent) -> {
@@ -226,7 +229,7 @@ public class MediaViewPane extends Region implements Disposable {
             backButton.setOnAction(e -> {
                 if (!disabled && mediaView != null) {
                     showMediaView();
-                    mediaPlayer.setTime(0);
+                    mediaPlayer.controls().setTime(0);
                     _play();
                 }
             });
@@ -253,16 +256,16 @@ public class MediaViewPane extends Region implements Disposable {
             Button pauseButton = new Button("Pause");
             pauseButton.getStyleClass().add("pause-button");
             pauseButton.setOnAction(e -> {
-                if (!disabled && mediaPlayer.isPlaying())
-                    mediaPlayer.pause();
+                if (!disabled && mediaPlayer.status().isPlaying())
+                    mediaPlayer.controls().pause();
             });
 
             Button forwardButton = new Button("Forward");
             forwardButton.getStyleClass().add("forward-button");
             forwardButton.setOnAction(e -> {
                 if (!disabled && mediaView != null) {
-                    long currentTime = mediaPlayer.getTime();
-                    mediaPlayer.setTime(currentTime + 5000); // going forward 5 seconds
+                    long currentTime = mediaPlayer.status().time();
+                    mediaPlayer.controls().setTime(currentTime + 5000); // going forward 5 seconds
                 }
             });
             
@@ -271,9 +274,9 @@ public class MediaViewPane extends Region implements Disposable {
             loopButton.setOnAction(e -> {
                 if (!disabled) {
                     if (loopButton.isSelected())
-                        mediaPlayer.setRepeat(true);
+                        mediaPlayer.controls().setRepeat(true);
                     else
-                        mediaPlayer.setRepeat(false);
+                        mediaPlayer.controls().setRepeat(false);
                     loopEnabled.set(loopButton.isSelected());
                 }
             });
@@ -308,7 +311,7 @@ public class MediaViewPane extends Region implements Disposable {
                 }
             });
         } else {
-            mediaPlayerComponent = null;
+            mediaPlayerFactory = null;
             mediaPlayer = null;
             mediaButtonBar = null;
             mediaBottomBar = null;
@@ -436,7 +439,7 @@ public class MediaViewPane extends Region implements Disposable {
                 if (!targetDir.exists())
                     targetDir.mkdirs();
 
-                if (mediaPlayer.isPlaying())
+                if (mediaPlayer.status().isPlaying())
                     _stop();
 
                 Path tmpPath;
@@ -465,23 +468,27 @@ public class MediaViewPane extends Region implements Disposable {
 
     @Override
     public void dispose() {
-        if (mediaPlayerComponent != null)
-            mediaPlayerComponent.release(true);
+        if (mediaPlayerFactory != null) {
+            mediaPlayer.controls().stop();
+            mediaPlayer.release();
+            mediaPlayerFactory.release();
+        }
     }
 
-    private void initializeImageView(int width, int height) {
+    private void initializeImageView(ByteBuffer buffer, int width, int height) {
         if (mediaView != null)
             getChildren().remove(mediaView);
         getChildren().remove(mediaButtonBar);
 
-        writableImage = new WritableImage(width, height);
-        pixelWriter = writableImage.getPixelWriter();
-        mediaView = new ImageView(writableImage);
+        PixelFormat<ByteBuffer> pixelFormat = PixelFormat.getByteBgraPreInstance();
+        videoPixelBuffer = new PixelBuffer<>(width, height, buffer, pixelFormat);
+        videoImage = new WritableImage(videoPixelBuffer);
+        mediaView = new ImageView(videoImage);
         getChildren().addAll(mediaView, mediaButtonBar);
 
-        List<TrackInfo> tracksInfo = mediaPlayer.getTrackInfo(TrackType.VIDEO);
+        List<VideoTrackInfo> tracksInfo = mediaPlayer.media().info().videoTracks();
         if (tracksInfo.size() > 0) {
-            VideoTrackInfo trackInfo = (VideoTrackInfo) tracksInfo.get(0);
+            VideoTrackInfo trackInfo = tracksInfo.get(0);
 
             // when SAR is set to an invalid 0:0 ratio, force it to default to 1:1
             double sampleAspectRatio = Math.max(trackInfo.sampleAspectRatio(), 1);
@@ -502,12 +509,12 @@ public class MediaViewPane extends Region implements Disposable {
     }
     
     private void _play() {
-        mediaPlayer.play();
+        mediaPlayer.controls().play();
         playingProperty.set(true);
     }
     
     private void _stop() {
-        mediaPlayer.stop();
+        mediaPlayer.controls().stop();
         playingProperty.set(false);
     }
     
@@ -520,7 +527,7 @@ public class MediaViewPane extends Region implements Disposable {
         disabled = true;
         
         if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying() || mediaPlayer.getPosition() > 0.0)
+            if (mediaPlayer.status().isPlaying() || mediaPlayer.status().position() > 0.0)
                 _stop();
             if (isMediaViewShown())
                 hideMediaView();
@@ -530,8 +537,8 @@ public class MediaViewPane extends Region implements Disposable {
     }
 
     public void pause() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying())
-            mediaPlayer.pause();
+        if (mediaPlayer != null && mediaPlayer.status().isPlaying())
+            mediaPlayer.controls().pause();
     }
     
     public BooleanProperty playingProperty() {
@@ -543,7 +550,7 @@ public class MediaViewPane extends Region implements Disposable {
         
         if (mediaPlayer != null)
             if (mediaPath != null) {
-                mediaPlayer.prepareMedia(mediaPath.toString());
+                mediaPlayer.media().prepare(mediaPath.toString());
                 if (mediaView != null && !isMediaViewShown())
                     showMediaView();
             } else {
@@ -568,7 +575,7 @@ public class MediaViewPane extends Region implements Disposable {
 
     public void setVolume(int volume) {
         if (mediaPlayer != null)
-            mediaPlayer.setVolume(volume);
+            mediaPlayer.audio().setVolume(volume);
     }
 
     public void addDropTarget(ImageViewPane eventTargets) {

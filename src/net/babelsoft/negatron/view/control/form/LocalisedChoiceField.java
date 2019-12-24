@@ -30,7 +30,7 @@ public class LocalisedChoiceField<T extends Enum> extends ValueChoiceField<T> {
     public LocalisedChoiceField(GridPane grid, int row, String key, T[] values) {
         super(grid, row, key, values);
         
-        choiceBox.setConverter(new StringConverter<T>() {
+        choiceBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(T object) {
                 // decapitalise enum class name

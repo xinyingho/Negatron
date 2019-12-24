@@ -20,11 +20,11 @@ package net.babelsoft.negatron.view.control.form;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  *
@@ -42,7 +42,7 @@ public class SinglePathField extends Field {
         
         pathField = new TextField();
         pathField.setPromptText(prompt);
-        pathField.setTooltip(new Tooltip(prompt));
+        pathField.setTooltip(new Infotip(prompt));
         grid.add(pathField, 1, row);
         GridPane.setHgrow(pathField, Priority.SOMETIMES);
         

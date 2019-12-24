@@ -20,11 +20,11 @@ package net.babelsoft.negatron.view.control.form;
 import java.util.IllegalFormatConversionException;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.Strings;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  *
@@ -42,7 +42,7 @@ public class IntegerSpinnerField extends Field {
         Label label = new Label(Language.Manager.getString("globalConf." + key));
         grid.add(label, 0, row);
         
-        Tooltip tooltip = new Tooltip(Language.Manager.tryGetString("globalConf." + key + ".tooltip"));
+        Infotip tooltip = new Infotip(Language.Manager.tryGetString("globalConf." + key + ".tooltip"));
         
         String sValue = Configuration.Manager.getGlobalConfiguration(key);
         int currentValue = Strings.isValid(sValue) ? Integer.parseInt(sValue) : 0;

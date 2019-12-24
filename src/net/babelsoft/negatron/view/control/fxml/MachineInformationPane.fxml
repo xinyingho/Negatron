@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <Insets left="4" /> 
             </HBox.margin>
             <tooltip>
-                <Tooltip text="%favourites.tooltip" />
+                <Infotip text="%favourites.tooltip" />
             </tooltip>
         </Button>
       </HBox>
@@ -72,22 +72,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                            <children>
                                <ImageViewPane fx:id="marqueeImagePane" GridPane.columnSpan="2" GridPane.rowIndex="0">
                                    <tooltip>
-                                       <Tooltip text="%marquee" /> 
+                                       <Infotip text="%marquee" /> 
                                    </tooltip>
                                </ImageViewPane>
                                <ImageViewPane fx:id="cabinetImagePane" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                    <tooltip>
-                                       <Tooltip text="%cabinet" />
+                                       <Infotip text="%cabinet" />
                                    </tooltip>
                                </ImageViewPane>
                                <ImageViewPane fx:id="controlPanelImagePane" GridPane.columnIndex="0" GridPane.rowIndex="2">
                                    <tooltip>
-                                       <Tooltip text="%controlPanel" />
+                                       <Infotip text="%controlPanel" />
                                    </tooltip>
                                </ImageViewPane>
                                <ImageViewPane fx:id="flyerImagePane" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
                                    <tooltip>
-                                       <Tooltip text="%flyer" />
+                                       <Infotip text="%flyer" />
                                    </tooltip>
                                </ImageViewPane>
                            </children>
@@ -130,12 +130,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                     <children>
                                         <ImageViewPane fx:id="titleImagePane" GridPane.rowIndex="0">
                                             <tooltip>
-                                                <Tooltip text="%title" />
+                                                <Infotip text="%title" />
                                             </tooltip>
                                         </ImageViewPane>
                                         <ImageViewPane fx:id="snapshotImagePane" GridPane.rowIndex="1">
                                             <tooltip>
-                                                <Tooltip text="%snapshot" />
+                                                <Infotip text="%snapshot" />
                                             </tooltip>
                                         </ImageViewPane>
                                     </children>
@@ -143,49 +143,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                   
                                   <ImageViewPane fx:id="logoImagePane" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                       <tooltip>
-                                          <Tooltip text="%logo" />
+                                          <Infotip text="%logo" />
                                       </tooltip>
                                   </ImageViewPane>
                                   <ImageViewPane fx:id="howtoImagePane" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                       <tooltip>
-                                          <Tooltip text="%howTo" />
+                                          <Infotip text="%howTo" />
                                       </tooltip>
                                   </ImageViewPane>
                                   <ImageViewPane fx:id="scoreImagePane" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                       <tooltip>
-                                          <Tooltip text="%score" />
+                                          <Infotip text="%score" />
                                       </tooltip>
                                   </ImageViewPane>
                                   
                                   <ImageViewPane fx:id="bossImagePane" GridPane.columnIndex="2" GridPane.rowIndex="0">
                                       <tooltip>
-                                          <Tooltip text="%boss" />
+                                          <Infotip text="%boss" />
                                       </tooltip>
                                   </ImageViewPane>
                                   <ImageViewPane fx:id="gameoverImagePane" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                       <tooltip>
-                                          <Tooltip text="%gameOver" />
+                                          <Infotip text="%gameOver" />
                                       </tooltip>
                                   </ImageViewPane>
                                   <ImageViewPane fx:id="endImagePane" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                       <tooltip>
-                                          <Tooltip text="%end" />
+                                          <Infotip text="%end" />
                                       </tooltip>
                                   </ImageViewPane>
                                   
                                   <ImageViewPane fx:id="selectImagePane" GridPane.columnIndex="3" GridPane.rowIndex="0">
                                       <tooltip>
-                                          <Tooltip text="%select" />
+                                          <Infotip text="%select" />
                                       </tooltip>
                                   </ImageViewPane>
                                   <ImageViewPane fx:id="artpreviewImagePane" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                       <tooltip>
-                                          <Tooltip text="%artworkPreview" />
+                                          <Infotip text="%artworkPreview" />
                                       </tooltip>
                                   </ImageViewPane>
                                   <ImageViewPane fx:id="versusImagePane" GridPane.columnIndex="3" GridPane.rowIndex="2">
                                       <tooltip>
-                                          <Tooltip text="%versus" />
+                                          <Infotip text="%versus" />
                                       </tooltip>
                                   </ImageViewPane>
                                </children>

@@ -108,6 +108,14 @@ public abstract class Field {
         }
     }
     
+    protected void updateInfotipTiming(String name) {
+        try {
+            Configuration.Manager.updateInfotipTiming(name);
+        } catch (IOException ex) {
+            alert(ex);
+        }
+    }
+    
     protected void updateCheatMenuEnabled(boolean cheatMenuEnabled) {
         try {
             Configuration.Manager.updateCheatMenuEnabled(cheatMenuEnabled);

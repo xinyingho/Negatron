@@ -19,10 +19,10 @@ package net.babelsoft.negatron.view.control.form;
 
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  *
@@ -37,7 +37,7 @@ public class ChoiceField<T> extends Field {
         grid.add(label, 0, row);
         
         choiceBox = new ChoiceBox<>();
-        choiceBox.setTooltip(new Tooltip(prompt));
+        choiceBox.setTooltip(new Infotip(prompt));
         choiceBox.setMaxWidth(Double.MAX_VALUE);
         grid.add(choiceBox, 1, row);
         GridPane.setHgrow(choiceBox, Priority.SOMETIMES);

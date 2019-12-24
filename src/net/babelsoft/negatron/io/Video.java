@@ -20,15 +20,13 @@ package net.babelsoft.negatron.io;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.util.Strings;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
-import uk.co.caprica.vlcj.discovery.linux.DefaultLinuxNativeDiscoveryStrategy;
-import uk.co.caprica.vlcj.discovery.mac.DefaultMacNativeDiscoveryStrategy;
-import uk.co.caprica.vlcj.discovery.windows.DefaultWindowsNativeDiscoveryStrategy;
+import uk.co.caprica.vlcj.binding.RuntimeUtil;
+import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
+import uk.co.caprica.vlcj.factory.discovery.provider.DiscoveryDirectoryProvider;
 
 /**
  *
@@ -41,53 +39,66 @@ public class Video {
     public static boolean isEnabled() {
         // disable bogus X11 multithreading context initialisation, which isn't needed anymore with VLC 2.2.0+
         // otherwise it'll unexpectedly raise a race condition and a native crash when trying to open a folder selection dialogbox
-        System.setProperty("VLCJ_INITX", "no");
-        return new CustomNativeDiscovery().discover();
+        // System.setProperty("VLCJ_INITX", "no");
+        return new NativeDiscovery().discover();
     }
     
-    private static class CustomNativeDiscovery extends NativeDiscovery {
-
-        /**
-         * Create a discovery component with the default platform strategies.
-         */
-        public CustomNativeDiscovery() {
-            super(
-                new CustomLinuxNativeDiscoveryStrategy(),
-                new CustomWindowsNativeDiscoveryStrategy(),
-                new CustomMacNativeDiscoveryStrategy()
-            );
-        }
-    }
-    
-    private static interface UserHintedDiscoveryStrategy {
-        
-        default void onGetUserDirectoryNames(List<String> directoryNames) {
-            String vlcPath = Configuration.Manager.getVlcPath();
-            if (Strings.isValid(vlcPath)) try {
-                directoryNames.add(
-                    Paths.get(vlcPath).getParent().toString()
-                );
-            } catch (Exception ex) { } // swallow errors
-        }
-    }
-    
-    private static class CustomLinuxNativeDiscoveryStrategy extends DefaultLinuxNativeDiscoveryStrategy implements UserHintedDiscoveryStrategy {
+    public static class UserHintedDiscoveryDirectoryProvider implements DiscoveryDirectoryProvider {
 
         @Override
-        protected void onGetDirectoryNames(List<String> directoryNames) {
-            onGetUserDirectoryNames(directoryNames);
+        public int priority() {
+            return 1;
+        }
+
+        @Override
+        public String[] directories() {
+            String vlcPath = Configuration.Manager.getVlcPath();
             
-            super.onGetDirectoryNames(directoryNames);
+            if (Strings.isValid(vlcPath)) try {
+                String[] directoryNames = new String[1];
+                directoryNames[0] = Paths.get(vlcPath).getParent().toString();
+                return directoryNames;
+            } catch (Exception ex) { } // swallow errors
             
+            return new String[0];
+        }
+
+        @Override
+        public boolean supported() {
+            return true;
+        }
+    }
+    
+    public static class LinuxDiscoveryDirectoryProvider implements DiscoveryDirectoryProvider {
+        @Override
+        public int priority() {
+            return 0;
+        }
+
+        @Override
+        public String[] directories() {
+            /*List<String> directoryNames = new ArrayList<>();
             directoryNames.add("/usr/lib64");
             directoryNames.add("/usr/local/lib64");
+            return directoryNames.toArray(new String[0]);*/
+            return new String[0];
+        }
+
+        @Override
+        public boolean supported() {
+            return RuntimeUtil.isNix();
         }
     }
     
-    private static class CustomWindowsNativeDiscoveryStrategy extends DefaultWindowsNativeDiscoveryStrategy implements UserHintedDiscoveryStrategy {
-        
+    public static class WindowsDiscoveryDirectoryProvider implements DiscoveryDirectoryProvider {
+
         @Override
-        protected void onGetDirectoryNames(List<String> directoryNames) {
+        public int priority() {
+            return 2;
+        }
+
+        @Override
+        public String[] directories() {
             String vlcPath = Configuration.Manager.getVlcPath();
             if (Strings.isEmpty(vlcPath) || Files.notExists(Paths.get(vlcPath))) try {
                 // detect any Windows versions of VLC media player included in Negatron's installation folder
@@ -98,6 +109,7 @@ public class Video {
                 ).findAny().orElse(null);
                 if (libVlc != null)
                     Configuration.Manager.updateVlcPath(libVlc.toString());
+                    // then VLC gets detected by UserHintedDiscoveryDirectoryProvider
             } catch (Exception ex) {
                 Logger.getLogger(Video.class.getName()).log(
                     Level.WARNING,
@@ -105,22 +117,31 @@ public class Video {
                     ex
                 );
             }
-            
-            onGetUserDirectoryNames(directoryNames);
-            super.onGetDirectoryNames(directoryNames);
+            return new String[0];
+        }
+
+        @Override
+        public boolean supported() {
+            return RuntimeUtil.isWindows();
         }
     }
     
-    private static class CustomMacNativeDiscoveryStrategy extends DefaultMacNativeDiscoveryStrategy implements UserHintedDiscoveryStrategy {
-        
+    public static class OsxDiscoveryDirectoryProvider implements DiscoveryDirectoryProvider {
+
         @Override
-        protected void onGetDirectoryNames(List<String> directoryNames) {
+        public int priority() {
+            return 2;
+        }
+
+        @Override
+        public String[] directories() {
             String vlcPath = Configuration.Manager.getVlcPath();
             if (Strings.isEmpty(vlcPath)) try {
                 // detect any macOS versions of VLC media player included in Negatron's installation folder
                 final String libVlc = "VLC.app/Contents/MacOS/lib/libvlc.dylib";
                 if (Files.exists(Paths.get(libVlc)))
                     Configuration.Manager.updateVlcPath(libVlc);
+                    // then VLC gets detected by UserHintedDiscoveryDirectoryProvider
             } catch (Exception ex) {
                 Logger.getLogger(Video.class.getName()).log(
                     Level.WARNING,
@@ -128,9 +149,12 @@ public class Video {
                     ex
                 );
             }
-            
-            onGetUserDirectoryNames(directoryNames);
-            super.onGetDirectoryNames(directoryNames);
+            return new String[0];
+        }
+
+        @Override
+        public boolean supported() {
+            return RuntimeUtil.isMac();
         }
     }
 }

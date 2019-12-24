@@ -49,7 +49,7 @@ public class ReflectionUtil {
     public static void setFieldValue(Object object, String name, Object value) {
         try {
             Field field = getField(object.getClass(), name);
-            if (!field.isAccessible()) {
+            if (!field.canAccess(object)) {
                 field.setAccessible(true);
             }
             field.set(object, value);
@@ -67,7 +67,7 @@ public class ReflectionUtil {
     public static Object getFieldValue(Object object, String name) {
         try {
             Field field = getField(object.getClass(), name);
-            if (!field.isAccessible()) {
+            if (!field.canAccess(object)) {
                 field.setAccessible(true);
             }
             return field.get(object);

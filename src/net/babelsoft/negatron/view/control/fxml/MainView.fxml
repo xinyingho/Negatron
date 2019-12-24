@@ -38,27 +38,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <items>
                 <Button fx:id="launchButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleLaunchAction" styleClass="launch-mame-button" text="%launch">
                     <tooltip>
-                        <Tooltip text="%launch.tooltip" />
+                        <Infotip text="%launch.tooltip" />
                     </tooltip>
                 </Button>
                 <ToggleButton fx:id="machineConfigurationButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleMachineConfigurationAction" styleClass="machine-configuration-button" text="%machineConfiguration">
                     <tooltip>
-                        <Tooltip text="%machineConfiguration.tooltip" />
+                        <Infotip text="%machineConfiguration.tooltip" />
                     </tooltip>
                 </ToggleButton>
                 <ToggleButton fx:id="softwareConfigurationButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleSoftwareConfigurationAction" styleClass="software-configuration-button" text="%softwareConfiguration">
                     <tooltip>
-                        <Tooltip text="%softwareConfiguration.tooltip" />
+                        <Infotip text="%softwareConfiguration.tooltip" />
                     </tooltip>
                 </ToggleButton>
                 <Button fx:id="advancedParametrisationButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleAdvancedParametrisationAction" styleClass="advanced-parametrisation-button" text="%advancedParametrisation">
                     <tooltip>
-                        <Tooltip text="%advancedParametrisation.tooltip" />
+                        <Infotip text="%advancedParametrisation.tooltip" />
                     </tooltip>
                 </Button>
                 <ToggleButton fx:id="favouriteViewButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleFavouriteViewAction" styleClass="favourite-view-button" text="%favourites">
                     <tooltip>
-                        <Tooltip text="%favourites.view.tooltip" />
+                        <Infotip text="%favourites.view.tooltip" />
                     </tooltip>
                 </ToggleButton>
                 <HBox alignment="CENTER" HBox.hgrow="ALWAYS" style="-fx-spacing: 0.333em;">
@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <Label fx:id="statusLabel" text="M.A.M.E." />
                         <ToggleButton fx:id="statisticsButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleStatisticsAction" styleClass="statistics-button" text="%statistics">
                             <tooltip>
-                                <Tooltip text="%statistics.tooltip" />
+                                <Infotip text="%statistics.tooltip" />
                             </tooltip>
                         </ToggleButton>
                     </children>
@@ -74,32 +74,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <HBox fx:id="notificationArea" style="-fx-spacing: 0.333em;">
                     <ToggleButton fx:id="soundButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleSoundAction" styleClass="sound-button" text="%soundOnOff">
                         <tooltip>
-                            <Tooltip text="%soundOnOff.tooltip" />
+                            <Infotip text="%soundOnOff.tooltip" />
                         </tooltip>
                     </ToggleButton>
                     <ToggleButton fx:id="videoButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleVideoAction" styleClass="video-button" text="%videoOnOff">
                         <tooltip>
-                            <Tooltip text="%videoOnOff.tooltip" />
+                            <Infotip text="%videoOnOff.tooltip" />
                         </tooltip>
                     </ToggleButton>
                     <ToggleButton fx:id="view3dButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleView3dAction" styleClass="view3d-button" text="%view3dOnOff">
                         <tooltip>
-                            <Tooltip text="%view3dOnOff.tooltip" />
+                            <Infotip text="%view3dOnOff.tooltip" />
                         </tooltip>
                     </ToggleButton>
                     <ToggleButton fx:id="globalConfigurationButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleGlobalConfigurationAction" styleClass="global-configuration-button" text="%globalConfiguration">
                         <tooltip>
-                            <Tooltip text="%globalConfiguration.tooltip" />
+                            <Infotip text="%globalConfiguration.tooltip" />
                         </tooltip>
                     </ToggleButton> 
                     <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleHelpAction" styleClass="help-button" text="%help">
                         <tooltip>
-                            <Tooltip text="%help.tooltip" />
+                            <Infotip text="%help.tooltip" />
                         </tooltip>
                     </Button>
                     <ProgressIndicator fx:id="notifier" prefWidth="20" prefHeight="20" onMouseEntered="#handleNotifierMouseEntered">
                         <tooltip>
-                            <Tooltip text="%notifier.tooltip" />
+                            <Infotip text="%notifier.tooltip" />
                         </tooltip>
                     </ProgressIndicator>
                 </HBox>

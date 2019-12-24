@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.view.control.adapter;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -93,7 +94,7 @@ public class TableColumnsAdapter<C extends TableColumnBase, CC extends TableColu
         final Map<String, CC> confMap = new HashMap<>();
         for (int i = 0;i < columns.size();++i) try {
             C col = columns.get(i);
-            CC conf = configurationType.newInstance();
+            CC conf = configurationType.getDeclaredConstructor().newInstance();
 
             conf.setName(col.getId());
             conf.setOrder(i);
@@ -104,7 +105,7 @@ public class TableColumnsAdapter<C extends TableColumnBase, CC extends TableColu
             conf.setWidth(col.getWidth());
 
             confMap.put(col.getId(), conf);
-        } catch (InstantiationException | IllegalAccessException ex) {
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException ex) {
             // should never happen
         }
         updateConfiguration.accept(confMap);

@@ -26,7 +26,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.FlowPane;
 import net.babelsoft.negatron.io.cache.UIConfigurationData;
 import net.babelsoft.negatron.io.configuration.Configuration;
@@ -38,6 +37,7 @@ import net.babelsoft.negatron.model.Support;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.view.control.EmulatedItemTreeView;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  * FXML Controller class
@@ -116,7 +116,7 @@ public class MachineFilterPaneController extends FilterPaneController<Machine> {
         Arrays.stream(ControllerType.values()).forEachOrdered(controller -> {
             CheckBox checkBox = new CheckBox(controller.toString());
             checkBox.setId("controller" + controller.name());
-            checkBox.setTooltip(new Tooltip(controller.getTooltipText()));
+            checkBox.setTooltip(new Infotip(controller.getTooltipText()));
             checkBox.setUserData(controller);
             controllerPane.getChildren().add(checkBox);
         });

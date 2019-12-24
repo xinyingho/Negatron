@@ -35,6 +35,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Domain;
+import net.babelsoft.negatron.io.configuration.InfotipTiming;
 import net.babelsoft.negatron.io.configuration.InputDevice;
 import net.babelsoft.negatron.io.configuration.JoystickProvider;
 import net.babelsoft.negatron.io.configuration.KeyboardProvider;
@@ -55,6 +56,7 @@ import net.babelsoft.negatron.view.control.form.FloatingNumberField;
 import net.babelsoft.negatron.view.control.form.FontSelectionField;
 import net.babelsoft.negatron.view.control.form.GenericCheckField;
 import net.babelsoft.negatron.view.control.form.GridAdornment;
+import net.babelsoft.negatron.view.control.form.InfotipTimingChoiceField;
 import net.babelsoft.negatron.view.control.form.IntegerNumberField;
 import net.babelsoft.negatron.view.control.form.IntegerSpinnerField;
 import net.babelsoft.negatron.view.control.form.LocalisedChoiceField;
@@ -273,6 +275,7 @@ public class GlobalConfigurationPaneController implements Initializable {
         // Options: MAME column
         
         rowIdx = 0;
+        GridAdornment.insertTitle                           (optionsGrid, rowIdx++, SPACING, isMess ? "MESS" : "MAME");
         check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "skip_gameinfo");
         check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "confirm_quit");
         cheatCheck      = new CheatCheckField               (optionsGrid, rowIdx++, isMess);
@@ -285,7 +288,7 @@ public class GlobalConfigurationPaneController implements Initializable {
         GridAdornment.insertTitle                           (optionsGrid, rowIdx++, SPACING, rb.getString("soundOptions"));
         check(s -> new ValueChoiceField<>                   (optionsGrid, rowIdx++, s, SampleRate.values()),                "samplerate");
         check(s -> new GenericCheckField                    (optionsGrid, rowIdx++, s),                                     "samples");
-        check(s -> new IntegerNumberField                   (optionsGrid, rowIdx++, s, -32, 0, 2, 1, 1),                    "volume");
+        check(s -> new IntegerNumberField                   (optionsGrid, rowIdx++, s, -32, 0, 4, 3, 1),                    "volume");
         
         GridAdornment.insertSpacing                         (optionsGrid, rowIdx++, SPACING);
         GridAdornment.insertTitle                           (optionsGrid, rowIdx++, SPACING, rb.getString("commOptions"));
@@ -304,9 +307,11 @@ public class GlobalConfigurationPaneController implements Initializable {
         // Options: Negatron column
         
         rowIdx = 0;
+        GridAdornment.insertTitle                           (optionsGrid2, rowIdx++, SPACING, rb.getString("negatron"));
         skin            = new SkinChoiceField               (optionsGrid2, rowIdx++);
         font            = new FontSelectionField            (optionsGrid2, rowIdx++);
         language        = new NegatronLanguageChoiceField   (optionsGrid2, rowIdx++);
+        new InfotipTimingChoiceField                        (optionsGrid2, rowIdx++);
         
         GridAdornment.insertSpacing                         (optionsGrid2, rowIdx++, SPACING);
         GridAdornment.insertTitle                           (optionsGrid2, rowIdx++, SPACING, isMess ? "MESS" : "MAME");

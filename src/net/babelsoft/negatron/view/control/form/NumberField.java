@@ -21,11 +21,11 @@ import java.util.IllegalFormatConversionException;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  *
@@ -47,7 +47,7 @@ public abstract class NumberField<T extends Number> extends Field {
         Label label = new Label(Language.Manager.getString("globalConf." + key));
         grid.add(label, 0, row);
         
-        Tooltip tooltip = new Tooltip(Language.Manager.tryGetString("globalConf." + key + ".tooltip"));
+        Infotip tooltip = new Infotip(Language.Manager.tryGetString("globalConf." + key + ".tooltip"));
         
         slider.setMaxWidth(Double.MAX_VALUE);
         slider.setShowTickLabels(true);

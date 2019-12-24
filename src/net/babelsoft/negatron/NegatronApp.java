@@ -18,9 +18,13 @@
 package net.babelsoft.negatron;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -38,10 +42,10 @@ import javafx.stage.Stage;
 import net.babelsoft.negatron.controller.MainController;
 import net.babelsoft.negatron.io.cache.MachineListCache;
 import net.babelsoft.negatron.io.configuration.Configuration;
+import net.babelsoft.negatron.preloader.NegatronPreloader;
 import net.babelsoft.negatron.preloader.NegatronPreloader.Notifier;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.Strings;
-import net.babelsoft.negatron.util.ToolTipDefaultsFixer;
 
 /**
  *
@@ -57,7 +61,7 @@ public class NegatronApp extends Application implements Notifier {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        ToolTipDefaultsFixer.setTooltipTimers(200, 15000, 200);
+        System.setProperty("javafx.preloader", NegatronPreloader.class.getCanonicalName());
         launch(args);
     }
     
@@ -89,18 +93,28 @@ public class NegatronApp extends Application implements Notifier {
         controller.initialiseData();
         
         if (stage != null) {
-            stage.setTitle("Negatron v" + getClass().getPackage().getImplementationVersion());
+            String implVersion = null;
+            try {
+                // Java 8 version of the below block: implVersion = getClass().getPackage().getImplementationVersion();
+                // Since Java 9 and the advent of modules, information from manifest aren't loaded anymore and so a workaround is needed
+                String res = getClass().getResource(getClass().getSimpleName() + ".class").toString();
+                URL url = new URL(res.substring(0, res.length() - (getClass().getName() + ".class").length()) + JarFile.MANIFEST_NAME);
+                Manifest manifest = new Manifest(url.openStream());
+                implVersion = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+            } catch (IOException ex) {
+                // swallow errors
+            }
+            stage.setTitle("Negatron v" + implVersion);
             stage.getIcons().add(new Image(NegatronApp.class.getResourceAsStream("resource/icon/Negatron.png")));
             stage.getIcons().add(new Image(NegatronApp.class.getResourceAsStream("resource/icon/Negatron@1.5x.png")));
             stage.getIcons().add(new Image(NegatronApp.class.getResourceAsStream("resource/icon/Negatron@2x.png")));
             stage.getIcons().add(new Image(NegatronApp.class.getResourceAsStream("resource/icon/Negatron@3x.png")));
             stage.getIcons().add(new Image(NegatronApp.class.getResourceAsStream("resource/icon/Negatron@4x.png")));
             stage.getIcons().add(new Image(NegatronApp.class.getResourceAsStream("resource/icon/Negatron@16x.png")));
-            stage.setScene(new Scene(root));
-        } else {
+        } else
             controller.restart();
-            this.stage.getScene().setRoot(root);
-        }
+        
+        this.stage.setScene(new Scene(root));
     } catch (Throwable ex) {
         Logger.getLogger(NegatronApp.class.getName()).log(Level.SEVERE, "Couldn't start Negatron", ex);
         throw ex;

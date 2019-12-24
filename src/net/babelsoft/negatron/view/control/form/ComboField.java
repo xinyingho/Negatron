@@ -19,10 +19,10 @@ package net.babelsoft.negatron.view.control.form;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  *
@@ -37,7 +37,7 @@ public class ComboField<T> extends Field {
         grid.add(label, 0, row);
         
         comboBox = new ComboBox<>();
-        comboBox.setTooltip(new Tooltip(prompt));
+        comboBox.setTooltip(new Infotip(prompt));
         comboBox.setMaxWidth(Double.MAX_VALUE);
         grid.add(comboBox, 1, row);
         GridPane.setHgrow(comboBox, Priority.SOMETIMES);

@@ -18,10 +18,10 @@
 package net.babelsoft.negatron.view.control.form;
 
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  *
@@ -36,7 +36,7 @@ public class TextField extends Field {
         grid.add(label, 0, row);
         
         text = new javafx.scene.control.TextField(Configuration.Manager.getGlobalConfiguration(key));
-        text.setTooltip(new Tooltip(Language.Manager.tryGetString("globalConf." + key + ".tooltip")));
+        text.setTooltip(new Infotip(Language.Manager.tryGetString("globalConf." + key + ".tooltip")));
         grid.add(text, 1, row);
         
         String currentValue = Configuration.Manager.getGlobalConfiguration(key);

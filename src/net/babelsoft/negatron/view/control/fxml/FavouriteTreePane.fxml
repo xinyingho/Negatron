@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%newFolder.tooltip" />
+                                <Infotip text="%newFolder.tooltip" />
                             </tooltip>
                         </Button>
                         <Button fx:id="newFavouriteButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleNewFavouriteAction" styleClass="new-favourite-button" text="%newFavourite">
@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%newFavourite.tooltip" />
+                                <Infotip text="%newFavourite.tooltip" />
                             </tooltip>
                         </Button>
                         <Button fx:id="newSeparatorButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleNewSeparatorAction" styleClass="new-separator-button" text="%newSeparator">
@@ -56,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%newSeparator.tooltip" />
+                                <Infotip text="%newSeparator.tooltip" />
                             </tooltip>
                         </Button>
                         <Separator orientation="VERTICAL" prefHeight="200.0" />
@@ -73,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets left="2.0" right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%filter.favourite.tooltip" />
+                                <Infotip text="%filter.favourite.tooltip" />
                             </tooltip>
                         </TextField>
                         <!--ToggleButton fx:id="filterButton" mnemonicParsing="false" onAction="#handleMoreFiltersAction" text="+">
@@ -81,7 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%moreFilters.tooltip" />
+                                <Infotip text="%moreFilters.tooltip" />
                             </tooltip>
                         </ToggleButton-->
                         <Separator orientation="VERTICAL" prefHeight="200.0" />
@@ -90,12 +90,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets left="2.0" right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%expandAll.tooltip" />
+                                <Infotip text="%expandAll.tooltip" />
                             </tooltip>
                         </Button>
                         <Button fx:id="collapseAllButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleCollapseAllAction" styleClass="collapse-all-button" text="%collapseAll">
                             <tooltip>
-                                <Tooltip text="%collapseAll.tooltip" />
+                                <Infotip text="%collapseAll.tooltip" />
                             </tooltip>
                         </Button>
                     </children>
@@ -110,7 +110,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%cut.tooltip" />
+                                <Infotip text="%cut.tooltip" />
                             </tooltip>
                         </Button>
                         <Button fx:id="copyButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleCopyAction" styleClass="copy-button" text="%copy">
@@ -118,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%copy.tooltip" />
+                                <Infotip text="%copy.tooltip" />
                             </tooltip>
                         </Button>
                         <Button fx:id="pasteButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handlePasteAction" styleClass="paste-button" text="%paste">
@@ -126,7 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%paste.tooltip" />
+                                <Infotip text="%paste.tooltip" />
                             </tooltip>
                         </Button>
                         <Separator orientation="VERTICAL" prefHeight="200.0" />
@@ -135,12 +135,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                 <Insets left="2.0" right="5.0" />
                             </HBox.margin>
                             <tooltip>
-                                <Tooltip text="%edit.tooltip" />
+                                <Infotip text="%edit.tooltip" />
                             </tooltip>
                         </Button>
                         <Button fx:id="deleteButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleDeleteAction" styleClass="delete-button" text="%delete">
                             <tooltip>
-                                <Tooltip text="%delete.tooltip" />
+                                <Infotip text="%delete.tooltip" />
                             </tooltip>
                         </Button>
                     </children>
@@ -158,7 +158,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <TreeTableColumn fx:id="dateCreated" minWidth="0" prefWidth="140.0" style="-fx-alignment: center;" text="%dateCreated" visible="false" />
                     </columns>
                     <tooltip>
-                        <Tooltip text="%favouriteTreeView.tooltip" />
+                        <Infotip text="%favouriteTreeView.tooltip" />
                     </tooltip>
                 </FavouriteTreeView>
             </children>

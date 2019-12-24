@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <ToggleGroup fx:id="displayToggle" />
                     </toggleGroup>
                     <tooltip>
-                        <Tooltip text="%treeView.tooltip" />
+                        <Infotip text="%treeView.tooltip" />
                     </tooltip>
                 </ToggleButton>
                 <ToggleButton fx:id="tableViewButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleTableViewSwitchAction" styleClass="table-view-button" text="%tableView" toggleGroup="$displayToggle">
@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <Insets right="5.0" />
                     </HBox.margin>
                     <tooltip>
-                        <Tooltip text="%tableView.tooltip" />
+                        <Infotip text="%tableView.tooltip" />
                     </tooltip>
                 </ToggleButton>
                 <ToggleButton fx:id="viewButton" mnemonicParsing="false" onAction="#handleMoreViewsAction" text="+">
@@ -57,7 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <Insets right="5.0" />
                     </HBox.margin>
                     <tooltip>
-                        <Tooltip text="%moreViews.tooltip" />
+                        <Infotip text="%moreViews.tooltip" />
                     </tooltip>
                 </ToggleButton>
                 <Separator orientation="VERTICAL" prefHeight="200.0" />
@@ -74,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <Insets left="2.0" right="5.0" />
                     </HBox.margin>
                     <tooltip>
-                        <Tooltip text="%filter.tooltip" />
+                        <Infotip text="%filter.tooltip" />
                     </tooltip>
                 </TextField>
                 <ToggleButton fx:id="filterButton" mnemonicParsing="false" onAction="#handleMoreFiltersAction" text="+">
@@ -82,7 +82,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <Insets right="5.0" />
                     </HBox.margin>
                     <tooltip>
-                        <Tooltip text="%moreFilters.tooltip" />
+                        <Infotip text="%moreFilters.tooltip" />
                     </tooltip>
                 </ToggleButton>
                 <Separator orientation="VERTICAL" prefHeight="200.0" />
@@ -91,12 +91,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <Insets left="2.0" right="5.0" />
                     </HBox.margin>
                     <tooltip>
-                        <Tooltip text="%expandAll.tooltip" />
+                        <Infotip text="%expandAll.tooltip" />
                     </tooltip>
                 </Button>
                 <Button fx:id="collapseAllButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleCollapseAllAction" styleClass="collapse-all-button" text="%collapseAll">
                     <tooltip>
-                        <Tooltip text="%collapseAll.tooltip" />
+                        <Infotip text="%collapseAll.tooltip" />
                     </tooltip>
                 </Button>
             </children>
@@ -116,7 +116,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <TreeTableColumn id="status" minWidth="0" prefWidth="50.0" style="-fx-alignment: center;" text="%status" />
             </columns>
             <tooltip>
-                <Tooltip text="%emulatedItemTreeView.tooltip" />
+                <Infotip text="%emulatedItemTreeView.tooltip" />
             </tooltip>
         </EmulatedItemTreeView>
     </children>

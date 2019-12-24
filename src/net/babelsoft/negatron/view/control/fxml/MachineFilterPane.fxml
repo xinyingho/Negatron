@@ -75,7 +75,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                       <Label minWidth="-Infinity" text="%description" wrapText="true" GridPane.rowIndex="1" />
                       <TextField fx:id="description" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
                          <tooltip>
-                            <Tooltip text="%description.tooltip" />
+                            <Infotip text="%description.tooltip" />
                          </tooltip></TextField>
                       <Label minWidth="-Infinity" text="%name" wrapText="true" GridPane.rowIndex="2" />
                       <TextField fx:id="name" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
@@ -98,7 +98,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             </VBox>
                             <TextField fx:id="year" prefWidth="70.0">
                                <tooltip>
-                                  <Tooltip text="%year.tooltip" />
+                                  <Infotip text="%year.tooltip" />
                                </tooltip></TextField>
                             <HBox fx:id="yearRangePane" alignment="CENTER_LEFT" spacing="5.0">
                                <children>
@@ -129,15 +129,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                          <children>
                             <CheckBox fx:id="supportGood" mnemonicParsing="false" onAction="#handleOnAction" text="%supportLevel.good">
                                <tooltip>
-                                  <Tooltip text="%supportGood.tooltip" />
+                                  <Infotip text="%supportGood.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="supportImperfect" mnemonicParsing="false" onAction="#handleOnAction" text="%imperfect">
                                <tooltip>
-                                  <Tooltip text="%supportImperfect.tooltip" />
+                                  <Infotip text="%supportImperfect.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="supportPreliminary" mnemonicParsing="false" onAction="#handleOnAction" text="%preliminary">
                                <tooltip>
-                                  <Tooltip text="%supportPreliminary.tooltip" />
+                                  <Infotip text="%supportPreliminary.tooltip" />
                                </tooltip></CheckBox>
                          </children>
                       </FlowPane>
@@ -146,15 +146,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                          <children>
                             <CheckBox fx:id="statusGood" mnemonicParsing="false" onAction="#handleOnAction" text="%romChdStatus.good">
                                <tooltip>
-                                  <Tooltip text="%statusGood.machine.tooltip" />
+                                  <Infotip text="%statusGood.machine.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="statusBad" mnemonicParsing="false" onAction="#handleOnAction" text="%bad">
                                <tooltip>
-                                  <Tooltip text="%statusBad.machine.tooltip" />
+                                  <Infotip text="%statusBad.machine.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="statusMissing" mnemonicParsing="false" onAction="#handleOnAction" text="%missing">
                                <tooltip>
-                                  <Tooltip text="%statusMissing.machine.tooltip" />
+                                  <Infotip text="%statusMissing.machine.tooltip" />
                                </tooltip></CheckBox>
                          </children>
                       </FlowPane>
@@ -165,11 +165,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                          <children>
                             <CheckBox fx:id="machineTypeElectronic" mnemonicParsing="false" onAction="#handleOnAction" text="%electronic">
                                <tooltip>
-                                  <Tooltip text="%electronic.tooltip" />
+                                  <Infotip text="%electronic.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="machineTypeMechanical" mnemonicParsing="false" onAction="#handleOnAction" text="%mechanical">
                                <tooltip>
-                                  <Tooltip text="%mechanical.tooltip" />
+                                  <Infotip text="%mechanical.tooltip" />
                                </tooltip></CheckBox>
                          </children>
                       </FlowPane>
@@ -185,11 +185,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                          <children>
                             <CheckBox fx:id="softwareHousingEmbedded" mnemonicParsing="false" onAction="#handleOnAction" text="%embedded">
                                <tooltip>
-                                  <Tooltip text="%embedded.tooltip" />
+                                  <Infotip text="%embedded.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="softwareHousingMedium" mnemonicParsing="false" onAction="#handleOnAction" text="%separateMedium">
                                <tooltip>
-                                  <Tooltip text="%separateMedium.tooltip" />
+                                  <Infotip text="%separateMedium.tooltip" />
                                </tooltip></CheckBox>
                          </children>
                       </FlowPane>
@@ -215,11 +215,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                          <children>
                             <CheckBox fx:id="serviceModeAvailable" mnemonicParsing="false" onAction="#handleOnAction" text="%available">
                                <tooltip>
-                                  <Tooltip text="%serviceMode.tooltip" />
+                                  <Infotip text="%serviceMode.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="serviceModeUnavailable" mnemonicParsing="false" onAction="#handleOnAction" text="%unavailable">
                                <tooltip>
-                                  <Tooltip text="%serviceMode.tooltip" />
+                                  <Infotip text="%serviceMode.tooltip" />
                                </tooltip></CheckBox>
                          </children>
                       </FlowPane>
@@ -228,11 +228,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                          <children>
                             <CheckBox fx:id="tiltDetectionAvailable" mnemonicParsing="false" onAction="#handleOnAction" text="%available">
                                <tooltip>
-                                  <Tooltip text="%tiltSlamDetection.tooltip" />
+                                  <Infotip text="%tiltSlamDetection.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="tiltDetectionUnavailable" mnemonicParsing="false" onAction="#handleOnAction" text="%unavailable">
                                <tooltip>
-                                  <Tooltip text="%tiltSlamDetection.tooltip" />
+                                  <Infotip text="%tiltSlamDetection.tooltip" />
                                </tooltip></CheckBox>
                          </children>
                       </FlowPane>
@@ -262,67 +262,67 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                             <CheckBox fx:id="soundNone" mnemonicParsing="false" onAction="#handleOnAction" text="%none" />
                             <CheckBox fx:id="soundMono" mnemonicParsing="false" onAction="#handleOnAction" text="%mono">
                                <tooltip>
-                                  <Tooltip text="%mono.tooltip" />
+                                  <Infotip text="%mono.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="soundStereo" mnemonicParsing="false" onAction="#handleOnAction" text="%stereo">
                                <tooltip>
-                                  <Tooltip text="%stereo.tooltip" />
+                                  <Infotip text="%stereo.tooltip" />
                                </tooltip></CheckBox>
                             <CheckBox fx:id="soundSurround" mnemonicParsing="false" onAction="#handleOnAction" text="%surround">
                                <tooltip>
-                                  <Tooltip text="%surround.tooltip" />
+                                  <Infotip text="%surround.tooltip" />
                                </tooltip></CheckBox>
                          </children>
                       </FlowPane>
                       <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="27" />
                     <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#handleOnSetCompanyAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="3">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetGroupAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="4">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetYearAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="5">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetVersionAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="6">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetSupportAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="9">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetStatusAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="10">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetMachineTypeAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="13">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetBusinessModelAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="14">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetSoftwareHousingTypeAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="15">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetMaxNumberPlayersAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="18">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <VBox alignment="CENTER" spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="19">
@@ -331,34 +331,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                           <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#handleOnSelectNoneControllers" text="%selectNone" />
                           <Button mnemonicParsing="false" onAction="#handleOnSetControllerAsSelection" text="%setAsSelection.machine">
                              <tooltip>
-                                <Tooltip text="%setAsSelection.machine.tooltip" />
+                                <Infotip text="%setAsSelection.machine.tooltip" />
                              </tooltip>
                           </Button>
                        </children>
                     </VBox>
                     <Button mnemonicParsing="false" onAction="#handleOnSetDisplayAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="24">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetServiceModeAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="20">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetTiltSlamDetectionAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="21">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetScreenOrientationAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="25">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnSetSoundAsSelection" text="%setAsSelection.machine" GridPane.columnIndex="2" GridPane.rowIndex="26">
                        <tooltip>
-                          <Tooltip text="%setAsSelection.machine.tooltip" />
+                          <Infotip text="%setAsSelection.machine.tooltip" />
                        </tooltip>
                     </Button>
                     <Button mnemonicParsing="false" onAction="#handleOnRestoreDefaults" text="%restoreDefaults" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="28" />

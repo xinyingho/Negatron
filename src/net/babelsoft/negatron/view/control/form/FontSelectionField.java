@@ -24,7 +24,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -33,6 +32,7 @@ import javafx.scene.text.Font;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.Strings;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  *
@@ -52,7 +52,7 @@ public class FontSelectionField extends Field {
         
         fontBox = new ComboBox<>(FXCollections.observableArrayList(Font.getFamilies()));
         fontBox.setMaxWidth(Double.MAX_VALUE);
-        fontBox.setTooltip(new Tooltip(Language.Manager.getString("font.tooltip")));
+        fontBox.setTooltip(new Infotip(Language.Manager.getString("font.tooltip")));
         fontBox.setCellFactory((listView) -> {
             return new ListCell<String>() {
                 @Override

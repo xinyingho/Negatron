@@ -79,6 +79,7 @@ public enum Configuration {
     private final String VLC_ENTRY = "vlc";
     private final String SKIN_ENTRY = "skin";
     private final String LANGUAGE_ENTRY = "language";
+    private final String INFOTIP_TIMING_ENTRY = "infotipTiming";
     private final String CHEAT_MENU_ENTRY = "cheatmenu";
     private final String VSYNC_ENTRY = "vsync";
     private final String FONT_FAMILY_ENTRY = "fontFamily";
@@ -102,6 +103,7 @@ public enum Configuration {
     private String vlcPath;
     private String skin;
     private String language;
+    private String infotipTiming;
     private Boolean cheatMenuEnabled;
     private VsyncMethod vsync;
     private String fontFamily;
@@ -176,6 +178,9 @@ public enum Configuration {
                         break;
                     case LANGUAGE_ENTRY:
                         language = tidyStringPath(content[1]);
+                        break;
+                    case INFOTIP_TIMING_ENTRY:
+                        infotipTiming = tidyStringPath(content[1]);
                         break;
                     case CHEAT_MENU_ENTRY:
                         cheatMenuEnabled = digitToBoolean(content[1]);
@@ -401,6 +406,8 @@ public enum Configuration {
             skin = "";
         if (language == null)
             language = "";
+        if (infotipTiming == null)
+            infotipTiming = InfotipTiming.AGGRESSIVE.getName();
         if (vsync == null)
             vsync = VsyncMethod.NONE;
         if (fontFamily == null)
@@ -725,6 +732,7 @@ public enum Configuration {
             writeConfigurationLine(writer, VLC_ENTRY, vlcPath);
             writeConfigurationLine(writer, SKIN_ENTRY, skin);
             writeConfigurationLine(writer, LANGUAGE_ENTRY, language);
+            writeConfigurationLine(writer, INFOTIP_TIMING_ENTRY, infotipTiming);
             writeConfigurationLine(writer, CHEAT_MENU_ENTRY, cheatMenuEnabled);
             writeConfigurationLine(writer, VSYNC_ENTRY, vsync.name);
             writeConfigurationLine(writer, FONT_FAMILY_ENTRY, fontFamily);
@@ -817,6 +825,10 @@ public enum Configuration {
     
     public String getLanguage() {
         return language;
+    }
+    
+    public String getInfotipTiming() {
+        return infotipTiming;
     }
     
     public boolean isCheatMenuEnabled() {
@@ -1139,6 +1151,13 @@ public enum Configuration {
     public void updateLanguage(String language) throws IOException {
         if (!this.language.equals(language)) {
             this.language = language;
+            writeNegatronInitialisationFile();
+        }
+    }
+    
+    public void updateInfotipTiming(String infotipTiming) throws IOException {
+        if (!this.infotipTiming.equals(infotipTiming)) {
+            this.infotipTiming = infotipTiming;
             writeNegatronInitialisationFile();
         }
     }

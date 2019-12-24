@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -34,6 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -192,7 +196,17 @@ public class Extras {
     }
     
     private static Path getDocumentPath(String wantedFilenameMask, String removingExpression, String resource) throws IOException {
-        String version = Extras.class.getPackage().getImplementationVersion();
+        String version = null;
+        try {
+            // Java 8 version of the below block: version = Extras.class.getPackage().getImplementationVersion();
+            // Since Java 9 and the advent of modules, information from manifest aren't loaded anymore and so a workaround is needed
+            String res = Extras.class.getResource(Extras.class.getSimpleName() + ".class").toString();
+            URL url = new URL(res.substring(0, res.length() - (Extras.class.getName() + ".class").length()) + JarFile.MANIFEST_NAME);
+            Manifest manifest = new Manifest(url.openStream());
+            version = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+        } catch (IOException ex) {
+            // swallow errors
+        }
         Path defaultDocumentPath = Paths.get(".", String.format(wantedFilenameMask, version));
         
         if (Files.notExists(defaultDocumentPath)) {

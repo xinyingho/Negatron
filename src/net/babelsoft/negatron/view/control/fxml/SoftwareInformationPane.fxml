@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <Insets left="4" /> 
             </HBox.margin>
             <tooltip>
-                <Tooltip text="%favourites.tooltip" />
+                <Infotip text="%favourites.tooltip" />
             </tooltip>
         </Button>
    </header>
@@ -79,17 +79,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                </SubScene-->
                                <ImageViewPane fx:id="boxartImagePane" GridPane.columnIndex="0">
                                    <tooltip>
-                                       <Tooltip text="%boxArt" />
+                                       <Infotip text="%boxArt" />
                                    </tooltip>
                                </ImageViewPane>
                                <ImageViewPane fx:id="coverImagePane" GridPane.columnIndex="1">
                                    <tooltip>
-                                       <Tooltip text="%cover" />
+                                       <Infotip text="%cover" />
                                    </tooltip>
                                </ImageViewPane>
                                <ImageViewPane fx:id="mediaImagePane" GridPane.columnIndex="2">
                                    <tooltip>
-                                       <Tooltip text="%media" />
+                                       <Infotip text="%media" />
                                    </tooltip>
                                </ImageViewPane>
                            </children>
@@ -119,12 +119,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                            <children>
                               <ImageViewPane fx:id="titleImagePane" GridPane.rowIndex="0">
                                   <tooltip>
-                                      <Tooltip text="%title" />
+                                      <Infotip text="%title" />
                                   </tooltip>
                               </ImageViewPane>
                               <ImageViewPane fx:id="snapshotImagePane" GridPane.rowIndex="1">
                                   <tooltip>
-                                      <Tooltip text="%snapshot" />
+                                      <Infotip text="%snapshot" />
                                   </tooltip>
                               </ImageViewPane>
                            </children>

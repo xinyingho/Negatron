@@ -17,8 +17,8 @@
  */
 package net.babelsoft.negatron.view.skin;
 
-import com.sun.javafx.scene.control.skin.BehaviorSkinBase;
-import com.sun.javafx.scene.control.skin.TreeTableCellSkin;
+import com.sun.javafx.scene.control.behavior.BehaviorBase;
+import javafx.scene.control.skin.TreeTableCellSkin;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,9 +35,12 @@ public class FavouriteTreeTableCellSkin<S,T> extends TreeTableCellSkin<S,T> {
         super(treeTableCell);
         
         try {
-            Field f = BehaviorSkinBase.class.getDeclaredField("behavior");
+            Field f = TreeTableCellSkin.class.getDeclaredField("behavior");
             f.setAccessible(true);
+            
+            BehaviorBase behavior = (BehaviorBase)f.get(this);
             f.set(this, new FavouriteTreeTableCellBehavior<>(treeTableCell));
+            behavior.dispose();
         } catch (Exception ex) {
             Logger.getLogger(FavouriteTreeTableCellSkin.class.getName()).log(Level.SEVERE, null, ex);
         }

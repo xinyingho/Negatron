@@ -86,7 +86,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                      <children>
                         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="SOMETIMES">
                            <children>
-                              <Label fx:id="optionsLabel" text="MAME" />
                               <GridPane fx:id="optionsGrid" hgap="5.0" vgap="10.0" VBox.vgrow="SOMETIMES">
                                 <columnConstraints>
                                   <ColumnConstraints minWidth="90.0" />
@@ -101,7 +100,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <Separator orientation="VERTICAL" prefHeight="200.0" />
                         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="SOMETIMES">
                            <children>
-                              <Label fx:id="optionsLabel2" text="%negatron" />
                               <GridPane fx:id="optionsGrid2" hgap="5.0" vgap="10.0">
                                 <columnConstraints>
                                   <ColumnConstraints minWidth="90.0" />

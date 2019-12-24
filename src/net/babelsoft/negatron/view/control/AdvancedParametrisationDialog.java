@@ -17,7 +17,6 @@
  */
 package net.babelsoft.negatron.view.control;
 
-import com.sun.javafx.scene.control.skin.resources.ControlResources;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -28,7 +27,6 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -96,8 +94,8 @@ public class AdvancedParametrisationDialog extends Dialog<String> {
 
         dialogPane.contentTextProperty().addListener(o -> updateGrid());
 
-        setTitle(ControlResources.getString("Dialog.confirm.title"));
-        dialogPane.setHeaderText(ControlResources.getString("Dialog.confirm.header"));
+        setTitle(Language.Manager.getString("Dialog.confirm.title"));
+        dialogPane.setHeaderText(Language.Manager.getString("Dialog.confirm.header"));
         dialogPane.getStyleClass().add("text-input-dialog");
         dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -126,15 +124,15 @@ public class AdvancedParametrisationDialog extends Dialog<String> {
         getDialogPane().getButtonTypes().setAll(okButtonType, ButtonType.CANCEL);
 
         Button noDrcButton = new Button(language.getString("noDynaRec"));
-        noDrcButton.setTooltip(new Tooltip(language.getString("noDynaRec.tooltip")));
+        noDrcButton.setTooltip(new Infotip(language.getString("noDynaRec.tooltip")));
         noDrcButton.setOnAction(evt -> getEditor().appendText(" -nodrc"));
         Button biosButton = new Button(language.getString("bios"));
-        biosButton.setTooltip(new Tooltip(language.getString("bios.tooltip")));
+        biosButton.setTooltip(new Infotip(language.getString("bios.tooltip")));
         biosButton.setOnAction(evt -> getEditor().appendText(
             String.format(" -bios <%s>", language.getString("bios.parameter"))
         ));
         Button ramSizeButton = new Button(language.getString("ramSize"));
-        ramSizeButton.setTooltip(new Tooltip(language.getString("ramSize.tooltip")));
+        ramSizeButton.setTooltip(new Infotip(language.getString("ramSize.tooltip")));
         ramSizeButton.setOnAction(evt -> getEditor().appendText(
             String.format(" -ramsize <%s>", language.getString("ramSize.parameter"))
         ));

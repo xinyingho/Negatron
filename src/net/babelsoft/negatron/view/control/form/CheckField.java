@@ -20,9 +20,9 @@ package net.babelsoft.negatron.view.control.form;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import net.babelsoft.negatron.view.control.Infotip;
 
 /**
  *
@@ -37,7 +37,7 @@ public class CheckField extends Field {
         grid.add(label, 0, row);
         
         checkBox = new CheckBox();
-        checkBox.setTooltip(new Tooltip(prompt));
+        checkBox.setTooltip(new Infotip(prompt));
         grid.add(checkBox, 1, row);
 
         // add dummy constraints for current row
