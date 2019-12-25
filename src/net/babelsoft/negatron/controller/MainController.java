@@ -1037,14 +1037,18 @@ public class MainController implements Initializable, AlertController, EditContr
     }
     
     private void closeSoftwareFilterWindow() {
-        if (softwareFilterWindow.getDisplayMode() != DisplayMode.HIDDEN) {
+        if (softwareFilterWindow.getDisplayMode() != DisplayMode.HIDDEN)
             softwareFilterWindow.close();
-        }
     }
     
     private void closeGlobalConfigurationWindow() {
-        if (globalConfigurationButton.isSelected())
-            globalConfigurationButton.fire();
+        if (globalConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+            globalConfigurationWindow.close();
+    }
+    
+    private void closeStatisticsWindow() {
+        if (statisticsWindow.getDisplayMode() != DisplayMode.HIDDEN)
+            statisticsWindow.close();
     }
     
     private void launchMame(List<String> parameters) throws IOException {
@@ -1326,6 +1330,9 @@ public class MainController implements Initializable, AlertController, EditContr
     @FXML
     private void handleFavouriteViewAction(ActionEvent event) {
         if (favouriteViewButton.isSelected()) {
+            closeGlobalConfigurationWindow();
+            closeStatisticsWindow();
+            
             favouriteTreeWindow.showMaximised();
             machineTreePane.clearSelection();
             favouriteTreePane.clearSelection();
@@ -1344,9 +1351,8 @@ public class MainController implements Initializable, AlertController, EditContr
     @FXML
     private void handleStatisticsAction(ActionEvent event) {
         if (statisticsButton.isSelected()) {
+            closeGlobalConfigurationWindow();
             statisticsWindow.showMaximised();
-            if (globalConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
-                globalConfigurationWindow.close();
         } else
             statisticsWindow.close();
     }
@@ -1387,9 +1393,8 @@ public class MainController implements Initializable, AlertController, EditContr
     private void handleGlobalConfigurationAction(ActionEvent event) {
         switch (globalConfigurationWindow.getDisplayMode()) {
             case HIDDEN:
+                closeStatisticsWindow();
                 globalConfigurationWindow.showMaximised();
-                if (statisticsWindow.getDisplayMode() != DisplayMode.HIDDEN)
-                    statisticsWindow.close();
                 break;
             default:
                 globalConfigurationWindow.close();
