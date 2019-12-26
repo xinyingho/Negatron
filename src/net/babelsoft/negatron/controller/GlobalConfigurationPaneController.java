@@ -541,8 +541,8 @@ public class GlobalConfigurationPaneController implements Initializable {
         addRemoveFoldersGridField(controller);
         addRemoveGridFields(foldersGrid, 7);
         addRemoveGridFields(foldersGrid2, 1);
-        addRemoveGridFields(optionsGrid, 5);
-        addRemoveGridFields(optionsGrid2, 3);
+        addRemoveGridFields(optionsGrid, 6);
+        addRemoveGridFields(optionsGrid2, 4);
         
         try {
             Configuration.Manager.updateGlobalAdvancedOptionsEnabled(
