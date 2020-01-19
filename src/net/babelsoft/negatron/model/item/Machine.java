@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javafx.util.Pair;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.model.ControllerType;
@@ -279,7 +280,29 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
     }
     
     public List<SoftwareListFilter> getSoftwareLists() {
-        return softwareLists;
+        if (getSlots() == null)
+            return softwareLists;
+        
+        // Some selected slot options can also provide additional software lists
+        List<SoftwareListFilter> additionalSoftwareLists = getSlots().stream().map(
+                slot -> slot.getValue().getDevice()
+        ).filter(
+                device -> device != null
+        ).map(
+                device -> device.getSoftwareLists()
+        ).filter(
+                list -> list != null
+        ).flatMap(
+                list -> list.stream()
+        ).collect(
+                Collectors.toList()
+        );
+        
+        if (additionalSoftwareLists.size() > 0) {
+            additionalSoftwareLists.addAll(softwareLists);
+            return additionalSoftwareLists;
+        } else
+            return softwareLists;
     }
     
     public Merger reset(String origin) {
