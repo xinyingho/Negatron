@@ -12,7 +12,7 @@ Moreover, Negatron's second objective is to ease the creation of a complete info
 
 ## PREREQUISITES
 
-Negatron requires a Java runtime environment (JRE) to work: ensure that your computer has at least Java version 8 update 60, or newer. If you have any doubt, you can simply download the latest Java version at http://www.java.com and install it on your computer.
+Negatron requires a Java runtime environment (JRE) to work: ensure that your computer has at least Java 13, or newer. If you have any doubts, you can download the latest version of OpenJDK at https://jdk.java.net/ or the latest version of Java SE at https://java.oracle.com/ and install it on your computer.
 
 Negatron also requires MAME to be installed on your computer. Although it has only been tested with v0.162 or newer, Negatron should work with MAME / MESS v0.70 and newer as well. You can get the latest version for your specific OS at http://www.mamedev.org. If you plan on using MAME v0.186 or newer, we strongly recommend you to use the derivative NegaMAME instead as recent versions of MAME disabled access to some information on emulated consoles and computers to third-party front-ends. It's available at http://www.babelsoft.net/products/negamame.htm. However, if you only play arcade games, you shouldn't see any differences between official MAME and NegaMAME.
 
@@ -34,7 +34,7 @@ For any further information, please refer to the manual (Negatron Manual vXXX.pd
 
 ## LICENSE
 
-Copyright (C) 2015-2018 BabelSoft S.A.S.U.
+Copyright (C) 2015-2020 BabelSoft S.A.S.U.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -54,17 +54,16 @@ To compile NegaMAME:
 
 To compile Negatron:
 1. Create a root folder locally that will hold the source code of Negatron and all its dependencies.
-2. Within this root folder, download the source code of Negatron, Negatron-Preloader, TwelveMonkeys, vlcj-experimental and OpenViewerFX using git. It's important to have them all inside the same root folder as some dependencies will only be available in \<root\>/Negatron/lib/ and the projects are configured with relative paths.
-3. Switch vlcj-experimental to its "experimental" branch with the command `git checkout experimental`.
-4. Ensure that you have the latest version of JDK 1.8. For now, Negatron won't work on Java 9 or newer, only on Java 8. Migration to Java 9+ will be done at a later time.
-5. The following instructions have been tested against Apache Netbeans 9.0. But it should also work with other IDEs.
-6. Open all the 5 Java projects in Netbeans. *Do not import them*, simply use "File > Open Projects...". Netbeans may issue some warnings. Ignore them as they will be solved by compiling the projects.
+2. Within this root folder, download the source code of Negatron, Negatron-Preloader, OpenViewerFX and Moditect using git. For OpenViewerFX and Moditect, you must get them from https://github.com/xinyingho/ as those versions include important modifications not available from the original repositories of those projects.
+3. Switch Moditect to the branch "negatron-branch" with the command `git checkout negatron-branch`.
+4. Ensure that you have the latest version of OpenJDK or Oracle Java SE, at least v13. This won't work on earlier versions of Java.
+5. The following instructions have been tested against Apache Netbeans 11.2. But it should also work with other IDEs.
+6. Open all the 4 Java projects in Netbeans. *Do not import them*, simply use "File > Open Projects...". Netbeans may issue some warnings. Ignore them as they will be solved by compiling the projects.
 7. Compile them in this order and you're done:
-   1. TwelveMonkeys
-   2. vlcj-experimental
-   3. OpenViewerFX
-   4. Negatron-Preloader
-   5. Negatron
+   1. Moditect
+   2. OpenViewerFX
+   3. Negatron-Preloader
+   4. Negatron
 
 The Windows version of Negatron also has a native executable file to ease launch for Windows users.  To compile it:
 1. Download its source code using git i.e. `git clone https://github.com/xinyingho/Negatron-Boostrap`.
