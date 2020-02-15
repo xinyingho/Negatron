@@ -18,8 +18,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <moduleName>negatron</moduleName>
         <mainClass>net.babelsoft.negatron.NegatronApp</mainClass>
-        <javafx.version>13.0.1</javafx.version>
-        <twelvemonkeys.version>3.4.2</twelvemonkeys.version>
+        <javafx.version>13.0.2</javafx.version>
+        <twelvemonkeys.version>3.5</twelvemonkeys.version>
+        <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
+        <vlcj.version>4.3.0-negatron</vlcj.version>
+        <vlcj-natives.version>4.1.0</vlcj-natives.version>
+        <vlc-jna.version>5.2.0</vlc-jna.version>
         <localLibPath>${project.basedir}/lib</localLibPath>
     </properties>
     
@@ -89,7 +93,7 @@
         <dependency>
             <groupId>org.jpedal</groupId>
             <artifactId>OpenViewerFX</artifactId>
-            <version>6.6.30-negatron</version>
+            <version>${openviewerfx.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.mozilla</groupId>
@@ -108,7 +112,7 @@
         <dependency>
             <groupId>uk.co.caprica</groupId>
             <artifactId>vlcj</artifactId>
-            <version>4.2.0</version>
+            <version>${vlcj.version}</version>
         </dependency>
     </dependencies>
 
@@ -293,7 +297,7 @@
                                     <artifact>
                                         <groupId>uk.co.caprica</groupId>
                                         <artifactId>vlcj</artifactId>
-                                        <version>4.2.0</version>
+                                        <version>${vlcj.version}</version>
                                     </artifact>
                                     <moduleInfo>
                                         <uses>uk.co.caprica.vlcj.factory.discovery.provider.DiscoveryDirectoryProvider;</uses>
@@ -303,15 +307,7 @@
                                     <artifact>
                                         <groupId>uk.co.caprica</groupId>
                                         <artifactId>vlcj-natives</artifactId>
-                                        <version>4.1.0</version>
-                                    </artifact>
-                                    <moduleInfo /> <!-- generates a default module-info -->
-                                </module>
-                                <module>
-                                    <artifact>
-                                        <groupId>uk.co.caprica</groupId>
-                                        <artifactId>vlcj-osx-stubs</artifactId>
-                                        <version>1.0.0</version>
+                                        <version>${vlcj-natives.version}</version>
                                     </artifact>
                                     <moduleInfo /> <!-- generates a default module-info -->
                                 </module>
@@ -319,15 +315,19 @@
                                     <artifact>
                                         <groupId>net.java.dev.jna</groupId>
                                         <artifactId>jna</artifactId>
-                                        <version>5.2.0</version>
+                                        <version>${vlc-jna.version}</version>
                                     </artifact>
-                                    <moduleInfo /> <!-- generates a default module-info -->
+                                    <moduleInfo>
+                                        <opensResources>
+                                            com.sun.jna.darwin;
+                                        </opensResources>
+                                    </moduleInfo>
                                 </module>
                                 <module>
                                     <artifact>
                                         <groupId>net.java.dev.jna</groupId>
                                         <artifactId>jna-platform</artifactId>
-                                        <version>5.2.0</version>
+                                        <version>${vlc-jna.version}</version>
                                     </artifact>
                                     <moduleInfo>
                                         <exports>
@@ -368,6 +368,7 @@
                                         net.babelsoft.negatron.view.control to javafx.fxml;
                                         net.babelsoft.negatron.model.favourites to javafx.base;
                                         net.babelsoft.negatron.view.control.adapter to javafx.base;
+                                        net.babelsoft.negatron.view.skin;
                                     </opens>
                                     <opensResources>
                                         net.babelsoft.negatron.resource;
