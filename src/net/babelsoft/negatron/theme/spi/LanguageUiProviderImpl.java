@@ -24,7 +24,11 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.spi.AbstractResourceBundleProvider;
@@ -38,19 +42,34 @@ public class LanguageUiProviderImpl extends AbstractResourceBundleProvider imple
     
     @Override
     public ResourceBundle getBundle(String baseName, Locale locale) {
-        String bundleName = toBundleName(Language.Manager.FILE_PATH, locale);
-        java.util.ResourceBundle bundle = null;
+        ResourceBundle bundle = null;
 
+        // Retrieve the resource name
+        final String bundleName = toBundleName(Language.Manager.FILE_PATH, locale);
         final String resourceName = ResourceBundle.Control.getControl(
                 ResourceBundle.Control.FORMAT_DEFAULT
         ).toResourceName(bundleName, "properties");
         if (resourceName == null) {
             return bundle;
         }
+        
+        // Retrieve all the potential resource root folders
+        final List<String> resourcePaths = new ArrayList<>();
+        resourcePaths.add(""); // default path to the current working folder
+        String libraryPath = System.getProperty("java.library.path");
+        if (libraryPath != null)
+            resourcePaths.addAll( Arrays.asList(libraryPath.split(";")) );
 
-        final Path path = Paths.get(resourceName);
-        if (Files.exists(path)) try (
-            InputStream stream = Files.newInputStream(path);
+        // Search for the resource over all those root folders
+        final Optional<Path> optionalPath = resourcePaths.stream().map(
+                path -> Paths.get(path, resourceName)
+        ).filter(
+                path -> Files.exists(path)
+        ).findFirst();
+        
+        // Embed the resource into a bundle
+        if (optionalPath.isPresent()) try (
+            InputStream stream = Files.newInputStream(optionalPath.get());
             InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
         ) {
             bundle = new PropertyResourceBundle(reader);
