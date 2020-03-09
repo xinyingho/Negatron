@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.theme.spi;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,7 +59,7 @@ public class LanguageUiProviderImpl extends AbstractResourceBundleProvider imple
         resourcePaths.add(""); // default path to the current working folder
         String libraryPath = System.getProperty("java.library.path");
         if (libraryPath != null)
-            resourcePaths.addAll( Arrays.asList(libraryPath.split(";")) );
+            resourcePaths.addAll( Arrays.asList(libraryPath.split(File.pathSeparator)) );
 
         // Search for the resource over all those root folders
         final Optional<Path> optionalPath = resourcePaths.stream().map(
