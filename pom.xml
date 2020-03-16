@@ -4,28 +4,366 @@
 
     <groupId>net.babelsoft</groupId>
     <artifactId>Negatron</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.100</version>
     <packaging>jar</packaging>
 
     <name>Negatron</name>
-
+    <description>Negatron, the user-friendly desktop front-end for MAME</description>
+    <url>http://www.negatron.net/</url>
+    <inceptionYear>2015</inceptionYear>
+    <licenses>
+        <license>
+            <name>GPLv3+</name>
+            <url>https://www.gnu.org/licenses/gpl.html</url>
+            <comments>${copyright}</comments>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git@github.com:xinyingho/Negatron.git</connection>
+        <url>https://www.github.com/xinyingho/Negatron/tree/${project.scm.tag}</url>
+        <tag>master</tag>
+    </scm>
     <organization>
-        <!-- Used as the 'Vendor' for JNLP generation -->
         <name>BabelSoft</name>
+        <url>http://www.babelsoft.net/</url>
     </organization>
+    <developers>
+        <developer>
+            <id>xinyingho</id>
+            <name>Cyril APAN 黄保倫</name>
+            <email>cyril.apan@babelsoft.net</email>
+            <roles>
+                <role>project manager</role>
+                <role>functional architect</role>
+                <role>business analyst</role>
+                <role>technical architect</role>
+                <role>developer</role> <!-- the only role that really matters -->
+                <role>q/a</role>
+                <role>support level 1/2/3</role>
+                <role>release manager</role>
+                <role>stakeholder</role> <!-- the other role that actually matters -->
+                <role>product owner</role>
+                <role>business owner</role>
+            </roles>
+            <timezone>Europe/Paris</timezone>
+        </developer>
+    </developers>
 
     <properties>
+        <copyright>${project.organization.name} copyright © 2020</copyright>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <moduleName>negatron</moduleName>
         <mainClass>net.babelsoft.negatron.NegatronApp</mainClass>
+        
+        <package.basedir>${project.build.directory}/package</package.basedir>
+        <package.runtime.output>${package.basedir}/runtime</package.runtime.output>
+        <package.app.output>${package.basedir}/app</package.app.output>
+        
         <javafx.version>13.0.2</javafx.version>
         <twelvemonkeys.version>3.5</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
         <vlcj.version>4.3.0-negatron</vlcj.version>
         <vlcj-natives.version>4.1.0</vlcj-natives.version>
         <vlc-jna.version>5.2.0</vlc-jna.version>
+        
         <localLibPath>${project.basedir}/lib</localLibPath>
     </properties>
+    
+    <profiles>
+        <profile>
+            <id>win</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <os.name>Win64</os.name>
+                <bundle.type>msi</bundle.type>
+                <jpackage.home>${java.home}/../jdk</jpackage.home>
+                <icon>${project.basedir}/../Negatron-Bootstrap/Negatron-Bootstrap/Negatron.ico</icon>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources-win</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${package.app.output}/vlc-3.0.8</outputDirectory>
+                                    <resources>          
+                                        <resource>
+                                            <directory>${project.basedir}/vlc-3.0.8</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>              
+                                </configuration>            
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>--type</argument>
+                                        <argument>${bundle.type}</argument>
+                                        <argument>--icon</argument>
+                                        <argument>${icon}</argument>
+                                        <argument>--app-version</argument>
+                                        <argument>${project.version}</argument>
+                                        <argument>--copyright</argument>
+                                        <argument>${copyright}</argument>
+                                        <argument>--name</argument>
+                                        <argument>${project.name}</argument>
+                                        <argument>--vendor</argument>
+                                        <argument>${project.organization.name}</argument>
+                                        <argument>--description</argument>
+                                        <argument>${project.description}</argument>
+                                        <argument>--license-file</argument>
+                                        <argument>${project.basedir}/license.txt</argument>
+                                
+                                        <argument>--runtime-image</argument>
+                                        <argument>${package.runtime.output}</argument>
+                                        <argument>--input</argument>
+                                        <argument>${package.app.output}</argument>
+                                        
+                                        <argument>--win-menu</argument>
+                                        <argument>--win-dir-chooser</argument>
+                                        <argument>--win-menu-group</argument>
+                                        <argument>${project.organization.name}</argument>
+                                        <argument>--win-upgrade-uuid</argument>
+                                        <argument>b614f558-f821-44ed-a0f7-11ce7eddb3f5</argument>
+                                
+                                        <argument>--java-options</argument>
+                                        <argument>-Xms512m</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>-Xmx2g</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-exports</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
+                                
+                                        <argument>--module</argument>
+                                        <argument>${moduleName}/${mainClass}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+            <id>macos</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <os.name>Mac64</os.name>
+                <bundle.type>dmg</bundle.type>
+                <jpackage.home>${java.home}/../../../jdk</jpackage.home>
+                <icon>${project.basedir}/../Negatron-Bootstrap/Negatron-Bootstrap/Negatron.icns</icon>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources-mac</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${package.app.output}/VLC.app</outputDirectory>
+                                    <resources>          
+                                        <resource>
+                                            <directory>${project.basedir}/VLC.app</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>              
+                                </configuration>            
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>--type</argument>
+                                        <argument>${bundle.type}</argument>
+                                        <argument>--icon</argument>
+                                        <argument>${icon}</argument>
+                                        <argument>--app-version</argument>
+                                        <argument>${project.version}</argument>
+                                        <argument>--copyright</argument>
+                                        <argument>${copyright}</argument>
+                                        <argument>--name</argument>
+                                        <argument>${project.name}</argument>
+                                        <argument>--vendor</argument>
+                                        <argument>${project.organization.name}</argument>
+                                        <argument>--description</argument>
+                                        <argument>${project.description}</argument>
+                                        <argument>--license-file</argument>
+                                        <argument>${project.basedir}/license.txt</argument>
+                                
+                                        <argument>--runtime-image</argument>
+                                        <argument>${package.runtime.output}</argument>
+                                        <argument>--input</argument>
+                                        <argument>${package.app.output}</argument>
+                                
+                                        <argument>--java-options</argument>
+                                        <argument>-Xms512m</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>-Xmx2g</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-exports</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
+                                
+                                        <argument>--module</argument>
+                                        <argument>${moduleName}/${mainClass}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>linux</family>
+                </os>
+            </activation>
+            <properties>
+                <os.name>Lnx64</os.name>
+                <bundle.type>deb</bundle.type>
+                <jpackage.home>${java.home}/../jdk</jpackage.home>
+                <icon>${project.basedir}/../Negatron-Bootstrap/Negatron-Bootstrap/Negatron.png</icon>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>--type</argument>
+                                        <argument>${bundle.type}</argument>
+                                        <argument>--icon</argument>
+                                        <argument>${icon}</argument>
+                                        <argument>--app-version</argument>
+                                        <argument>${project.version}</argument>
+                                        <argument>--copyright</argument>
+                                        <argument>${copyright}</argument>
+                                        <argument>--name</argument>
+                                        <argument>${project.name}</argument>
+                                        <argument>--vendor</argument>
+                                        <argument>${project.organization.name}</argument>
+                                        <argument>--description</argument>
+                                        <argument>${project.description}</argument>
+                                        <argument>--license-file</argument>
+                                        <argument>${project.basedir}/license.txt</argument>
+                                
+                                        <argument>--runtime-image</argument>
+                                        <argument>${package.runtime.output}</argument>
+                                        <argument>--input</argument>
+                                        <argument>${package.app.output}</argument>
+                                
+                                        <argument>--linux-deb-maintainer</argument>
+                                        <argument>cyril.apan@babelsoft.net</argument>
+                                        <argument>--linux-app-category</argument>
+                                        <argument>games</argument>
+                                        <argument>--linux-menu-group</argument>
+                                        <argument>Games</argument>
+                                        <argument>--linux-rpm-license-type</argument>
+                                        <argument>GPLv3+</argument>
+                                
+                                        <argument>--java-options</argument>
+                                        <argument>-Xms512m</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>-Xmx2g</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-exports</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
+                                
+                                        <argument>--module</argument>
+                                        <argument>${moduleName}/${mainClass}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
     <dependencies>
         <dependency>
@@ -161,35 +499,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>${java.home}/bin/java</executable>
-                            <arguments>
-                                <argument>-Xms512m</argument>
-                                <argument>-Xmx2g</argument>
-                                <argument>--add-exports</argument>
-                                <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
-                                <argument>--add-opens</argument>
-                                <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
-                                <argument>--add-opens</argument>
-                                <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
-                                <argument>--module-path</argument>
-                                <argument>${project.build.directory}/modules</argument>
-                                <argument>--module</argument>
-                                <argument>${moduleName}/${mainClass}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>  
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.1.1</version>
@@ -226,6 +535,28 @@
                 </executions>
             </plugin>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${package.app.output}/theme</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>${project.basedir}/theme</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.moditect</groupId>
                 <artifactId>moditect-maven-plugin</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
@@ -246,35 +577,13 @@
                             <modules>
                                 <module>
                                     <artifact>
-                                        <groupId>com.twelvemonkeys.imageio</groupId>
-                                        <artifactId>imageio-bmp</artifactId>
-                                        <version>${twelvemonkeys.version}</version>
-                                    </artifact>
-                                    <moduleInfo /> <!-- generates a default module-info -->
-                                </module>
-                                <module>
-                                    <artifact>
-                                        <groupId>com.twelvemonkeys.imageio</groupId>
-                                        <artifactId>imageio-core</artifactId>
-                                        <version>${twelvemonkeys.version}</version>
-                                    </artifact>
-                                    <moduleInfo /> <!-- generates a default module-info -->
-                                </module>
-                                <module>
-                                    <artifact>
-                                        <groupId>com.twelvemonkeys.imageio</groupId>
-                                        <artifactId>imageio-metadata</artifactId>
-                                        <version>${twelvemonkeys.version}</version>
-                                    </artifact>
-                                    <moduleInfo /> <!-- generates a default module-info -->
-                                </module>
-                                <module>
-                                    <artifact>
                                         <groupId>com.twelvemonkeys.common</groupId>
                                         <artifactId>common-lang</artifactId>
                                         <version>${twelvemonkeys.version}</version>
                                     </artifact>
-                                    <moduleInfo /> <!-- generates a default module-info -->
+                                    <moduleInfo>
+                                        <name>twelvemonkeys.common.lang</name>
+                                    </moduleInfo>
                                 </module>
                                 <module>
                                     <artifact>
@@ -282,7 +591,9 @@
                                         <artifactId>common-io</artifactId>
                                         <version>${twelvemonkeys.version}</version>
                                     </artifact>
-                                    <moduleInfo /> <!-- generates a default module-info -->
+                                    <moduleInfo>
+                                        <name>twelvemonkeys.common.io</name>
+                                    </moduleInfo>
                                 </module>
                                 <module>
                                     <artifact>
@@ -290,7 +601,39 @@
                                         <artifactId>common-image</artifactId>
                                         <version>${twelvemonkeys.version}</version>
                                     </artifact>
-                                    <moduleInfo /> <!-- generates a default module-info -->
+                                    <moduleInfo>
+                                        <name>twelvemonkeys.common.image</name>
+                                    </moduleInfo>
+                                </module>
+                                <module>
+                                    <artifact>
+                                        <groupId>com.twelvemonkeys.imageio</groupId>
+                                        <artifactId>imageio-bmp</artifactId>
+                                        <version>${twelvemonkeys.version}</version>
+                                    </artifact>
+                                    <moduleInfo>
+                                        <name>twelvemonkeys.imageio.bmp</name>
+                                    </moduleInfo>
+                                </module>
+                                <module>
+                                    <artifact>
+                                        <groupId>com.twelvemonkeys.imageio</groupId>
+                                        <artifactId>imageio-core</artifactId>
+                                        <version>${twelvemonkeys.version}</version>
+                                    </artifact>
+                                    <moduleInfo>
+                                        <name>twelvemonkeys.imageio.core</name>
+                                    </moduleInfo>
+                                </module>
+                                <module>
+                                    <artifact>
+                                        <groupId>com.twelvemonkeys.imageio</groupId>
+                                        <artifactId>imageio-metadata</artifactId>
+                                        <version>${twelvemonkeys.version}</version>
+                                    </artifact>
+                                    <moduleInfo>
+                                        <name>twelvemonkeys.imageio.metadata</name>
+                                    </moduleInfo>
                                 </module>
                                 
                                 <module>
@@ -399,7 +742,7 @@
                             </module>
                         </configuration>
                     </execution>
-                    <!--execution>
+                    <execution>
                         <id>create-runtime-image</id>
                         <phase>package</phase>
                         <goals>
@@ -411,12 +754,7 @@
                             </modulePath>
                             <modules>
                                 <module>${moduleName}</module>
-                                <module>java.base</module>
-                                <module>javafx.base</module>
-                                <module>javafx.fxml</module>
-                                <module>javafx.controls</module>
-                                <module>javafx.graphics</module>
-                                <module>javafx.swing</module>
+                                <module>twelvemonkeys.imageio.bmp</module>
                             </modules>
                             <excludedResources>
                                 <pattern>glob:/net.babelsoft/**</pattern>
@@ -435,9 +773,58 @@
                                 <arg>-multi-release</arg>
                                 <arg>9</arg>
                             </jdepsExtraArgs>
-                            <outputDirectory>${project.build.directory}/jlink-image</outputDirectory>
+                            <outputDirectory>${package.runtime.output}</outputDirectory>
                         </configuration>
-                    </execution-->
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <arguments>
+                                <argument>-Xms512m</argument>
+                                <argument>-Xmx2g</argument>
+                                <argument>--add-exports</argument>
+                                <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
+                                <argument>--add-opens</argument>
+                                <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
+                                <argument>--add-opens</argument>
+                                <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
+                                <argument>--module-path</argument>
+                                <argument>${project.build.directory}/modules</argument>
+                                <argument>--module</argument>
+                                <argument>${moduleName}/${mainClass}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Compiling with OpenJDK 13 but packaging is done with a recompiled bleeding edge version of OpenJDK as the JDK integrated packaging solution is still in early beta state. -->
+                            <!-- This bleeding edge version is simply the main branch of OpenJDK at http://hg.openjdk.java.net/jdk/jdk/ -->
+                            <!-- Each OS requires specific packaging options, which can be found in the profile section of this pom file -->
+                            <executable>${jpackage.home}/bin/jpackage</executable>
+                            <workingDirectory>${project.build.directory}</workingDirectory>
+                            <longModulepath>false</longModulepath>
+                            <environmentVariables>
+                                <JAVA_HOME>${jpackage.home}</JAVA_HOME>
+                            </environmentVariables>
+                            <arguments>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
