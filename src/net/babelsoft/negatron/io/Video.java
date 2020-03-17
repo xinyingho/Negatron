@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.babelsoft.negatron.io.configuration.Configuration;
+import net.babelsoft.negatron.util.PathUtil;
 import net.babelsoft.negatron.util.Strings;
 import uk.co.caprica.vlcj.binding.RuntimeUtil;
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
@@ -107,6 +108,10 @@ public class Video {
                         return p.toString().startsWith(".\\vlc-") && p.endsWith("libvlc.dll") && bfa.isRegularFile();
                     }
                 ).findAny().orElse(null);
+                
+                if (libVlc == null)
+                    libVlc = PathUtil.retrieveFromJavaLibraryPaths("vlc", "libvlc.dll");
+                    
                 if (libVlc != null)
                     Configuration.Manager.updateVlcPath(libVlc.toString());
                     // then VLC gets detected by UserHintedDiscoveryDirectoryProvider
@@ -136,11 +141,13 @@ public class Video {
         @Override
         public String[] directories() {
             String vlcPath = Configuration.Manager.getVlcPath();
-            if (Strings.isEmpty(vlcPath)) try {
+            if (Strings.isEmpty(vlcPath) || Files.notExists(Paths.get(vlcPath))) try {
                 // detect any macOS versions of VLC media player included in Negatron's installation folder
-                final String libVlc = "VLC.app/Contents/MacOS/lib/libvlc.dylib";
-                if (Files.exists(Paths.get(libVlc)))
-                    Configuration.Manager.updateVlcPath(libVlc);
+                Path libVlc = Paths.get("VLC.app/Contents/MacOS/lib/libvlc.dylib");
+                if (!Files.exists(libVlc))
+                    libVlc = PathUtil.retrieveFromJavaLibraryPaths("VLC.app", "Contents", "MacOS", "lib", "libvlc.dylib");
+                if (libVlc != null)
+                    Configuration.Manager.updateVlcPath(libVlc.toString());
                     // then VLC gets detected by UserHintedDiscoveryDirectoryProvider
             } catch (Exception ex) {
                 Logger.getLogger(Video.class.getName()).log(

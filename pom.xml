@@ -96,10 +96,10 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${package.app.output}/vlc-3.0.8</outputDirectory>
+                                    <outputDirectory>${package.app.output}/vlc</outputDirectory>
                                     <resources>          
                                         <resource>
-                                            <directory>${project.basedir}/vlc-3.0.8</directory>
+                                            <directory>${project.basedir}/vlc</directory>
                                             <filtering>false</filtering>
                                         </resource>
                                     </resources>              
@@ -759,10 +759,10 @@
                             <excludedResources>
                                 <pattern>glob:/net.babelsoft/**</pattern>
                             </excludedResources>
-                            <launcher>
+                            <!--launcher>
                                 <name>Negatron</name>
                                 <module>${moduleName}/${mainClass}</module>
-                            </launcher>
+                            </launcher-->
                             <stripDebug>true</stripDebug>
                             <compression>2</compression>
                             <no-header-files>true</no-header-files>

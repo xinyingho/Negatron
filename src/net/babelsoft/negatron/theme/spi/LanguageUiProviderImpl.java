@@ -17,23 +17,18 @@
  */
 package net.babelsoft.negatron.theme.spi;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.spi.AbstractResourceBundleProvider;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.PathUtil;
 
 /**
  *
@@ -54,23 +49,11 @@ public class LanguageUiProviderImpl extends AbstractResourceBundleProvider imple
             return bundle;
         }
         
-        // Retrieve all the potential resource root folders
-        final List<String> resourcePaths = new ArrayList<>();
-        resourcePaths.add(""); // default path to the current working folder
-        String libraryPath = System.getProperty("java.library.path");
-        if (libraryPath != null)
-            resourcePaths.addAll( Arrays.asList(libraryPath.split(File.pathSeparator)) );
-
-        // Search for the resource over all those root folders
-        final Optional<Path> optionalPath = resourcePaths.stream().map(
-                path -> Paths.get(path, resourceName)
-        ).filter(
-                path -> Files.exists(path)
-        ).findFirst();
+        Path path = PathUtil.retrieveFromJavaLibraryPaths(resourceName);
         
         // Embed the resource into a bundle
-        if (optionalPath.isPresent()) try (
-            InputStream stream = Files.newInputStream(optionalPath.get());
+        if (path != null) try (
+            InputStream stream = Files.newInputStream(path);
             InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
         ) {
             bundle = new PropertyResourceBundle(reader);
