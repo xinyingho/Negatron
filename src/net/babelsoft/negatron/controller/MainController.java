@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
@@ -800,7 +801,15 @@ public class MainController implements Initializable, AlertController, EditContr
                 List<Software> softwares = machine.getSoftwareLists().stream().flatMap(
                     softwareListFilter -> {
                         SoftwareList softwareList = softwareLists.get(softwareListFilter.getSoftwareList());
-                        return softwareList.getSoftwares(interfaceFormats, softwareListFilter.getFilter()).stream();
+                        if (softwareList != null)
+                            return softwareList.getSoftwares(interfaceFormats, softwareListFilter.getFilter()).stream();
+                        
+                        alert(AlertType.WARNING, String.format(
+                                "Negatron couldn't find the software list %s for the machine %s within MAME's internal database.\n\n" +
+                                "Please, contact the MAME team at https://www.mamedev.org/ or report this issue to http://www.babelsoft.net/forum/index.php",
+                                softwareListFilter.getSoftwareList(), machine.getName()
+                        ));
+                        return Stream.ofNullable(null);
                     }
                 ).collect(Collectors.toList());
                 softwareTreePane.setItems(softwares);
