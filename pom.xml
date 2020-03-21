@@ -59,7 +59,7 @@
         <package.runtime.output>${package.basedir}/runtime</package.runtime.output>
         <package.app.output>${package.basedir}/app</package.app.output>
         
-        <javafx.version>13.0.2</javafx.version>
+        <javafx.version>14</javafx.version>
         <twelvemonkeys.version>3.5</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
         <vlcj.version>4.3.0-negatron</vlcj.version>
@@ -479,8 +479,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>13</source>
-                    <target>13</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -559,7 +559,7 @@
             <plugin>
                 <groupId>org.moditect</groupId>
                 <artifactId>moditect-maven-plugin</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.0-negatron</version>
                 <executions>
                     <execution>
                         <id>add-module-info-to-deps</id>
@@ -812,7 +812,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <!-- Compiling with OpenJDK 13 but packaging is done with a recompiled bleeding edge version of OpenJDK as the JDK integrated packaging solution is still in early beta state. -->
+                            <!-- Compiling with OpenJDK 14 but packaging is done with a recompiled bleeding edge version of OpenJDK as the JDK integrated packaging solution is still in early beta state. -->
                             <!-- This bleeding edge version is simply the main branch of OpenJDK at http://hg.openjdk.java.net/jdk/jdk/ -->
                             <!-- Each OS requires specific packaging options, which can be found in the profile section of this pom file -->
                             <executable>${jpackage.home}/bin/jpackage</executable>
