@@ -7,7 +7,7 @@ JVM_OPTIONS="-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.
 # Check whether the system-wide Java runtime meets the minimum requirements
 
 java_err() {
-    read -n1 -r -p "**Negatron requires Oracle's Java or OpenJDK $MINIMUMVERSION+ to run**"
+    echo "**Negatron requires Oracle's Java or OpenJDK $MINIMUMVERSION+ to run**"
     exit 1
 }
 
@@ -22,4 +22,6 @@ MAJORVERSION=`java -version 2>&1 | head -1 | awk '{print $3}' | awk -F. '{print 
 [ "$MAJORVERSION" -ge "$MINIMUMVERSION" ] || java_err
 
 # All checks have been passed
+[ "$DIR" != "." ] && CLOSE="true" && cd -- "$DIR"
 $JAVA $JVM_OPTIONS -m negatron/net.babelsoft.negatron.NegatronApp $@
+[ $CLOSE ] && osascript -e 'tell application "Terminal" to close front window' > /dev/null 2>&1 &
