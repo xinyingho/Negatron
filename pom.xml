@@ -62,7 +62,7 @@
         <javafx.version>14</javafx.version>
         <twelvemonkeys.version>3.5</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
-        <vlcj.version>4.3.0-negatron</vlcj.version>
+        <vlcj.version>4.4.0-negatron</vlcj.version>
         <vlcj-natives.version>4.1.0</vlcj-natives.version>
         <vlc-jna.version>5.2.0</vlc-jna.version>
         
@@ -492,7 +492,7 @@
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
+                            <!--classpathPrefix>lib/</classpathPrefix-->
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                     </archive>
@@ -823,6 +823,24 @@
                             </environmentVariables>
                             <arguments>
                             </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>cross-platform-assembly.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 DIR=`dirname $0`
-MINIMUMVERSION=13
-JVM_OPTIONS="-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=negatron --add-opens javafx.controls/javafx.scene.control=negatron --add-opens javafx.controls/javafx.scene.control.skin=negatron --module-path=$DIR/modules"
+MINIMUMVERSION=11
+JVM_OPTIONS="-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=negatron --add-opens javafx.controls/javafx.scene.control=negatron --add-opens javafx.controls/javafx.scene.control.skin=negatron --module-path=\"$DIR/modules:$DIR/modules/mac\""
 
 # Check whether the system-wide Java runtime meets the minimum requirements
 
@@ -23,5 +23,5 @@ MAJORVERSION=`java -version 2>&1 | head -1 | awk '{print $3}' | awk -F. '{print 
 
 # All checks have been passed
 [ "$DIR" != "." ] && CLOSE="true" && cd -- "$DIR"
-$JAVA $JVM_OPTIONS -m negatron/net.babelsoft.negatron.NegatronApp $@
+eval $JAVA $JVM_OPTIONS -m negatron/net.babelsoft.negatron.NegatronApp $@ &
 [ $CLOSE ] && osascript -e 'tell application "Terminal" to close front window' > /dev/null 2>&1 &
