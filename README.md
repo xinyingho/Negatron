@@ -12,7 +12,7 @@ Moreover, Negatron's second objective is to ease the creation of a complete info
 
 ## PREREQUISITES
 
-Negatron requires a Java runtime environment (JRE) to work: ensure that your computer has at least Java 13, or newer. If you have any doubts, you can download the latest version of OpenJDK at https://jdk.java.net/ or the latest version of Java SE at https://java.oracle.com/ and install it on your computer.
+Negatron requires a Java runtime environment (JRE) to work: ensure that your computer has at least Java 11, or newer. If you have any doubts, you can download the latest version of OpenJDK at https://jdk.java.net/ or the latest version of Java SE at https://java.oracle.com/ and install it on your computer.
 
 Negatron also requires MAME to be installed on your computer. Although it has only been tested with v0.162 or newer, Negatron should work with MAME / MESS v0.70 and newer as well. You can get the latest version for your specific OS at http://www.mamedev.org. If you plan on using MAME v0.186 or newer, we strongly recommend you to use the derivative NegaMAME instead as recent versions of MAME disabled access to some information on emulated consoles and computers to third-party front-ends. It's available at http://www.babelsoft.net/products/negamame.htm. However, if you only play arcade games, you shouldn't see any differences between official MAME and NegaMAME.
 
@@ -24,7 +24,7 @@ The latest version of Negatron should always be available at http://www.babelsof
 ## QUICK START
 
 Uncompress Negatron's zip archive file wherever you see fit, then:
-* under Windows, launch Negatron.exe
+* under Windows, launch Negatron.cmd
 * under Linux, launch Negatron.sh
 * under MacOS X, launch Negatron.command
 
@@ -54,20 +54,13 @@ To compile NegaMAME:
 
 To compile Negatron:
 1. Create a root folder locally that will hold the source code of Negatron and all its dependencies.
-2. Within this root folder, download the source code of Negatron, Negatron-Preloader, OpenViewerFX, VLCj and Moditect using git. For OpenViewerFX, VLCj and Moditect, you must get them from https://github.com/xinyingho/ as those versions include important modifications not available from the original repositories of those 3 projects.
-3. Switch Moditect to the branch "negatron-branch" with the command `git checkout negatron-branch`.
-4. Switch VLCj to the branch "negatron-branch", again with the command `git checkout negatron-branch`.
-5. Ensure that you have the latest version of OpenJDK or Oracle Java SE, at least v13. This won't work on earlier versions of Java.
+2. Within this root folder, download the source code of Negatron, Negatron-Preloader, OpenViewerFX and VLCj using git. For OpenViewerFX and VLCj, you must get them from https://github.com/xinyingho/ as those versions include important modifications not available from the original repositories of those 2 projects.
+3. Switch VLCj to the branch "negatron-branch", with the command `git checkout negatron-branch`.
+4. Ensure that you have the latest version of OpenJDK or Oracle Java SE, at least v11. This won't work on earlier versions of Java.
 6. The following instructions have been tested against Apache Netbeans 11.2. But it should also work with other IDEs.
-7. Open all the 5 Java projects in Netbeans. *Do not import them*, simply use "File > Open Projects...". Netbeans may issue some warnings. Ignore them as they will be solved by compiling the projects.
+7. Open all the 4 Java projects in Netbeans. *Do not import them*, simply use "File > Open Projects...". Netbeans may issue some warnings. Ignore them as they will be solved by compiling the projects.
 8. Compile them in this order and you're done:
-   1. Moditect
-   2. OpenViewerFX
-   3. VLCj
-   4. Negatron-Preloader
-   5. Negatron
-
-The Windows version of Negatron also has a native executable file to ease launch for Windows users.  To compile it:
-1. Download its source code using git i.e. `git clone https://github.com/xinyingho/Negatron-Boostrap`.
-2. Ensure that you have Visual Studio and that it can manage C++ projects. It's been tested with Visual Studio 2017.
-3. Open the project with Visual Studio and compile it. You're done.
+   1. OpenViewerFX
+   2. VLCj
+   3. Negatron-Preloader
+   4. Negatron
