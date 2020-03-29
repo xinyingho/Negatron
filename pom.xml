@@ -467,6 +467,7 @@
                     <include>**/*.fxml</include>
                     <include>**/*.pdf</include>
                     <include>**/*.png</include>
+                    <include>**/*.ttf</include>
                     <include>**/*.txt</include>
                     <include>**/*.xml</include>
                 </includes>
@@ -728,10 +729,13 @@
                                     </opensResources>
                                     <uses>
                                         net.babelsoft.negatron.theme.spi.LanguageUiProvider;
+                                        net.babelsoft.negatron.view.glyphfont.GlyphFont;
                                     </uses>
                                     <provides>
                                         net.babelsoft.negatron.theme.spi.LanguageUiProvider with
                                             net.babelsoft.negatron.theme.spi.LanguageUiProviderImpl;
+                                        net.babelsoft.negatron.view.glyphfont.GlyphFont with
+                                            net.babelsoft.negatron.view.glyphfont.FontAwesome;
                                         uk.co.caprica.vlcj.factory.discovery.provider.DiscoveryDirectoryProvider with
                                             net.babelsoft.negatron.io.Video.LinuxDiscoveryDirectoryProvider,
                                             net.babelsoft.negatron.io.Video.OsxDiscoveryDirectoryProvider,
