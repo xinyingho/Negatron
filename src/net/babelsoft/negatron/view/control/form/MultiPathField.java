@@ -19,9 +19,11 @@ package net.babelsoft.negatron.view.control.form;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -394,6 +396,16 @@ public class MultiPathField extends Field {
     
     public List<TextField> getPathFields() {
         return pathFields;
+    }
+    
+    public List<Path> getPaths() {
+        return pathFields.stream().map(
+                field -> field.getText()
+        ).map(
+                text -> Path.of(text)
+        ).collect(
+                Collectors.toList()
+        );
     }
     
     public Label getLabel() {

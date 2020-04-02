@@ -33,16 +33,6 @@ import net.babelsoft.negatron.io.configuration.VsyncMethod;
  */
 public abstract class Field {
     
-    private static int rowCount;
-    
-    protected static int getRowCount() {
-        return rowCount++;
-    }
-    
-    public static void resetRowCount() {
-        rowCount = 0;
-    }
-    
     private void alert(Exception ex) {
         Logger.getLogger(Field.class.getName()).log(Level.SEVERE, null, ex);
         Alert alert = new Alert(

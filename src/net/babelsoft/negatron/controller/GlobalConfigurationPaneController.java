@@ -20,6 +20,7 @@ package net.babelsoft.negatron.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +36,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Domain;
-import net.babelsoft.negatron.io.configuration.InfotipTiming;
 import net.babelsoft.negatron.io.configuration.InputDevice;
 import net.babelsoft.negatron.io.configuration.JoystickProvider;
 import net.babelsoft.negatron.io.configuration.KeyboardProvider;
@@ -49,6 +49,7 @@ import net.babelsoft.negatron.io.configuration.Sound;
 import net.babelsoft.negatron.io.configuration.UIFontProvider;
 import net.babelsoft.negatron.io.configuration.Video;
 import net.babelsoft.negatron.util.function.Delegate;
+import net.babelsoft.negatron.view.control.PluginSelectionField;
 import net.babelsoft.negatron.view.control.form.ChdmanPathField;
 import net.babelsoft.negatron.view.control.form.CheatCheckField;
 import net.babelsoft.negatron.view.control.form.ExtrasRootPathField;
@@ -137,6 +138,7 @@ public class GlobalConfigurationPaneController implements Initializable {
     private MultiPathField information;
     private MultiPathField folderView;
     
+    private MultiPathField plugins;
     private VlcPathField vlcPath;
     
     private ExtrasRootPathField mameExtras;
@@ -175,6 +177,9 @@ public class GlobalConfigurationPaneController implements Initializable {
     private SkinChoiceField skin;
     private FontSelectionField font;
     private NegatronLanguageChoiceField language;
+    
+    private GenericCheckField pluginCheck;
+    private PluginSelectionField pluginSelections;
     
     private GenericCheckField lightgun;
     private GenericCheckField dualLightgun;
@@ -224,6 +229,7 @@ public class GlobalConfigurationPaneController implements Initializable {
         artwork         = new MultiPathField    (foldersGrid, rowIdx++, Property.ARTWORK,          rb.getString("artwork"), rb.getString("artwork.tooltip"));
         cheat           = new MultiPathField    (foldersGrid, rowIdx++, Property.CHEAT,            rb.getString("cheat"), rb.getString("cheat.tooltip"), compressedArchives, "*.7z; *.zip");
         controller      = new MultiPathField    (foldersGrid, rowIdx++, Property.CONTROLLER,       rb.getString("controllerDefinition"), rb.getString("controllerDefinition.tooltip"));
+        plugins         = new MultiPathField    (foldersGrid, rowIdx++, Property.PLUGINS,          rb.getString("plugins"), rb.getString("plugins.tooltip"));
         rom             = new MultiPathField    (foldersGrid, rowIdx++, Property.ROM,              rb.getString("rom"), rb.getString("rom.tooltip"));
         sample          = new MultiPathField    (foldersGrid, rowIdx++, Property.SAMPLE,           rb.getString("sample"), rb.getString("sample.tooltip"));
         
@@ -330,9 +336,15 @@ public class GlobalConfigurationPaneController implements Initializable {
         check(s -> new IntegerSpinnerField                  (optionsGrid2, rowIdx++, s, 2147483647),                        "autoboot_delay"); // 2 147 483 647 = 2^32 - 1 = max int value
         check(s -> new TextField                            (optionsGrid2, rowIdx++, s),                                    "autoboot_script");
         check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "console");
-        check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "plugins");
-        check(s -> new TextField                            (optionsGrid2, rowIdx++, s),                                    "plugin");
-        check(s -> new TextField                            (optionsGrid2, rowIdx++, s),                                    "noplugin");
+        pluginCheck = check(s -> new GenericCheckField      (optionsGrid2, rowIdx++, s),                                    "plugins");
+        pluginSelections = check(
+                (s1, s2) -> new PluginSelectionField        (optionsGrid2, rowIdx++, s1, s2, plugins.getPaths()),           "noplugin", "plugin"
+        );
+        if (pluginCheck != null && pluginSelections != null) {
+            Delegate plug = () -> pluginSelections.setDisabled(!pluginCheck.isSelected());
+            pluginCheck.selectedProperty().addListener(o -> plug.fire());
+            plug.fire();
+        }
         
         // Inputs
         
@@ -501,10 +513,19 @@ public class GlobalConfigurationPaneController implements Initializable {
         check(s -> new IntegerNumberField                   (osdGrid2, rowIdx++, s, 1, 3, 1, 0, 1),                         "prescale");
     }
     
-    // if the option is in mame.ini, instantiate the related control else do nothing
-    private <R> R check(Function<String, R> instantiate, String option) {
-        if (Configuration.Manager.getGlobalConfiguration(option) != null)
-            return instantiate.apply(option);
+    // if the entry is in mame.ini, instantiate the related control else do nothing
+    private <R> R check(Function<String, R> instantiate, String entry) {
+        if (Configuration.Manager.getGlobalConfiguration(entry) != null)
+            return instantiate.apply(entry);
+        return null;
+    }
+    
+    // if entry1 and entry2 are in mame.ini, instantiate the related control else do nothing
+    private <R> R check(BiFunction<String, String, R> instantiate, String entry1, String entry2) {
+        if (
+                Configuration.Manager.getGlobalConfiguration(entry1) != null &&
+                Configuration.Manager.getGlobalConfiguration(entry2) != null
+        ) return instantiate.apply(entry1, entry2);
         return null;
     }
     

@@ -39,8 +39,6 @@ public class TextField extends Field {
         text.setTooltip(new Infotip(Language.Manager.tryGetString("globalConf." + key + ".tooltip")));
         grid.add(text, 1, row);
         
-        String currentValue = Configuration.Manager.getGlobalConfiguration(key);
-        text.setText(currentValue);
         text.textProperty().addListener(
             (o, oV, newValue) -> updateGlobalConfigurationSetting(key, newValue)
         );

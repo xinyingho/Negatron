@@ -452,6 +452,11 @@
             <artifactId>vlcj</artifactId>
             <version>${vlcj.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.eclipsesource.minimal-json</groupId>
+            <artifactId>minimal-json</artifactId>
+            <version>0.9.5</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -693,7 +698,16 @@
                                     </artifact>
                                     <moduleInfo /> <!-- generates a default module-info -->
                                 </module>
-                                
+
+                                <module>
+                                    <artifact>
+                                        <groupId>com.eclipsesource.minimal-json</groupId>
+                                        <artifactId>minimal-json</artifactId>
+                                        <version>0.9.5</version>
+                                    </artifact>
+                                    <moduleInfo /> <!-- generates a default module-info -->
+                                </module>
+
                                 <module>
                                     <file>lib/stax-utils.jar</file>
                                     <moduleInfo /> <!-- generates a default module-info -->

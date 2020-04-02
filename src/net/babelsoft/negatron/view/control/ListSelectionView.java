@@ -42,7 +42,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Skin;
 import javafx.scene.input.KeyCombination;
 import javafx.util.Callback;
-import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.view.control.adapter.Action;
 import net.babelsoft.negatron.view.glyphfont.FontAwesome;
 import net.babelsoft.negatron.view.glyphfont.Glyph;
@@ -96,14 +95,12 @@ public class ListSelectionView<T> extends Control {
     public ListSelectionView() {
         getStyleClass().add(DEFAULT_STYLECLASS);
 
-        Label sourceHeader = new Label(
-                Language.Manager.getString("globalConf.noplugin"));
+        Label sourceHeader = new Label();
         sourceHeader.getStyleClass().add("list-header-label");
         sourceHeader.setId("source-header-label");
         setSourceHeader(sourceHeader);
 
-        Label targetHeader = new Label(
-                Language.Manager.getString("globalConf.plugin"));
+        Label targetHeader = new Label();
         targetHeader.getStyleClass().add("list-header-label");
         targetHeader.setId("target-header-label");
         setTargetHeader(targetHeader);
@@ -140,6 +137,17 @@ public class ListSelectionView<T> extends Control {
      */
     public final Node getSourceHeader() {
         return sourceHeader.get();
+    }
+    
+    /**
+     * Returns the value of {@link #sourceHeaderProperty()}.
+     *
+     * @return the source header node if it's a {@link Label}
+     */
+    public final Label getSourceLabel() {
+        if (sourceHeader.get() instanceof Label)
+            return (Label) sourceHeader.get();
+        return null;
     }
 
     /**
@@ -202,19 +210,30 @@ public class ListSelectionView<T> extends Control {
     /**
      * Returns the value of {@link #targetHeaderProperty()}.
      *
-     * @return the source header node
+     * @return the target header node
      */
     public final Node getTargetHeader() {
         return targetHeader.get();
     }
 
     /**
+     * Returns the value of {@link #targetHeaderProperty()}.
+     *
+     * @return the target header node if it's a {@link Label}
+     */
+    public final Label getTargetLabel() {
+        if (targetHeader.get() instanceof Label)
+            return (Label) targetHeader.get();
+        return null;
+    }
+    
+    /**
      * Sets the value of {@link #targetHeaderProperty()}.
      *
      * @param node
      *            the new node shown above the target list
      */
-    public final void setTargetHeader(Node node) {
+    public final void setTargetHeader(Label node) {
         targetHeader.set(node);
     }
 
