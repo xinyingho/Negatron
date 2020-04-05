@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.babelsoft.negatron.view.control;
+package net.babelsoft.negatron.view.control.form;
 
 import com.eclipsesource.json.Json;
 import java.io.FileReader;
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -34,7 +33,9 @@ import javafx.collections.ObservableList;
 import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
-import net.babelsoft.negatron.view.control.form.Field;
+import net.babelsoft.negatron.view.control.Infotip;
+import net.babelsoft.negatron.view.control.ListSelectionView;
+import net.babelsoft.negatron.view.skin.ListSelectionViewSkin;
 
 /**
  *
@@ -103,6 +104,8 @@ public class PluginSelectionField extends Field {
         
         selection.getSourceLabel().setText(Language.Manager.getString("globalConf." + disabledPluginKey));
         selection.getTargetLabel().setText(Language.Manager.getString("globalConf." + enabledPluginKey));
+        selection.setSourceTooltip(new Infotip(Language.Manager.getString("globalConf." + disabledPluginKey + ".tooltip")));
+        selection.setTargetTooltip(new Infotip(Language.Manager.getString("globalConf." + enabledPluginKey + ".tooltip")));
         selection.getSourceItems().addListener((Observable o) -> updatePluginSetting(disabledPluginKey, selection.getSourceItems()));
         selection.getTargetItems().addListener((Observable o) -> updatePluginSetting(enabledPluginKey, selection.getTargetItems()));
         
@@ -116,8 +119,7 @@ public class PluginSelectionField extends Field {
         );
         
         // update plugin.ini
-        // we assume that plugin.ini is in the same folder as mame.ini
-        Path path = Paths.get(Configuration.Manager.getMameIni()).resolveSibling("plugin.ini");
+        updatePlugins(selection.getSourceItems(), selection.getTargetItems());
     }
     
     public void setDisabled(boolean value) {

@@ -73,12 +73,14 @@ public class ListSelectionViewSkin<T> extends SkinBase<ListSelectionView<T>> {
 
         sourceListView = requireNonNull(createSourceListView(), "source list view can not be null");
         sourceListView.setId("source-list-view");
+        sourceListView.setTooltip(view.getSourceTooltip());
         sourceListActionView = createListActionView(sourceListView);
         Bindings.bindContent(sourceListActionView.getActions(), view.getSourceActions());
         Bindings.bindContentBidirectional(sourceListActionView.getItems(), view.getSourceItems());
 
         targetListView = requireNonNull(createTargetListView(), "target list view can not be null");
         targetListView.setId("target-list-view");
+        targetListView.setTooltip(view.getTargetTooltip());
         targetListActionView = createListActionView(targetListView);
         Bindings.bindContent(targetListActionView.getActions(), view.getTargetActions());
         Bindings.bindContentBidirectional(targetListActionView.getItems(), view.getTargetItems());

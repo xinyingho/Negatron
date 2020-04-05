@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static javafx.geometry.Orientation.HORIZONTAL;
+import javafx.scene.control.Tooltip;
 import static net.babelsoft.negatron.view.glyphfont.FontAwesome.Glyph.ANGLE_DOUBLE_DOWN;
 import static net.babelsoft.negatron.view.glyphfont.FontAwesome.Glyph.ANGLE_DOUBLE_LEFT;
 import static net.babelsoft.negatron.view.glyphfont.FontAwesome.Glyph.ANGLE_DOUBLE_RIGHT;
@@ -192,6 +193,16 @@ public class ListSelectionView<T> extends Control {
     public final void setSourceFooter(Node node) {
         sourceFooter.set(node);
     }
+    
+    private Tooltip sourceTooltip;
+    
+    public final void setSourceTooltip(Tooltip tooltip) {
+        sourceTooltip = tooltip;
+    }
+    
+    public final Tooltip getSourceTooltip() {
+        return sourceTooltip;
+    }
 
     private final ObjectProperty<Node> targetHeader = new SimpleObjectProperty<>(
             this, "targetHeader");
@@ -268,6 +279,16 @@ public class ListSelectionView<T> extends Control {
      */
     public final void setTargetFooter(Node node) {
         targetFooter.set(node);
+    }
+    
+    private Tooltip targetTooltip;
+    
+    public final void setTargetTooltip(Tooltip tooltip) {
+        targetTooltip = tooltip;
+    }
+    
+    public final Tooltip getTargetTooltip() {
+        return targetTooltip;
     }
 
     private ObjectProperty<ObservableList<T>> sourceItems;

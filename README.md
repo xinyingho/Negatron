@@ -12,21 +12,22 @@ Moreover, Negatron's second objective is to ease the creation of a complete info
 
 ## PREREQUISITES
 
-Negatron requires a Java runtime environment (JRE) to work: ensure that your computer has at least Java 11, or newer. If you have any doubts, you can download the latest version of OpenJDK at https://jdk.java.net/ or the latest version of Java SE at https://java.oracle.com/ and install it on your computer.
+Negatron requires a Java development kit (JDK) to work: ensure that your computer has at least Java 11, or newer. If you have any doubts, you can download the latest version of OpenJDK at https://jdk.java.net/ or the latest version of Java SE at https://java.oracle.com/ and install it on your computer.
 
 Negatron also requires MAME to be installed on your computer. Although it has only been tested with v0.162 or newer, Negatron should work with MAME / MESS v0.70 and newer as well. You can get the latest version for your specific OS at http://www.mamedev.org. If you plan on using MAME v0.186 or newer, we strongly recommend you to use the derivative NegaMAME instead as recent versions of MAME disabled access to some information on emulated consoles and computers to third-party front-ends. It's available at http://www.babelsoft.net/products/negamame.htm. However, if you only play arcade games, you shouldn't see any differences between official MAME and NegaMAME.
 
-Finally, while not mandatory, Negatron also needs VLC media player 2.2.0 or newer to be installed on your computer in order to play video previews. For this to work, VLC's bitness must match the bitness of the JRE you run with, i.e. if you run Negatron with Java 64-bit, you must install VLC 64-bit as well.
+Finally, while not mandatory, Negatron also needs VLC media player 3.0.0 or newer to be installed on your computer in order to play video previews. For this to work, VLC's bitness must match the bitness of the JRE you run with, i.e. if you run Negatron with Java 64-bit, you must install VLC 64-bit as well.
 You can get the latest version for your specific OS at http://www.videolan.org. Be aware that the site lets you download the Windows 32-bit version by default.
 
 The latest version of Negatron should always be available at http://www.babelsoft.net/products/negatron.htm.
 
 ## QUICK START
 
-Uncompress Negatron's zip archive file wherever you see fit, then:
+Uncompress Negatron's cross-platform zip archive file wherever you see fit, then:
 * under Windows, launch Negatron.cmd
 * under Linux, launch Negatron.sh
 * under MacOS X, launch Negatron.command
+You can also use the native installers provided for Windows and macOS.
 
 ## SEE ALSO
 
@@ -64,3 +65,4 @@ To compile Negatron:
    2. VLCj
    3. Negatron-Preloader
    4. Negatron
+On the last compilation step, you may encounter an error about not finding the program `jpackage` during the create-package stage. It's normal: as Negatron uses an early access feature of Java for packaging, the official packs are generated using a custom hacked version of this feature.

@@ -601,7 +601,7 @@ public enum Configuration {
         }
     }
     
-    public void writeMameInitialisationFile() throws IOException, InterruptedException {
+    private void writeMameInitialisationFile() throws IOException, InterruptedException {
         Path iniPath = Paths.get(mameIni);
         
         if (Strings.isEmpty(mamePath) || mameIni == null || !Files.isWritable(iniPath))
@@ -676,7 +676,7 @@ public enum Configuration {
         Files.move(tempPath, iniPath, StandardCopyOption.REPLACE_EXISTING);
     }
     
-    public void writeNegatronInitialisationFile() throws IOException {
+    private void writeNegatronInitialisationFile() throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(NEGATRON_INI)) {
             writeConfigurationSectionHeader(writer, "MAME PATHS");
             if (isMess)
@@ -741,6 +741,45 @@ public enum Configuration {
             writeConfigurationLine(writer, VIDEO_ENTRY, videoEnabled);
             writeConfigurationLine(writer, VIEW3D_ENTRY, view3dEnabled);
         }
+    }
+    
+    private void writePluginInitialisationFile(List<String> disabledPlugins, List<String> enabledPlugins) throws IOException {
+        Path iniPath = Paths.get(mameIni);
+        if (Strings.isEmpty(mamePath) || mameIni == null || !Files.isWritable(iniPath))
+            return;
+        
+        // assuming that plugin.ini is in the same folder as mame.ini
+        iniPath = iniPath.resolveSibling("plugin.ini");
+        if (!Files.isWritable(iniPath))
+            return;
+        
+        Path tempPath = Files.createTempFile("negatron", "pluginini");
+        try (
+            BufferedReader reader = Files.newBufferedReader(iniPath);
+            BufferedWriter writer = Files.newBufferedWriter(tempPath);
+        ) {
+            for (String line : reader.lines().toArray(String[]::new)) {
+                boolean lineUpdated = false;
+                
+                if (!line.isEmpty() && !line.startsWith("#")) {
+                    String[] splitLine = splitLine(line);
+                    
+                    if (splitLine.length > 1 && (
+                            disabledPlugins.contains(splitLine[0]) || enabledPlugins.contains(splitLine[0])
+                    )) {
+                        writeConfigurationLine(writer, splitLine[0], enabledPlugins.contains(splitLine[0]));
+                        lineUpdated = true;
+                    }
+                }
+                
+                if (!lineUpdated) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+        }
+        
+        Files.move(tempPath, iniPath, StandardCopyOption.REPLACE_EXISTING);
     }
     
     public void determineExecutionMode(String mameVersion) {
@@ -1261,6 +1300,10 @@ public enum Configuration {
     public void updateGlobalConfigurationSetting(String key, boolean value) throws IOException, InterruptedException {
         globalConfiguration.put(key, value ? TRUE : FALSE);
         writeMameInitialisationFile();
+    }
+
+    public void updatePlugins(List<String> disabledPlugins, List<String> enabledPlugins) throws IOException {
+        writePluginInitialisationFile(disabledPlugins, enabledPlugins);
     }
 
     public void updateTreeTableColumnsConfiguration(String id, Map<String, TreeTableColumnConfiguration> conf) throws IOException {

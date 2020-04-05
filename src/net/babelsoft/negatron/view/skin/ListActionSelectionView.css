@@ -26,10 +26,6 @@
     -fx-background-insets: 0, 1 1 1 0;
 }
 
-.list-selection-view {
-	-fx-padding: 10px;	
-}
-
 .list-selection-view > .grid-pane {
 	-fx-vgap: 10px;
 	-fx-hgap: 10px;
@@ -37,5 +33,4 @@
 
 .list-selection-view > .grid-pane > .list-header-label {
 	-fx-font-size: 1.0em;
-	-fx-font-weight: bold;
 }
