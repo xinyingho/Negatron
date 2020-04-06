@@ -55,7 +55,7 @@ To compile NegaMAME:
 
 To compile Negatron:
 1. Create a root folder locally that will hold the source code of Negatron and all its dependencies.
-2. Within this root folder, download the source code of Negatron, Negatron-Preloader, OpenViewerFX and VLCj using git. For OpenViewerFX and VLCj, you must get them from https://github.com/xinyingho/ as those versions include important modifications not available from the original repositories of those 2 projects.
+2. Within this root folder, download the source code of Negatron, Negatron-Preloader, Negatron-Bootstrap, OpenViewerFX and VLCj using git. For OpenViewerFX and VLCj, you must get them from https://github.com/xinyingho/ as those versions include important modifications not available from the original repositories of those 2 projects.
 3. Switch VLCj to the branch "negatron-branch", with the command `git checkout negatron-branch`.
 4. Ensure that you have the latest version of OpenJDK or Oracle Java SE, at least v11. This won't work on earlier versions of Java.
 6. The following instructions have been tested against Apache Netbeans 11.2. But it should also work with other IDEs.
@@ -65,4 +65,6 @@ To compile Negatron:
    2. VLCj
    3. Negatron-Preloader
    4. Negatron
+
 On the last compilation step, you may encounter an error about not finding the program `jpackage` during the create-package stage. It's normal: as Negatron uses an early access feature of Java for packaging, the official packs are generated using a custom hacked version of this feature.
+Negatron-Bootstrap doesn't need to be compiled. This obsolete project is still there to provide the icons for the Windows and macOS installers.
