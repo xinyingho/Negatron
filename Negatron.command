@@ -18,7 +18,7 @@ JAVA=`which java`
 JRE=`java -version 2>&1 | head -1 | awk '{print $1}'`
 [ "$JRE" = "java" ] || [ "$JRE" = "openjdk" ] || java_err
 # version check
-MAJORVERSION=`java -version 2>&1 | head -1 | awk '{print $3}' | awk -F. '{print substr($1, 2)}'`
+MAJORVERSION=`java -version 2>&1 | head -1 | awk '{print substr($3, 2, length($3) - 2)}' | awk -F. '{print $1}'`
 [ "$MAJORVERSION" -ge "$MINIMUMVERSION" ] || java_err
 
 # All checks have been passed
