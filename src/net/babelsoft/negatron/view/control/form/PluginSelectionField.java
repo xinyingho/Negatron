@@ -117,9 +117,6 @@ public class PluginSelectionField extends Field {
         updateGlobalConfigurationSetting(
                 key, list.stream().sorted().collect(Collectors.joining(","))
         );
-        
-        // update plugin.ini
-        updatePlugins(selection.getSourceItems(), selection.getTargetItems());
     }
     
     public void setDisabled(boolean value) {

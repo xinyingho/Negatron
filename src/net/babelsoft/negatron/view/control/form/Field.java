@@ -179,14 +179,6 @@ public abstract class Field {
         }
     }
     
-    protected void updatePlugins(List<String> disabledPlugins, List<String> enabledPlugins) {
-        try {
-            Configuration.Manager.updatePlugins(disabledPlugins, enabledPlugins);
-        } catch (IOException ex) {
-            alert(ex);
-        }
-    }
-    
     protected void removePath(Property property, int index) {
         try {
             Configuration.Manager.removePath(property, index);
