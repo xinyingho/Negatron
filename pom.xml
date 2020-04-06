@@ -850,6 +850,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>cross-platform-pack</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -858,6 +859,20 @@
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>cross-platform-assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>installer-pack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.name}-${os.name} ${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>installer-assembly.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>
