@@ -869,7 +869,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.name}-${os.name} ${project.version}</finalName>
+                            <finalName>${project.name}-${os.name}-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>installer-assembly.xml</descriptor>
