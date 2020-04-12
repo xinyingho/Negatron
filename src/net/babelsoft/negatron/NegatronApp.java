@@ -62,6 +62,7 @@ public class NegatronApp extends Application implements Notifier {
      */
     public static void main(String[] args) {
         System.setProperty("javafx.preloader", NegatronPreloader.class.getCanonicalName());
+        System.setProperty("VLCJ_INITX", "no");
         launch(args);
     }
     
