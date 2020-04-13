@@ -23,7 +23,7 @@ import net.babelsoft.negatron.theme.Language;
 
 /**
  *
- * @author Xiny
+ * @author capan
  */
 public class CheatCheckField extends CheckField {
     

@@ -52,7 +52,7 @@ public enum Property {
     MARQUEE         ("marqueepath",      Domain.EXTRAS_MACHINE_ONLY,         "marquees|M"),
     MEDIA           ("mediapath",        Domain.EXTRAS_SOFTWARE_ONLY,        "media|S"),
     PCB             ("pcbpath",          Domain.EXTRAS_MACHINE_ONLY,         "pcb|M"),
-    PLUGINS         ("pluginspath",      Domain.MAME_FOLDER_ONLY,            "plugins"),
+    PLUGINS         ("pluginspath",      Domain.MAME_FOLDER_ONLY),
     ROM             ("rompath",          Domain.MAME_FOLDER_ONLY),
     SAMPLE          ("samplepath",       Domain.MAME_FOLDER_ONLY,            "samples"),
     SCORE           ("scorepath",        Domain.EXTRAS_MACHINE_ONLY,         "scores|M"), // new since 0.172

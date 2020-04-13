@@ -226,17 +226,17 @@ public class GlobalConfigurationPaneController implements Initializable {
         chdmanExec      = new ChdmanPathField   (foldersGrid, rowIdx++);
         
         GridAdornment.insertSpacing             (foldersGrid, rowIdx++, SPACING);
-        artwork         = new MultiPathField    (foldersGrid, rowIdx++, Property.ARTWORK,          rb.getString("artwork"), rb.getString("artwork.tooltip"));
-        cheat           = new MultiPathField    (foldersGrid, rowIdx++, Property.CHEAT,            rb.getString("cheat"), rb.getString("cheat.tooltip"), compressedArchives, "*.7z; *.zip");
-        controller      = new MultiPathField    (foldersGrid, rowIdx++, Property.CONTROLLER,       rb.getString("controllerDefinition"), rb.getString("controllerDefinition.tooltip"));
-        plugins         = new MultiPathField    (foldersGrid, rowIdx++, Property.PLUGINS,          rb.getString("plugins"), rb.getString("plugins.tooltip"));
-        rom             = new MultiPathField    (foldersGrid, rowIdx++, Property.ROM,              rb.getString("rom"), rb.getString("rom.tooltip"));
-        sample          = new MultiPathField    (foldersGrid, rowIdx++, Property.SAMPLE,           rb.getString("sample"), rb.getString("sample.tooltip"));
+        artwork         = new MultiPathField    (foldersGrid, rowIdx++, Property.ARTWORK,          "artwork");
+        cheat           = new MultiPathField    (foldersGrid, rowIdx++, Property.CHEAT,            "cheat", compressedArchives, "*.7z; *.zip");
+        controller      = new MultiPathField    (foldersGrid, rowIdx++, Property.CONTROLLER,       "controllerDefinition");
+        plugins         = new MultiPathField    (foldersGrid, rowIdx++, Property.PLUGINS,          "plugins");
+        rom             = new MultiPathField    (foldersGrid, rowIdx++, Property.ROM,              "rom");
+        sample          = new MultiPathField    (foldersGrid, rowIdx++, Property.SAMPLE,           "sample");
         
         GridAdornment.insertSpacing             (foldersGrid, rowIdx++, SPACING);
         GridAdornment.insertTitle               (foldersGrid, rowIdx++, SPACING,                   isMess ? rb.getString("mameExtrasHistoryVersioning").replaceFirst("MAME", "MESS") : rb.getString("mameExtrasHistoryVersioning"));
-        information     = new MultiPathField    (foldersGrid, rowIdx++, Property.INFORMATION,      rb.getString("information"), rb.getString("information.tooltip"), rb.getString("dataFiles"), "*.dat");
-        folderView      = new MultiPathField    (foldersGrid, rowIdx++, Property.FOLDER_VIEW,      rb.getString("folderView"), rb.getString("folderView.tooltip"));
+        information     = new MultiPathField    (foldersGrid, rowIdx++, Property.INFORMATION,      "information", rb.getString("dataFiles"), "*.dat");
+        folderView      = new MultiPathField    (foldersGrid, rowIdx++, Property.FOLDER_VIEW,      "folderView");
         
         GridAdornment.insertSpacing             (foldersGrid, rowIdx++, SPACING);
         GridAdornment.insertTitle               (foldersGrid, rowIdx++, SPACING,                   rb.getString("miscellaneous"));
@@ -249,34 +249,34 @@ public class GlobalConfigurationPaneController implements Initializable {
         mameMultimedia  = new MultimediaRootPathField(foldersGrid2, rowIdx++);
         
         GridAdornment.insertHeader              (foldersGrid2, rowIdx++, SPACING, Domain.EXTRAS_MACHINE_SOFTWARE);
-        icon            = new MultiPathField    (foldersGrid2, rowIdx++, Property.ICON,             rb.getString("icon"), rb.getString("icon.tooltip"), compressedArchives, "*.zip");
-        manual          = new MultiPathField    (foldersGrid2, rowIdx++, Property.MANUAL,           rb.getString("manual"), rb.getString("manual.tooltip"), compressedArchives, "*.zip");
-        snapshot        = new MultiPathField    (foldersGrid2, rowIdx++, Property.SNAPSHOT,         rb.getString("snapshot"), rb.getString("snapshot.tooltip"), compressedArchives, "*.zip");
-        title           = new MultiPathField    (foldersGrid2, rowIdx++, Property.TITLE,            rb.getString("title"), rb.getString("title.tooltip"), compressedArchives, "*.zip");
-        videoPreview    = new MultiPathField    (foldersGrid2, rowIdx++, Property.VIDEO_PREVIEW,    rb.getString("videoPreview"), rb.getString("videoPreview.tooltip"));
+        icon            = new MultiPathField    (foldersGrid2, rowIdx++, Property.ICON,             "icon", compressedArchives, "*.zip");
+        manual          = new MultiPathField    (foldersGrid2, rowIdx++, Property.MANUAL,           "manual", compressedArchives, "*.zip");
+        snapshot        = new MultiPathField    (foldersGrid2, rowIdx++, Property.SNAPSHOT,         "snapshot", compressedArchives, "*.zip");
+        title           = new MultiPathField    (foldersGrid2, rowIdx++, Property.TITLE,            "title", compressedArchives, "*.zip");
+        videoPreview    = new MultiPathField    (foldersGrid2, rowIdx++, Property.VIDEO_PREVIEW,    "videoPreview");
         
         GridAdornment.insertHeader              (foldersGrid2, rowIdx++, SPACING, Domain.EXTRAS_MACHINE_ONLY);
-        artworkPreview  = new MultiPathField    (foldersGrid2, rowIdx++, Property.ARTWORK_PREVIEW,  rb.getString("artworkPreview"), rb.getString("artworkPreview.tooltip"), compressedArchives, "*.zip");
-        boss            = new MultiPathField    (foldersGrid2, rowIdx++, Property.BOSS,             rb.getString("boss"), rb.getString("boss.tooltip"), compressedArchives, "*.zip");
-        cabinet         = new MultiPathField    (foldersGrid2, rowIdx++, Property.CABINET,          rb.getString("cabinet"), rb.getString("cabinet.tooltip"), compressedArchives, "*.zip");
-        controlPanel    = new MultiPathField    (foldersGrid2, rowIdx++, Property.CONTROL_PANEL,    rb.getString("controlPanel"), rb.getString("controlPanel.tooltip"), compressedArchives, "*.zip");
-        device          = new MultiPathField    (foldersGrid2, rowIdx++, Property.DEVICE,           rb.getString("device"), rb.getString("device.tooltip"), compressedArchives, "*.zip");
-        end             = new MultiPathField    (foldersGrid2, rowIdx++, Property.END,              rb.getString("end"), rb.getString("end.tooltip"), compressedArchives, "*.zip");
-        flyer           = new MultiPathField    (foldersGrid2, rowIdx++, Property.FLYER,            rb.getString("flyer"), rb.getString("flyer.tooltip"), compressedArchives, "*.zip");
-        gameOver        = new MultiPathField    (foldersGrid2, rowIdx++, Property.GAME_OVER,        rb.getString("gameOver"), rb.getString("gameOver.tooltip"), compressedArchives, "*.zip");
-        howTo           = new MultiPathField    (foldersGrid2, rowIdx++, Property.HOW_TO,           rb.getString("howTo"), rb.getString("howTo.tooltip"), compressedArchives, "*.zip");
-        logo            = new MultiPathField    (foldersGrid2, rowIdx++, Property.LOGO,             rb.getString("logo"), rb.getString("logo.tooltip"), compressedArchives, "*.zip");
-        marquee         = new MultiPathField    (foldersGrid2, rowIdx++, Property.MARQUEE,          rb.getString("marquee"), rb.getString("marquee.tooltip"), compressedArchives, "*.zip");
-        pcb             = new MultiPathField    (foldersGrid2, rowIdx++, Property.PCB,              rb.getString("pcb"), rb.getString("pcb.tooltip"), compressedArchives, "*.zip");
-        score           = new MultiPathField    (foldersGrid2, rowIdx++, Property.SCORE,            rb.getString("score"), rb.getString("score.tooltip"), compressedArchives, "*.zip");
-        select          = new MultiPathField    (foldersGrid2, rowIdx++, Property.SELECT,           rb.getString("select"), rb.getString("select.tooltip"), compressedArchives, "*.zip");
-        soundtrack      = new MultiPathField    (foldersGrid2, rowIdx++, Property.SOUNDTRACK,       rb.getString("soundtrack"), rb.getString("soundtrack.tooltip"));
-        versus          = new MultiPathField    (foldersGrid2, rowIdx++, Property.VERSUS,           rb.getString("versus"), rb.getString("versus.tooltip"), compressedArchives, "*.zip");
+        artworkPreview  = new MultiPathField    (foldersGrid2, rowIdx++, Property.ARTWORK_PREVIEW,  "artworkPreview", compressedArchives, "*.zip");
+        boss            = new MultiPathField    (foldersGrid2, rowIdx++, Property.BOSS,             "boss", compressedArchives, "*.zip");
+        cabinet         = new MultiPathField    (foldersGrid2, rowIdx++, Property.CABINET,          "cabinet", compressedArchives, "*.zip");
+        controlPanel    = new MultiPathField    (foldersGrid2, rowIdx++, Property.CONTROL_PANEL,    "controlPanel", compressedArchives, "*.zip");
+        device          = new MultiPathField    (foldersGrid2, rowIdx++, Property.DEVICE,           "device", compressedArchives, "*.zip");
+        end             = new MultiPathField    (foldersGrid2, rowIdx++, Property.END,              "end", compressedArchives, "*.zip");
+        flyer           = new MultiPathField    (foldersGrid2, rowIdx++, Property.FLYER,            "flyer", compressedArchives, "*.zip");
+        gameOver        = new MultiPathField    (foldersGrid2, rowIdx++, Property.GAME_OVER,        "gameOver", compressedArchives, "*.zip");
+        howTo           = new MultiPathField    (foldersGrid2, rowIdx++, Property.HOW_TO,           "howTo", compressedArchives, "*.zip");
+        logo            = new MultiPathField    (foldersGrid2, rowIdx++, Property.LOGO,             "logo", compressedArchives, "*.zip");
+        marquee         = new MultiPathField    (foldersGrid2, rowIdx++, Property.MARQUEE,          "marquee", compressedArchives, "*.zip");
+        pcb             = new MultiPathField    (foldersGrid2, rowIdx++, Property.PCB,              "pcb", compressedArchives, "*.zip");
+        score           = new MultiPathField    (foldersGrid2, rowIdx++, Property.SCORE,            "score", compressedArchives, "*.zip");
+        select          = new MultiPathField    (foldersGrid2, rowIdx++, Property.SELECT,           "select", compressedArchives, "*.zip");
+        soundtrack      = new MultiPathField    (foldersGrid2, rowIdx++, Property.SOUNDTRACK,       "soundtrack");
+        versus          = new MultiPathField    (foldersGrid2, rowIdx++, Property.VERSUS,           "versus", compressedArchives, "*.zip");
         
         GridAdornment.insertHeader              (foldersGrid2, rowIdx++, SPACING, Domain.EXTRAS_SOFTWARE_ONLY);
-        boxArt          = new MultiPathField    (foldersGrid2, rowIdx++, Property.BOX_ART,          rb.getString("boxArt"), rb.getString("boxArt.tooltip"));
-        cover           = new MultiPathField    (foldersGrid2, rowIdx++, Property.COVER,            rb.getString("cover"), rb.getString("cover.tooltip"), compressedArchives, "*.zip");
-        media           = new MultiPathField    (foldersGrid2, rowIdx++, Property.MEDIA,            rb.getString("media"), rb.getString("media.tooltip"));
+        boxArt          = new MultiPathField    (foldersGrid2, rowIdx++, Property.BOX_ART,          "boxArt");
+        cover           = new MultiPathField    (foldersGrid2, rowIdx++, Property.COVER,            "cover", compressedArchives, "*.zip");
+        media           = new MultiPathField    (foldersGrid2, rowIdx++, Property.MEDIA,            "media");
         
         // Options: MAME column
         
@@ -338,7 +338,7 @@ public class GlobalConfigurationPaneController implements Initializable {
         check(s -> new GenericCheckField                    (optionsGrid2, rowIdx++, s),                                    "console");
         pluginCheck = check(s -> new GenericCheckField      (optionsGrid2, rowIdx++, s),                                    "plugins");
         pluginSelections = check(
-                (s1, s2) -> new PluginSelectionField        (optionsGrid2, rowIdx++, s1, s2, plugins.getPaths()),           "noplugin", "plugin"
+                (s1, s2) -> new PluginSelectionField        (optionsGrid2, rowIdx++, s1, s2),                               "noplugin", "plugin"
         );
         if (pluginCheck != null && pluginSelections != null) {
             Delegate plug = () -> pluginSelections.setDisabled(!pluginCheck.isSelected());

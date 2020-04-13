@@ -26,6 +26,10 @@
  */
 package net.babelsoft.negatron.view.skin;
 
+import java.util.ArrayList;
+import java.util.List;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toCollection;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -36,9 +40,11 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import static javafx.scene.control.SelectionMode.MULTIPLE;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.MouseButton;
+import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -51,14 +57,6 @@ import net.babelsoft.negatron.view.control.ListActionView;
 import net.babelsoft.negatron.view.control.ListSelectionView;
 import net.babelsoft.negatron.view.control.adapter.Action;
 import net.babelsoft.negatron.view.control.adapter.ActionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toCollection;
-import static javafx.scene.control.SelectionMode.MULTIPLE;
-import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
 
 public class ListSelectionViewSkin<T> extends SkinBase<ListSelectionView<T>> {
 
@@ -331,6 +329,7 @@ public class ListSelectionViewSkin<T> extends SkinBase<ListSelectionView<T>> {
                 .collect(toCollection(FXCollections::observableArrayList));
     }
 
+    @SuppressWarnings("unchecked")
     private void initializeListSelectionAction(Action action) {
         if (action instanceof ListSelectionView.ListSelectionAction) {
             ((ListSelectionView.ListSelectionAction<T>) action).initialize(sourceListView, targetListView);

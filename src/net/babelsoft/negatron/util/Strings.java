@@ -26,7 +26,7 @@ public final class Strings {
     private Strings() { }
     
     public static boolean isEmpty(String s) {
-        return s == null || s.isEmpty();
+        return s == null || s.isBlank();
     }
 
     public static boolean isValid(String s) {

@@ -17,16 +17,6 @@
  */
 package net.babelsoft.negatron.view.control.form;
 
-import com.eclipsesource.json.Json;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.Observable;
 import javafx.collections.ObservableList;
@@ -35,87 +25,41 @@ import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.view.control.Infotip;
 import net.babelsoft.negatron.view.control.ListSelectionView;
-import net.babelsoft.negatron.view.skin.ListSelectionViewSkin;
 
 /**
  *
- * @author Xiny
+ * @author capan
  */
 public class PluginSelectionField extends Field {
     
-    protected class Plugin {
-        final String name;
-        final boolean enabledByDefault;
-        
-        Plugin(String name, boolean enabledByDefault) {
-            this.name = name;
-            this.enabledByDefault = enabledByDefault;
-        }
-    }
-    
     protected ListSelectionView<String> selection;
     
-    public PluginSelectionField(GridPane grid, int row, String disabledPluginKey, String enabledPluginKey, List<Path> paths) {
-        final List<String> disabledPlugins = Arrays.asList(
-                Configuration.Manager.getGlobalConfiguration(disabledPluginKey).split(",")
-        );
-        final List<String> enabledPlugins = Arrays.asList(
-                Configuration.Manager.getGlobalConfiguration(enabledPluginKey).split(",")
-        );
+    public PluginSelectionField(GridPane grid, int row, String disabledPluginKey, String enabledPluginKey) {
         selection = new ListSelectionView<>();
         
-        paths.stream().flatMap(path -> {
-            try {
-                return Files.list(path);
-            } catch (IOException ex) {
-                Logger.getLogger(PluginSelectionField.class.getName()).log(
-                        Level.WARNING, String.format("Couldn't list plugins folders within the folder %s", path), ex
-                );
-                return null;
-            }
-        }).filter(
-                path -> Files.isDirectory(path)
-        ).map(pluginFolder -> {
-            try (Reader fr = new FileReader(pluginFolder.resolve("plugin.json").toFile())) {
-                return Json.parse(fr).asObject().get("plugin").asObject();
-            } catch (Exception ex) {
-                Logger.getLogger(PluginSelectionField.class.getName()).log(
-                        Level.WARNING, String.format("Couldn't retrieve plugin.json file within the folder %s", pluginFolder), ex
-                );
-                return null;
-            }
-        }).filter(
-                plugin -> plugin != null && plugin.getString("type", "").equals("plugin") && !plugin.getString("name", "").isBlank()
-        ).map(
-                plugin -> new Plugin(plugin.getString("name", null), Boolean.parseBoolean( plugin.getString("start", "false") ))
+        Configuration.Manager.retrievePlugins(
+                disabledPluginKey, enabledPluginKey
         ).forEach(plugin -> {
-            if (plugin.enabledByDefault) {
-                if (disabledPlugins.contains(plugin.name))
-                    selection.getSourceItems().add(plugin.name);
-                else
-                    selection.getTargetItems().add(plugin.name);
-            } else {
-                if (enabledPlugins.contains(plugin.name))
-                    selection.getTargetItems().add(plugin.name);
-                else
-                    selection.getSourceItems().add(plugin.name);
-            }
+            if (plugin.isEnabled())
+                selection.getTargetItems().add(plugin.getName());
+            else
+                selection.getSourceItems().add(plugin.getName());
         });
         
         selection.getSourceLabel().setText(Language.Manager.getString("globalConf." + disabledPluginKey));
         selection.getTargetLabel().setText(Language.Manager.getString("globalConf." + enabledPluginKey));
         selection.setSourceTooltip(new Infotip(Language.Manager.getString("globalConf." + disabledPluginKey + ".tooltip")));
         selection.setTargetTooltip(new Infotip(Language.Manager.getString("globalConf." + enabledPluginKey + ".tooltip")));
-        selection.getSourceItems().addListener((Observable o) -> updatePluginSetting(disabledPluginKey, selection.getSourceItems()));
-        selection.getTargetItems().addListener((Observable o) -> updatePluginSetting(enabledPluginKey, selection.getTargetItems()));
+        selection.getSourceItems().addListener((Observable o) -> updatePlugins(disabledPluginKey, enabledPluginKey, selection.getSourceItems(), false));
+        selection.getTargetItems().addListener((Observable o) -> updatePlugins(disabledPluginKey, enabledPluginKey, selection.getTargetItems(), true));
         
         GridPane.setColumnSpan(selection, 2);
         grid.add(selection, 0, row);
     }
     
-    private void updatePluginSetting(String key, ObservableList<String> list) {
-        updateGlobalConfigurationSetting(
-                key, list.stream().sorted().collect(Collectors.joining(","))
+    private void updatePlugins(String disabledPluginKey, String enabledPluginKey, ObservableList<String> list, boolean updateEnabled) {
+        updatePlugins(
+                disabledPluginKey, enabledPluginKey, list.stream().sorted().collect(Collectors.joining(",")), updateEnabled
         );
     }
     

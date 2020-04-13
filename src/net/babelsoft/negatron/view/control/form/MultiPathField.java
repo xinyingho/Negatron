@@ -19,11 +19,9 @@ package net.babelsoft.negatron.view.control.form;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -74,10 +72,10 @@ public class MultiPathField extends Field {
     private final List<RadioButton> machineRadios;
     private final List<RadioButton> softwareRadios;
     
-    public MultiPathField(GridPane grid, int row, Property property, String text, String promptText, String... fileFilters) {
+    public MultiPathField(GridPane grid, int row, Property property, String key, String... fileFilters) {
         list.add(this);
         
-        this.promptText = promptText;
+        this.promptText = Language.Manager.getString(key + ".tooltip");
         this.property = property;
         this.fileFilters = fileFilters;
         
@@ -138,7 +136,7 @@ public class MultiPathField extends Field {
         RowConstraints constraints = new RowConstraints();
         grid.getRowConstraints().add(constraints);
         
-        label = new Label(text);
+        label = new Label(Language.Manager.getString(key));
         label.setWrapText(true);
         grid.add(label, 0, row);
         
@@ -226,7 +224,6 @@ public class MultiPathField extends Field {
                 updateFilePath(property, index, newValue, choices.get(index).getValue());
         });
         
-        @SuppressWarnings("unchecked")
         ChoiceBox<String> choice;
         Button fileButton;
         if (property.getDomain() == Domain.EXTRAS_INFORMATION) {
@@ -396,16 +393,6 @@ public class MultiPathField extends Field {
     
     public List<TextField> getPathFields() {
         return pathFields;
-    }
-    
-    public List<Path> getPaths() {
-        return pathFields.stream().map(
-                field -> field.getText()
-        ).map(
-                text -> Path.of(text)
-        ).collect(
-                Collectors.toList()
-        );
     }
     
     public Label getLabel() {

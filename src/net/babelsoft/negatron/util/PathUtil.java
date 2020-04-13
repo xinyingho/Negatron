@@ -16,7 +16,7 @@ import java.util.Optional;
 
 /**
  *
- * @author Xiny
+ * @author capan
  */
 public final class PathUtil {
     

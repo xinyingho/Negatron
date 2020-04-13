@@ -26,15 +26,19 @@
  */
 package net.babelsoft.negatron.view.skin;
 
+import static java.util.stream.Collectors.toCollection;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
+import static javafx.geometry.Orientation.HORIZONTAL;
+import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import static javafx.scene.control.SelectionMode.MULTIPLE;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.ToolBar;
@@ -47,11 +51,6 @@ import net.babelsoft.negatron.view.control.ListActionView;
 import net.babelsoft.negatron.view.control.ListActionView.ListAction;
 import net.babelsoft.negatron.view.control.adapter.Action;
 import net.babelsoft.negatron.view.control.adapter.ActionUtils;
-
-import static java.util.stream.Collectors.toCollection;
-import static javafx.geometry.Orientation.HORIZONTAL;
-import static javafx.geometry.Orientation.VERTICAL;
-import static javafx.scene.control.SelectionMode.MULTIPLE;
 
 public class ListActionViewSkin<T> extends SkinBase<ListActionView<T>> {
 
@@ -113,6 +112,7 @@ public class ListActionViewSkin<T> extends SkinBase<ListActionView<T>> {
                 .collect(toCollection(FXCollections::observableArrayList));
     }
 
+    @SuppressWarnings("unchecked")
     private void initializeListAction(Action action) {
         if (action instanceof ListAction) {
             ((ListAction<T>) action).initialize(listView);

@@ -17,14 +17,18 @@
  */
 package net.babelsoft.negatron.io.configuration;
 
+import com.eclipsesource.json.Json;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,10 +39,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.babelsoft.negatron.io.Mame;
 import net.babelsoft.negatron.io.cache.UIConfigurationCache;
 import net.babelsoft.negatron.io.cache.UIConfigurationData;
+import net.babelsoft.negatron.model.Plugin;
 import net.babelsoft.negatron.util.Shell;
 import net.babelsoft.negatron.util.Strings;
 
@@ -93,10 +100,12 @@ public enum Configuration {
     private final Path NEGATRON_INI = Paths.get(getRootFolder().toString(), "Negatron.ini");
     private final String MAME_INI = "mame.ini";
     private final String MESS_INI = "mess.ini";
+    private final String PLUGIN_INI = "plugin.ini";
     
     private String mamePath;
     private String mameExec;
     private String mameIni;
+    private Path pluginIni;
     private String chdmanExec;
     private String extrasPath;
     private String multimediaPath;
@@ -140,7 +149,7 @@ public enum Configuration {
         // negatron.ini check
         try (BufferedReader reader = Files.newBufferedReader(NEGATRON_INI)) {
             reader.lines().filter(
-                line -> !line.trim().startsWith("#")
+                line -> isMeaningfulLine(line)
             ).map(
                 line -> splitLine(line)
             ).forEach(content -> {
@@ -165,16 +174,19 @@ public enum Configuration {
                         chdmanExec = tidyStringPath(content[1]);
                         break;
                     case EXTRAS_ENTRY:
-                        extrasPath = tidyStringPath(content[1]);
+                        if (content.length > 1)
+                            extrasPath = tidyStringPath(content[1]);
                         break;
                     case MULTIMEDIA_ENTRY:
-                        multimediaPath = tidyStringPath(content[1]);
+                        if (content.length > 1)
+                            multimediaPath = tidyStringPath(content[1]);
                         break;
                     case VLC_ENTRY:
                         vlcPath = tidyStringPath(content[1]);
                         break;
                     case SKIN_ENTRY:
-                        skin = tidyStringPath(content[1]);
+                        if (content.length > 1)
+                            skin = tidyStringPath(content[1]);
                         break;
                     case LANGUAGE_ENTRY:
                         language = tidyStringPath(content[1]);
@@ -191,7 +203,8 @@ public enum Configuration {
                         ).findAny().orElse(null);
                         break;
                     case FONT_FAMILY_ENTRY:
-                        fontFamily = content[1].trim();
+                        if (content.length > 1)
+                            fontFamily = content[1].trim();
                         break;
                     case FONT_SIZE_ENTRY:
                         fontSize = Double.parseDouble(content[1]);
@@ -237,6 +250,7 @@ public enum Configuration {
                 if (Shell.isLinux()) {
                     // MAME on Linux can be packaged (system-wide) or compiled from source code.
                     List<String> mameIniPaths = Shell.find(INI, mamePath);
+                    mameIniPaths.addAll(Shell.find(INI, Paths.get(mamePath, "ini").toString()));
                     mameIniPaths.addAll(Shell.find(INI, Shell.expandPath("$HOME/." + (isMess ? MESS : MAME))));
                     mameIniPaths.addAll(Shell.find(INI, "/etc/"));
                     mameIniPaths.addAll(Shell.find(INI, "/usr/"));
@@ -279,8 +293,14 @@ public enum Configuration {
                     if (mameIni == null)
                         // if still didn't find anything, just go for the default SDLMAME location
                         mameIni = Paths.get(Shell.expandPath("$HOME/." + (isMess ? MESS : MAME)), INI).toString();
-                } else // Windows or Mac OS X
-                    mameIni = Paths.get(mamePath, INI).toString();
+                } else {
+                    // Windows or Mac OS X
+                    Path path = Paths.get(mamePath, "ini", INI);
+                    if (Files.isRegularFile(path))
+                        mameIni = path.toString();
+                    else
+                        mameIni = Paths.get(mamePath, INI).toString();
+                }
             }
             
             // mame.ini update: check if required. If yes, then perform sync between negatron.ini and mame.ini
@@ -288,8 +308,20 @@ public enum Configuration {
             Path iniPath = Paths.get(mameIni);
             if (Files.notExists(iniPath))
                 mameIniCreatedJustNow = true;
+            
+            // plugin.ini gets reset to its default state or gets wiped out with -cc (bugs still there in MAME 0.220)
+            // so move it temporarily away while MAME updates mame.ini
+            pluginIni = iniPath.resolveSibling(PLUGIN_INI);
+            Path tmpPluginPath = null;
+            if (Files.isRegularFile(pluginIni)) {
+                tmpPluginPath = pluginIni.resolveSibling("~" + PLUGIN_INI + "~");
+                Files.move(pluginIni, tmpPluginPath);
+            }
             // Create ini file or update it so that its content get updated to the latest format
             Mame.launch(stringToArray("-cc"), iniPath.getParent().toString(), true);
+            // move plugin.ini back to its normal location
+            if (tmpPluginPath != null)
+                Files.move(tmpPluginPath, pluginIni, StandardCopyOption.REPLACE_EXISTING);
             
             boolean shouldUpdateMameConfiguration = mustWriteDefaultConfiguration || extrasPath != null && mameIniCreatedJustNow;
             
@@ -297,16 +329,14 @@ public enum Configuration {
             boolean mustUpdateMameConfiguration;
             try (BufferedReader reader = Files.newBufferedReader(iniPath)) {
                 mustUpdateMameConfiguration = reader.lines().filter(
-                    line -> !line.trim().startsWith("#") && Strings.isValid(line.trim())
+                    line -> isMeaningfulLine(line)
                 ).map(
                     line -> splitLine(line)
                 ).map(content -> {
-                    boolean[] processedLine = { false }; // workaround: transform the boolean as a table so that it remains editable from lambda expressions...
-                    
                     // for each MAME paths editable in the global configuration pane, read their values from mame.ini
-                    Arrays.stream(Property.values()).filter(
+                    boolean processedLine = Arrays.stream(Property.values()).filter(
                         property -> property.isMamePath && content[0].equals(property.name)
-                    ).forEach(property -> {
+                    ).map(property -> {
                         String defaultFolders = null;
                         if (shouldUpdateMameConfiguration && property.defaultFolders.size() > 0) {
                             defaultFolders = property.defaultFolders.stream().map(
@@ -335,8 +365,8 @@ public enum Configuration {
                             content[1] + (defaultFolders != null ? ";" + defaultFolders : "")
                         ));
                         
-                        processedLine[0] = true;
-                    });
+                        return property;
+                    }).count() > 0;
                     
                     boolean mustUpdate = false;
                     
@@ -348,7 +378,7 @@ public enum Configuration {
                             mustUpdate = true;
                         } else if (cheatMenuEnabled != mameCheatMenuEnabled)
                             mustUpdate = true;
-                        processedLine[0] = true;
+                        processedLine = true;
                     } else if (content[0].equals(VsyncMethod.DOUBLE_BUFFERING.name)) {
                         boolean doubleBufferingEnabled = digitToBoolean(content[1]);
                         if (vsync == null && doubleBufferingEnabled) {
@@ -356,7 +386,7 @@ public enum Configuration {
                             mustUpdate = true;
                         } else if (vsync == VsyncMethod.DOUBLE_BUFFERING && !doubleBufferingEnabled)
                             mustUpdate = true;
-                        processedLine[0] = true;
+                        processedLine = true;
                     } else if (content[0].equals(VsyncMethod.TRIPLE_BUFFERING.name)) {
                         boolean tripleBufferingEnabled = digitToBoolean(content[1]);
                         if (vsync == null && tripleBufferingEnabled) {
@@ -364,14 +394,15 @@ public enum Configuration {
                             mustUpdate = true;
                         } else if (vsync == VsyncMethod.TRIPLE_BUFFERING && !tripleBufferingEnabled)
                             mustUpdate = true;
-                        // processedLine[0] = true; // Triple Buffer is a Windows native only MAME option
-                        // So to have a way to detect if triple buffering should be enabled and
+                        // Triple Buffer is a Windows native only MAME option.
+                        // So, to have a way to detect if triple buffering should be enabled and
                         // by assuming that SDL MAME doesn't add this option in -cc generated ini files,
                         // we let the process register the triple buffer line into the global conf dic
+                        // by not setting processedLine to true.
                     }
                     
                     // memorise not yet processed mame configuration lines into the Global Configuration dictionary
-                    if (!processedLine[0])
+                    if (!processedLine)
                         globalConfiguration.put(content[0], content.length > 1 ? content[1].trim() : "");
                     
                     return mustUpdate;
@@ -467,6 +498,10 @@ public enum Configuration {
         }
     }
     
+    private boolean isMeaningfulLine(String line) {
+        return !line.startsWith("\ufeff#") && !line.startsWith("#") && !line.isBlank();
+    }
+    
     private boolean digitToBoolean(String content) {
         return TRUE.equals(content.trim());
     }
@@ -481,7 +516,7 @@ public enum Configuration {
     }
     
     private String[] splitLine(String line) {
-        return line.split("\\s", 2);
+        return line.trim().split("\\s", 2);
     }
     
     private List<String> stringToArray(String string) {
@@ -491,9 +526,7 @@ public enum Configuration {
     }
     
     private List<String> pathStringToArray(String paths) {
-        paths = paths.trim();
-        
-        if (paths.isEmpty())
+        if (paths.isBlank())
             return new ArrayList<>();
         else
             return Arrays.asList(paths.trim().replace("\"", "").replaceAll(";{2,}", ";").split(";"));
@@ -617,7 +650,7 @@ public enum Configuration {
             for (String line : reader.lines().toArray(String[]::new)) {
                 boolean lineUpdated = false;
                 
-                if (!line.isEmpty() && !line.startsWith("#")) {
+                if (isMeaningfulLine(line)) {
                     String[] splitLine = splitLine(line);
                     
                     for (Property property : Property.values()) {
@@ -658,8 +691,11 @@ public enum Configuration {
                     }
                     
                     if (
-                        !lineUpdated && splitLine.length > 1 &&
-                        globalConfiguration.containsKey(splitLine[0]) && !globalConfiguration.get(splitLine[0]).equals(splitLine[1])
+                        !lineUpdated && (
+                            splitLine.length > 1 && globalConfiguration.containsKey(splitLine[0]) && !globalConfiguration.get(splitLine[0]).equals(splitLine[1])
+                        ) || (
+                            splitLine.length == 1 && globalConfiguration.containsKey(splitLine[0])
+                        )
                     ) {
                         writeConfigurationLine(writer, splitLine[0], globalConfiguration.get(splitLine[0]));
                         lineUpdated = true;
@@ -743,6 +779,53 @@ public enum Configuration {
         }
     }
     
+    private Map<String, Boolean> getPlugins(String disabledPluginKey, String enabledPluginKey) {
+        Map<String, Boolean> plugins = new HashMap<>();
+        
+        String conf = Configuration.Manager.getGlobalConfiguration(disabledPluginKey);
+        plugins.putAll(Strings.isValid(conf) ?
+                Arrays.stream(conf.split(",")).collect(Collectors.toMap(s -> s, s -> false)) :
+                Collections.emptyMap()
+        );
+        
+        conf = Configuration.Manager.getGlobalConfiguration(enabledPluginKey);
+        plugins.putAll(Strings.isValid(conf) ?
+                Arrays.stream(conf.split(",")).collect(Collectors.toMap(s -> s, s -> true)) :
+                Collections.emptyMap()
+        );
+        
+        return plugins;
+    }
+    
+    private void writePluginInitialisationFile(String disabledPluginKey, String enabledPluginKey) throws IOException {
+        if (!Files.isWritable(pluginIni))
+            return;
+        
+        try (BufferedWriter writer = Files.newBufferedWriter(
+                pluginIni, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+        )) {
+            writeConfigurationSectionHeader(writer, "PLUGINS OPTIONS");
+            
+            Map<String, Boolean> plugins = getPlugins(disabledPluginKey, enabledPluginKey);
+            List<String> keys = new ArrayList<>(plugins.keySet());
+            Collections.sort(keys);
+            for (String key : keys)
+                writeConfigurationLine(writer, key, plugins.get(key));
+        }
+    }
+    
+    private void readPluginInitialisationFile(Map<String, Boolean> pluginIniData) throws IOException {
+        try (BufferedReader reader = Files.newBufferedReader(pluginIni)) {
+            reader.lines().filter(
+                line -> isMeaningfulLine(line)
+            ).map(
+                line -> splitLine(line)
+            ).forEach(
+                    split -> pluginIniData.put(split[0], digitToBoolean(split[1]))
+            );
+        }
+    }
+    
     public void determineExecutionMode(String mameVersion) {
         // The default value is sync execution mode (since MAME v0.186)
         // --> machine configurations must be entirely deferred from the content of the initial call to -listxml
@@ -773,6 +856,57 @@ public enum Configuration {
                 // swallow exception
             }
         }
+    }
+    
+    public List<Plugin> retrievePlugins(String disabledPluginKey, String enabledPluginKey) {
+        final Map<String, Boolean> mameIniData = getPlugins(disabledPluginKey, enabledPluginKey);
+        final Map<String, Boolean> pluginIniData = new HashMap<>();
+        if (mameIniData.isEmpty()) try {
+            readPluginInitialisationFile(pluginIniData);
+        } catch (IOException ex) {
+            Logger.getLogger(Configuration.class.getName()).log(Level.WARNING, null, ex);
+        }
+        
+        return Configuration.Manager.getFolderPaths(Property.PLUGINS).stream().map(
+                path -> Path.of(path)
+        ).flatMap(path -> {
+            try {
+                return Files.list(path);
+            } catch (IOException ex) {
+                Logger.getLogger(Configuration.class.getName()).log(
+                        Level.WARNING, String.format("Couldn't list plugins folders within the folder %s", path), ex
+                );
+                return null;
+            }
+        }).filter(
+                path -> Files.isDirectory(path)
+        ).map(pluginFolder -> {
+            try (Reader fr = new FileReader(pluginFolder.resolve("plugin.json").toFile())) {
+                return Json.parse(fr).asObject().get("plugin").asObject();
+            } catch (Exception ex) {
+                Logger.getLogger(Configuration.class.getName()).log(
+                        Level.WARNING, String.format("Couldn't retrieve plugin.json file within the folder %s", pluginFolder), ex
+                );
+                return null;
+            }
+        }).filter(
+                plugin -> plugin != null && !plugin.getString("name", "").isBlank()
+        ).map(
+                plugin -> new Plugin(plugin.getString("name", null), Boolean.parseBoolean( plugin.getString("start", "false") ))
+        ).map(plugin -> {
+            if (plugin.isEnabledByDefault()) {
+                if (!mameIniData.getOrDefault(plugin.getName(), true) || !pluginIniData.getOrDefault(plugin.getName(), true))
+                    plugin.setEnabled(false);
+                else
+                    plugin.setEnabled(true);
+            } else {
+                if (mameIniData.getOrDefault(plugin.getName(), false) || pluginIniData.getOrDefault(plugin.getName(), false))
+                    plugin.setEnabled(true);
+                else
+                    plugin.setEnabled(false);
+            }
+            return plugin;
+        }).sorted().collect(Collectors.toList());
     }
     
     public boolean isAsyncExecutionMode() {
@@ -1261,6 +1395,11 @@ public enum Configuration {
     public void updateGlobalConfigurationSetting(String key, boolean value) throws IOException, InterruptedException {
         globalConfiguration.put(key, value ? TRUE : FALSE);
         writeMameInitialisationFile();
+    }
+    
+    public void updatePlugins(String disabledPluginKey, String enabledPluginKey, String value, boolean updateEnabled) throws IOException, InterruptedException {
+        updateGlobalConfigurationSetting(updateEnabled ? enabledPluginKey : disabledPluginKey, value);
+        writePluginInitialisationFile(disabledPluginKey, enabledPluginKey);
     }
 
     public void updateTreeTableColumnsConfiguration(String id, Map<String, TreeTableColumnConfiguration> conf) throws IOException {

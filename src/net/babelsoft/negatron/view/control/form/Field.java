@@ -18,7 +18,6 @@
 package net.babelsoft.negatron.view.control.form;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.Alert;
@@ -174,6 +173,14 @@ public abstract class Field {
     protected void updateGlobalConfigurationSetting(String key, boolean value) {
         try {
             Configuration.Manager.updateGlobalConfigurationSetting(key, value);
+        } catch (IOException | InterruptedException ex) {
+            alert(ex);
+        }
+    }
+    
+    protected void updatePlugins(String disabledPluginKey, String enabledPluginKey, String value, boolean updateEnabled) {
+        try {
+            Configuration.Manager.updatePlugins(disabledPluginKey, enabledPluginKey, value, updateEnabled);
         } catch (IOException | InterruptedException ex) {
             alert(ex);
         }
