@@ -36,7 +36,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
 import javafx.animation.ParallelTransition;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -89,7 +91,7 @@ import uk.co.caprica.vlcj.player.embedded.videosurface.callback.format.RV32Buffe
 /**
  * Used Oracle's Overlay Media Player code for the layout, and vlcj to replace Oracle's GStreamer back-end.
  * Media playback in JavaFX is done using GStreamer. But on Windows, Oracle set it up to use the default embedded OS codecs, which aren't up to date.
- * So replacing GStreamer by VLC allows Negatron to play any videos on Windows and also solves the libav versioning issues on recent Linux distributions.
+ * So replacing GStreamer by VLC allows Negatron to play any videos on Windows and also solves the libav versioning issues that can happen on some Linux distributions.
  * @author capan
  */
 public class MediaViewPane extends Region implements Disposable {
@@ -494,6 +496,13 @@ public class MediaViewPane extends Region implements Disposable {
             double sampleAspectRatio = Math.max(trackInfo.sampleAspectRatio(), 1);
             double sampleAspectRatioBase = Math.max(trackInfo.sampleAspectRatioBase(), 1);
             displayAspectRatio = (sampleAspectRatioBase * height) / (sampleAspectRatio * width); // DAR = PAR * SAR
+            
+            // macOS fix: when a system-wide VLC is still opened in the background,
+            // the update layout event can get fired before the new video file has been loaded in VLC,
+            // leading to a default display of 1:1 in the top-left corner
+            // instead of the expected centered display enlarged to the whole pane.
+            // So, Negatron needs to force a layout update after the correct DAR has been computed.
+            layoutChildren();
         }
         
         if (!isMediaViewShown())

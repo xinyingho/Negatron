@@ -182,7 +182,8 @@ public enum Configuration {
                             multimediaPath = tidyStringPath(content[1]);
                         break;
                     case VLC_ENTRY:
-                        vlcPath = tidyStringPath(content[1]);
+                        if (content.length > 1)
+                            vlcPath = tidyStringPath(content[1]);
                         break;
                     case SKIN_ENTRY:
                         if (content.length > 1)
@@ -606,11 +607,14 @@ public enum Configuration {
 
         Iterator<String> it = content.iterator();
         if (it.hasNext()) {
-            writer.write(it.next());
-            while (it.hasNext()) {
-                String part = it.next();
-                writer.write(";");
+            String part = it.next();
+            if (Strings.isValid(part))
                 writer.write(part);
+            while (it.hasNext()) {
+                writer.write(";");
+                part = it.next();
+                if (Strings.isValid(part))
+                    writer.write(part);
             }
         }
         writer.newLine();
@@ -869,6 +873,8 @@ public enum Configuration {
         
         return Configuration.Manager.getFolderPaths(Property.PLUGINS).stream().map(
                 path -> Path.of(path)
+        ).filter(
+                path -> Files.isDirectory(path)
         ).flatMap(path -> {
             try {
                 return Files.list(path);
