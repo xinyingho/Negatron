@@ -36,9 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
 import javafx.animation.ParallelTransition;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -81,10 +79,10 @@ import uk.co.caprica.vlcj.media.VideoTrackInfo;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
-import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.embedded.videosurface.CallbackVideoSurface;
 import uk.co.caprica.vlcj.player.embedded.videosurface.VideoSurfaceAdapters;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.embedded.videosurface.callback.RenderCallback;
 import uk.co.caprica.vlcj.player.embedded.videosurface.callback.format.RV32BufferFormat;
 
@@ -493,9 +491,19 @@ public class MediaViewPane extends Region implements Disposable {
             VideoTrackInfo trackInfo = tracksInfo.get(0);
 
             // when SAR is set to an invalid 0:0 ratio, force it to default to 1:1
-            double sampleAspectRatio = Math.max(trackInfo.sampleAspectRatio(), 1);
-            double sampleAspectRatioBase = Math.max(trackInfo.sampleAspectRatioBase(), 1);
-            displayAspectRatio = (sampleAspectRatioBase * height) / (sampleAspectRatio * width); // DAR = PAR * SAR
+            double sampleAspectRatioX = Math.max(trackInfo.sampleAspectRatio(), 1);
+            double sampleAspectRatioY = Math.max(trackInfo.sampleAspectRatioBase(), 1);
+            double sampleAspectRatio = sampleAspectRatioX / sampleAspectRatioY;
+            displayAspectRatio = (double) width / (double) height * sampleAspectRatio; // DAR = PAR * SAR
+            
+            if (sampleAspectRatio != 1.0 || Math.abs(displayAspectRatio - 16.0/9.0) > 0.001 && Math.abs(displayAspectRatio - 9.0/16.0) > 0.001) {
+                // it's not about a 16/9 or 9/16 DAR as expected from LCD/LED/OLED/QLED games
+                // so, it's about an old game that was always displayed on a classic 4/3 or 3/4 CRT
+                if (displayAspectRatio >= 1.0)
+                    displayAspectRatio = 4.0/3.0;
+                else
+                    displayAspectRatio = 3.0/4.0;
+            }
             
             // macOS fix: when a system-wide VLC is still opened in the background,
             // the update layout event can get fired before the new video file has been loaded in VLC,
@@ -674,10 +682,10 @@ public class MediaViewPane extends Region implements Disposable {
         double height = getHeight();
         
         if (mediaView != null) {
-            double fitHeight = displayAspectRatio * width;
+            double fitHeight = width / displayAspectRatio;
             if (fitHeight > height) {
                 mediaView.setFitHeight(height);
-                double fitWidth = height / displayAspectRatio;
+                double fitWidth = displayAspectRatio * height;
                 mediaView.setFitWidth(fitWidth);
             } else {
                 mediaView.setFitWidth(width);
