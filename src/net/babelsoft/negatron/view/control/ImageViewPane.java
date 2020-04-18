@@ -42,8 +42,9 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import net.babelsoft.negatron.util.function.Delegate;
+import net.babelsoft.negatron.model.ScreenOrientation;
 import net.babelsoft.negatron.util.Strings;
+import net.babelsoft.negatron.util.function.Delegate;
 
 /**
  * 
@@ -54,6 +55,7 @@ public class ImageViewPane extends Region {
     private final ObjectProperty<ImageView> imageViewProperty = new SimpleObjectProperty<>();
     private String dragCopyPath;
     private Delegate onDropCompleted;
+    private ScreenOrientation orientation = ScreenOrientation.NONE;
 
     public ImageViewPane() {
         this(new ImageView());
@@ -178,9 +180,27 @@ public class ImageViewPane extends Region {
     
     public void setImage(Image image, boolean preserveRatio) {
         ImageView imageView = new ImageView(image);
-        imageView.setPreserveRatio(preserveRatio);
+        if (orientation == ScreenOrientation.NONE)
+            imageView.setPreserveRatio(preserveRatio);
         imageView.setPickOnBounds(true);
         setImageView(imageView);
+        
+        layoutChildren();
+    }
+    
+    public ScreenOrientation getOrientation() {
+        return orientation;
+    }
+    
+    public void setOrientation(ScreenOrientation orientation) {
+        this.orientation = orientation;
+        
+        if (orientation == ScreenOrientation.NONE)
+            getImageView().setPreserveRatio(true);
+        else
+            getImageView().setPreserveRatio(false);
+        
+        layoutChildren();
     }
 
     public void setDragCopyPath(String dragCopyPath) {
@@ -234,9 +254,39 @@ public class ImageViewPane extends Region {
     protected void layoutChildren() {
         ImageView imageView = imageViewProperty.get();
         if (imageView != null) {
-            imageView.setFitWidth(getWidth());
-            imageView.setFitHeight(getHeight());
-            layoutInArea(imageView, 0, 0, getWidth(), getHeight(), 0, HPos.CENTER, VPos.CENTER);
+            double width = getWidth();
+            double height = getHeight();
+            
+            Image image = imageView.getImage();
+            if (image != null) {
+                if (orientation != ScreenOrientation.NONE) {
+                    double aspectRatio;
+                    if (orientation == ScreenOrientation.HORIZONTAL)
+                        if (Math.abs(image.getWidth() / image.getHeight() - 16.0/9.0) > 0.001)
+                            aspectRatio = 4.0/3.0;
+                        else
+                            aspectRatio = 16.0/9.0;
+                    else
+                        if (Math.abs(image.getWidth() / image.getHeight() - 9.0/16.0) > 0.001)
+                            aspectRatio = 3.0/4.0;
+                        else
+                            aspectRatio = 9.0/16.0;
+
+                    double fitHeight = width / aspectRatio;
+                    if (fitHeight > height) {
+                        imageView.setFitHeight(height);
+                        double fitWidth = aspectRatio * height;
+                        imageView.setFitWidth(fitWidth);
+                    } else {
+                        imageView.setFitWidth(width);
+                        imageView.setFitHeight(fitHeight);
+                    }
+                } else {
+                    imageView.setFitWidth(width);
+                    imageView.setFitHeight(height);
+                }
+                layoutInArea(imageView, 0, 0, width, height, 0, HPos.CENTER, VPos.CENTER);
+            }
         }
         super.layoutChildren();
     }

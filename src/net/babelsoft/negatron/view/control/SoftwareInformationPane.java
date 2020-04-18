@@ -22,6 +22,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TabPane;
 import net.babelsoft.negatron.controller.SoftwareInformationPaneController;
+import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.function.Delegate;
@@ -53,6 +54,10 @@ public class SoftwareInformationPane extends TitledWindowPane {
     public void setEmulatedItem(Software software, boolean keepFavouritesButtonEnabled) {
         controller.setEmulatedItem(software, keepFavouritesButtonEnabled);
         //controller.hideTab(() -> controller.showTab(), false);
+    }
+    
+    public void setMachine(Machine machine) {
+        controller.setMachine(machine);
     }
 
     public void setApplication(Application application) {

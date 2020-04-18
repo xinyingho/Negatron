@@ -981,6 +981,7 @@ public class MainController implements Initializable, AlertController, EditContr
     
     private void load() {
         reload(null);
+        softwareInformationWindow.setMachine(currentMachine);
     }
     
     private void reload(String origin) {

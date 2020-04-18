@@ -50,6 +50,8 @@ import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.io.extras.Extras;
 import net.babelsoft.negatron.io.extras.Images;
+import net.babelsoft.negatron.model.ScreenOrientation;
+import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.ImageViewPane;
@@ -90,6 +92,8 @@ public class SoftwareInformationPaneController extends InformationPaneController
     
     private double mousePosX, mousePosY;
     private Rotate rotateX, rotateY;
+    
+    private Machine machine;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -225,6 +229,10 @@ public class SoftwareInformationPaneController extends InformationPaneController
             systemName = emulatedItem.getGroup();
         super.setEmulatedItem(emulatedItem, keepFavouritesButtonEnabled);
     }
+    
+    public void setMachine(Machine machine) {
+        this.machine = machine;
+    }
 
     @Override
     protected void updateExternalTabContent(String currentName) throws IOException {
@@ -292,9 +300,11 @@ public class SoftwareInformationPaneController extends InformationPaneController
         
         Image image = snapshotImagePane.getImageView().getImage();
         
-        if (image.getWidth() >= image.getHeight()) {
+        if (machine != null && machine.getScreenOrientation() != ScreenOrientation.VERTICAL || image.getWidth() >= image.getHeight()) {
             GridPane.setConstraints(titleImagePane, 0, 0);
             GridPane.setConstraints(snapshotImagePane, 0, 1);
+            
+            setOrientation(ScreenOrientation.HORIZONTAL);
 
             ColumnConstraints hundredPctWidth = new ColumnConstraints();
             hundredPctWidth.setPercentWidth(100);
@@ -310,6 +320,8 @@ public class SoftwareInformationPaneController extends InformationPaneController
         } else {
             GridPane.setConstraints(titleImagePane, 0, 0);
             GridPane.setConstraints(snapshotImagePane, 1, 0);
+            
+            setOrientation(ScreenOrientation.VERTICAL);
 
             ColumnConstraints fiftyPctWidth = new ColumnConstraints();
             fiftyPctWidth.setPercentWidth(50);

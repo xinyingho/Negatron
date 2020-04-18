@@ -37,6 +37,7 @@ import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.io.extras.Extras;
 import net.babelsoft.negatron.io.extras.Images;
+import net.babelsoft.negatron.model.ScreenOrientation;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.ImageViewPane;
@@ -145,6 +146,19 @@ public class MachineInformationPaneController extends InformationPaneController<
     @Override
     protected void setGraphic(ImageView graphic) {
         headerLabel.setGraphic(graphic);
+    }
+    
+    @Override
+    protected void setOrientation(ScreenOrientation orientation) {
+        logoImagePane.setOrientation(orientation);
+        howtoImagePane.setOrientation(orientation);
+        scoreImagePane.setOrientation(orientation);
+        bossImagePane.setOrientation(orientation);
+        gameoverImagePane.setOrientation(orientation);
+        endImagePane.setOrientation(orientation);
+        selectImagePane.setOrientation(orientation);
+        versusImagePane.setOrientation(orientation);
+        super.setOrientation(orientation);
     }
     
     @Override
@@ -275,7 +289,7 @@ public class MachineInformationPaneController extends InformationPaneController<
         
         image = snapshotImagePane.getImageView().getImage();
         
-        if (image.getWidth() >= image.getHeight()) {
+        if (currentEmulatedItem == null || currentEmulatedItem.getScreenOrientation() != ScreenOrientation.VERTICAL) {
             GridPane.setConstraints(ingameTitleGrid, 0, 0, 3, 1);
             GridPane.setConstraints(titleImagePane, 0, 0);
             GridPane.setConstraints(snapshotImagePane, 1, 0);
@@ -291,6 +305,8 @@ public class MachineInformationPaneController extends InformationPaneController<
             GridPane.setConstraints(selectImagePane, 0, 3);
             GridPane.setConstraints(artpreviewImagePane, 1, 3);
             GridPane.setConstraints(versusImagePane, 2, 3);
+            
+            setOrientation(ScreenOrientation.HORIZONTAL);
 
             ColumnConstraints fiftyPctWidth = new ColumnConstraints();
             fiftyPctWidth.setPercentWidth(50);
@@ -333,6 +349,8 @@ public class MachineInformationPaneController extends InformationPaneController<
             GridPane.setConstraints(selectImagePane, 3, 0);
             GridPane.setConstraints(artpreviewImagePane, 3, 1);
             GridPane.setConstraints(versusImagePane, 3, 2);
+            
+            setOrientation(ScreenOrientation.VERTICAL);
 
             ColumnConstraints hundredPctWidth = new ColumnConstraints();
             hundredPctWidth.setPercentWidth(100);

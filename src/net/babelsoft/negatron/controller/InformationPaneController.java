@@ -67,6 +67,7 @@ import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.io.extras.Extras;
 import net.babelsoft.negatron.io.extras.Icons;
 import net.babelsoft.negatron.io.extras.Images;
+import net.babelsoft.negatron.model.ScreenOrientation;
 import net.babelsoft.negatron.model.item.EmulatedItem;
 import net.babelsoft.negatron.util.Disposable;
 import net.babelsoft.negatron.util.function.Delegate;
@@ -205,6 +206,7 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
         Arrays.stream(panes).forEach(pane -> pane.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY && (tabPane.getSelectionModel().getSelectedItem() != ingameTab || zoomEnabled)) {
                 zoomingPane.setImage(pane.getImageView().getImage());
+                zoomingPane.setOrientation(pane.getOrientation());
                 zoomingPane.setMouseTransparent(false);
                 FadeTransition fade = new FadeTransition(Duration.millis(200), zoomingPane);
                 fade.setToValue(1.0);
@@ -234,6 +236,11 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
         mediaViewPane.setOnDropCompleted(onDropCompleted);
         if (panes != null)
             Arrays.stream(panes).forEach(pane -> initialise(pane));
+    }
+    
+    protected void setOrientation(ScreenOrientation orientation) {
+        titleImagePane.setOrientation(orientation);
+        snapshotImagePane.setOrientation(orientation);
     }
 
     @Override
