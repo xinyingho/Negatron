@@ -652,26 +652,12 @@ public class MainController implements Initializable, AlertController, EditContr
     public void initialiseData() {
         notifierPopup = new NotifierPopup();
         
-        cache = new CacheManager(this, (machineMap, machineList, machineStats, softwareStats) -> Platform.runLater(() -> {
+        cache = new CacheManager(this, (machineList, machineStats, softwareStats, selection) -> Platform.runLater(() -> {
             machineTreePane.setItems(machineList);
             machineFolderViewWindow.initialiseData();
             machineFilterWindow.bind(machineTreePane);
             softwareFilterWindow.bind(softwareTreePane);
             statisticsWindow.setStatistics(machineStats, softwareStats);
-            
-            String selectedMachine = Configuration.Manager.getSelectedMachine();
-            if (selectedMachine != null) {
-                Machine machine = machineMap.get(selectedMachine);
-                if (machine != null) {
-                    show(
-                            machine,
-                            Configuration.Manager.getSelectedSoftwareConfiguration(),
-                            Configuration.Manager.getSelectedMachineConfiguration(),
-                            false
-                    );
-                    machineTreePane.scrollToSelection();
-                }
-            }
             
             try {
                 MachineListCache machineListCache = new MachineListCache();
@@ -681,6 +667,16 @@ public class MainController implements Initializable, AlertController, EditContr
                 ));
             } catch (ClassNotFoundException | IOException ex) {
                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Couldn't display statistics", ex);
+            }
+            
+            if (selection.hasSelection()) {
+                show(
+                        selection.getMachine(),
+                        selection.getSoftwareConfiguration(),
+                        selection.getMachineConfiguration(),
+                        false
+                );
+                machineTreePane.scrollToSelection();
             }
         }));
         

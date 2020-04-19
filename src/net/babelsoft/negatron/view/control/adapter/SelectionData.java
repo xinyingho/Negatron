@@ -34,6 +34,12 @@ public class SelectionData {
     private final MachineConfiguration machineConfiguration;
     private final SoftwareConfiguration softwareConfiguration;
     
+    public SelectionData(Machine machine, MachineConfiguration machineConfiguration, SoftwareConfiguration softwareConfiguration) {
+        this.machine = machine;
+        this.machineConfiguration = machineConfiguration;
+        this.softwareConfiguration = softwareConfiguration;
+    }
+    
     public SelectionData(Machine machine, AtomicInteger machineLoadingCount, Software software, DeviceController deviceController) {
         if (machine != null && machineLoadingCount.get() == 0) {
             this.machine = machine;

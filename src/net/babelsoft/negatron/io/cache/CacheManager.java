@@ -19,7 +19,6 @@ package net.babelsoft.negatron.io.cache;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +33,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert.AlertType;
 import net.babelsoft.negatron.controller.MainController;
+import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.FavouriteTree;
 import net.babelsoft.negatron.io.loader.FavouriteLoader;
 import net.babelsoft.negatron.io.loader.InitialisedCallable;
@@ -43,6 +43,7 @@ import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.statistics.MachineStatistics;
 import net.babelsoft.negatron.model.statistics.SoftwareStatistics;
 import net.babelsoft.negatron.util.function.TetraConsumer;
+import net.babelsoft.negatron.view.control.adapter.SelectionData;
 
 /**
  *
@@ -79,11 +80,11 @@ public class CacheManager extends Task<Void> {
     private final MainController controller;
     private final ExecutorService service;
     private final ExecutorCompletionService<Void> execService;
-    private final TetraConsumer<Map<String, Machine>, List<Machine>, MachineStatistics, SoftwareStatistics> onMachineListLoaded;
+    private final TetraConsumer<List<Machine>, MachineStatistics, SoftwareStatistics, SelectionData> onMachineListLoaded;
     
     public CacheManager(
         MainController controller,
-        TetraConsumer<Map<String, Machine>, List<Machine>, MachineStatistics, SoftwareStatistics> onMachineListLoaded
+        TetraConsumer<List<Machine>, MachineStatistics, SoftwareStatistics, SelectionData> onMachineListLoaded
     ) {
         this.controller = controller;
         this.onMachineListLoaded = onMachineListLoaded;
@@ -141,7 +142,12 @@ public class CacheManager extends Task<Void> {
             // wait for it to finish
             MachineListData machines = machineListFuture.get();
             onMachineListLoaded.accept(
-                machines.getMap(), machines.getList(), machines.getStatistics(), softwareListCache.getStatistics()
+                machines.getList(), machines.getStatistics(), softwareListCache.getStatistics(),
+                new SelectionData(
+                        machines.getMap().get(Configuration.Manager.getSelectedMachine()),
+                        Configuration.Manager.getSelectedMachineConfiguration(),
+                        Configuration.Manager.getSelectedSoftwareConfiguration()
+                )
             );
             
             controller.setSucceeded(true);
