@@ -26,6 +26,8 @@ import java.util.function.Function;
 import net.babelsoft.negatron.io.configuration.TableColumnConfiguration;
 import net.babelsoft.negatron.io.configuration.TreeTableColumnConfiguration;
 import net.babelsoft.negatron.io.configuration.TreeTableViewConfiguration;
+import net.babelsoft.negatron.model.favourites.MachineConfiguration;
+import net.babelsoft.negatron.model.favourites.SoftwareConfiguration;
 
 /**
  *
@@ -52,6 +54,9 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
         protected String selectedMachineFolderView;
         protected Map<String, Void> machineFoldersRemovedFomView; // folder removed from view > dummy data
         protected boolean isGlobalAdvancedOptionsEnabled;
+        protected String selectedMachine;
+        protected MachineConfiguration selectedMachineConfiguration;
+        protected SoftwareConfiguration selectedSoftwareConfiguration;
         
         public Data() {
             treeTableConfiguration = new HashMap<>();
@@ -68,6 +73,9 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
             isWindowMaximised = isWindowFullscreen = false;
             machineFoldersRemovedFomView = new HashMap<>();
             isGlobalAdvancedOptionsEnabled = false;
+            selectedMachine = null;
+            selectedMachineConfiguration = null;
+            selectedSoftwareConfiguration = null;
         }
     }
     
@@ -271,6 +279,27 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
 
     public void saveGlobalAdvancedOptionsEnabled(boolean value) throws IOException {
         data.isGlobalAdvancedOptionsEnabled = value;
+        save(data);
+    }
+    
+    public String loadSelectedMachine() {
+        return data.selectedMachine;
+    }
+    
+    public MachineConfiguration loadSelectedMachineConfiguration() {
+        return data.selectedMachineConfiguration;
+    }
+    
+    public SoftwareConfiguration loadSelectedSoftwareConfiguration() {
+        return data.selectedSoftwareConfiguration;
+    }
+    
+    public void saveSelection(
+            String machine, MachineConfiguration machineConfiguration, SoftwareConfiguration softwareConfiguration
+    ) throws IOException {
+        data.selectedMachine = machine;
+        data.selectedMachineConfiguration = machineConfiguration;
+        data.selectedSoftwareConfiguration = softwareConfiguration;
         save(data);
     }
     

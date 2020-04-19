@@ -109,6 +109,7 @@ import net.babelsoft.negatron.view.control.SoftwareInformationPane;
 import net.babelsoft.negatron.view.control.StatisticsPane;
 import net.babelsoft.negatron.view.control.TitledWindowPane;
 import net.babelsoft.negatron.view.control.TitledWindowPane.DisplayMode;
+import net.babelsoft.negatron.view.control.adapter.SelectionData;
 import net.babelsoft.negatron.view.control.form.Control;
 import net.babelsoft.negatron.view.control.form.DeviceControl;
 
@@ -578,15 +579,9 @@ public class MainController implements Initializable, AlertController, EditContr
         });
         
         final Consumer<Boolean> addToFavourites = isShiftDown -> {
-            if (currentMachine != null && machineLoadingCount.get() == 0) {
-                Software software = softwareTreePane.getCurrentItem();
-                if (software != null)
-                    favouriteTreePane.insert(currentMachine, new SoftwareConfiguration(
-                        currentMachine, currentDeviceController.getMachineComponent(), software
-                    ));
-                else
-                    favouriteTreePane.insert(currentMachine, null);
-                
+            SelectionData data = new SelectionData(currentMachine, machineLoadingCount, softwareTreePane.getCurrentItem(), currentDeviceController);
+            if (data.hasSelection()) {
+                favouriteTreePane.insert(data);
                 favouriteTreeWindow.setOnceOnAnimationEnded(() -> {
                     if (isShiftDown)
                         favouriteTreeWindow.close();
@@ -657,12 +652,26 @@ public class MainController implements Initializable, AlertController, EditContr
     public void initialiseData() {
         notifierPopup = new NotifierPopup();
         
-        cache = new CacheManager(this, (machines, machineStats, softwareStats) -> Platform.runLater(() -> {
-            machineTreePane.setItems(machines);
+        cache = new CacheManager(this, (machineMap, machineList, machineStats, softwareStats) -> Platform.runLater(() -> {
+            machineTreePane.setItems(machineList);
             machineFolderViewWindow.initialiseData();
             machineFilterWindow.bind(machineTreePane);
             softwareFilterWindow.bind(softwareTreePane);
             statisticsWindow.setStatistics(machineStats, softwareStats);
+            
+            String selectedMachine = Configuration.Manager.getSelectedMachine();
+            if (selectedMachine != null) {
+                Machine machine = machineMap.get(selectedMachine);
+                if (machine != null) {
+                    show(
+                            machine,
+                            Configuration.Manager.getSelectedSoftwareConfiguration(),
+                            Configuration.Manager.getSelectedMachineConfiguration(),
+                            false
+                    );
+                    machineTreePane.scrollToSelection();
+                }
+            }
             
             try {
                 MachineListCache machineListCache = new MachineListCache();
@@ -741,6 +750,17 @@ public class MainController implements Initializable, AlertController, EditContr
 
     @Override
     public void dispose() {
+        SelectionData data = new SelectionData(
+                currentMachine, machineLoadingCount, softwareTreePane.getCurrentItem(), currentDeviceController
+        );
+        if (data.hasSelection()) try {
+            Configuration.Manager.updateSelection(
+                    data.getMachine().getName(), data.getMachineConfiguration(), data.getSoftwareConfiguration()
+            );
+        } catch (IOException ex) {
+            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Couldn't save the last selection before Negatron exits", ex);
+        }
+        
         machineInformationPane.dispose();
         if (cache != null) {
             cache.cancel();

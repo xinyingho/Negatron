@@ -142,6 +142,10 @@ public class EmulatedItemTreePane<T extends EmulatedItem<T>> extends VBox {
         return tree.getSelectionModel().selectedItemProperty();
     }
     
+    public void scrollToSelection() {
+        tree.scrollTo(tree.getSelectionModel().getSelectedIndex());
+    }
+    
     public void setOnMoreViews(Consumer<Boolean> onMoreViews) {
         controller.setOnMoreViews(onMoreViews);
     }

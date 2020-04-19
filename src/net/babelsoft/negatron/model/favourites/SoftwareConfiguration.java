@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.model.favourites;
 
+import java.io.Serializable;
 import net.babelsoft.negatron.model.Describable;
 import net.babelsoft.negatron.model.component.Device;
 import net.babelsoft.negatron.model.item.Machine;
@@ -27,12 +28,13 @@ import net.babelsoft.negatron.model.item.SoftwarePart;
  *
  * @author capan
  */
-public class SoftwareConfiguration implements Describable {
+public class SoftwareConfiguration implements Describable, Serializable {
+    private static final long serialVersionUID = 1L;
     
-    private final String machine;
-    private final String device;
-    private final Software software;
-    private final SoftwarePart softwarePart;
+    private String machine;
+    private String device;
+    private Software software;
+    private SoftwarePart softwarePart;
     
     public SoftwareConfiguration(Machine machine, Device device, Software software) {
         this.machine = machine.getName();

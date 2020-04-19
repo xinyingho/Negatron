@@ -40,6 +40,7 @@ import net.babelsoft.negatron.model.component.MachineElementList;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.view.control.adapter.SelectionData;
 
 /**
  *
@@ -117,10 +118,10 @@ public class Favourite implements XmlOutput {
         );
     }
     
-    public Favourite(Machine machine, SoftwareConfiguration softwareConfiguration) { // favourite creation
+    public Favourite(SelectionData data) { // favourite creation
         this(
-            softwareConfiguration != null ? softwareConfiguration.getSoftware().getDescription() : machine.getDescription(),
-            machine, softwareConfiguration, MachineConfiguration.buildFromParameters(machine),
+            data.getSoftwareConfiguration() != null ? data.getSoftwareConfiguration().getSoftware().getDescription() : data.getMachine().getDescription(),
+            data.getMachine(), data.getSoftwareConfiguration(), data.getMachineConfiguration(),
             LocalDateTime.now(), LocalDateTime.now()
         );
     }

@@ -65,6 +65,7 @@ import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.FavouriteTreeView;
 import net.babelsoft.negatron.view.control.FavouriteTreeView.Position;
+import net.babelsoft.negatron.view.control.adapter.SelectionData;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem.CutCopyState;
 import net.babelsoft.negatron.view.control.tree.DateTimeTreeTableCell;
@@ -377,10 +378,10 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         }
     }
 
-    public void insert(Machine currentMachine, SoftwareConfiguration currentSoftware) {
+    public void insert(SelectionData data) {
         isInserting = true;
         
-        TreeItem<Favourite> favourite = new CopyPastableTreeItem(new Favourite(currentMachine, currentSoftware));
+        TreeItem<Favourite> favourite = new CopyPastableTreeItem(new Favourite(data));
         insert(favourite);
         
         if (selection.getSelectedItem() != favourite)

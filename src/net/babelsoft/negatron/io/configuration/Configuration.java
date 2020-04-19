@@ -46,6 +46,8 @@ import net.babelsoft.negatron.io.Mame;
 import net.babelsoft.negatron.io.cache.UIConfigurationCache;
 import net.babelsoft.negatron.io.cache.UIConfigurationData;
 import net.babelsoft.negatron.model.Plugin;
+import net.babelsoft.negatron.model.favourites.MachineConfiguration;
+import net.babelsoft.negatron.model.favourites.SoftwareConfiguration;
 import net.babelsoft.negatron.util.Shell;
 import net.babelsoft.negatron.util.Strings;
 
@@ -1181,6 +1183,24 @@ public enum Configuration {
             return uiConfigurationCache.loadGlobalAdvancedOptionsEnabled();
         return false;
     }
+    
+    public String getSelectedMachine() {
+        if (uiConfigurationCache != null)
+            return uiConfigurationCache.loadSelectedMachine();
+        return null;
+    }
+    
+    public MachineConfiguration getSelectedMachineConfiguration() {
+        if (uiConfigurationCache != null)
+            return uiConfigurationCache.loadSelectedMachineConfiguration();
+        return null;
+    }
+    
+    public SoftwareConfiguration getSelectedSoftwareConfiguration() {
+        if (uiConfigurationCache != null)
+            return uiConfigurationCache.loadSelectedSoftwareConfiguration();
+        return null;
+    }
 
     public void setMasterConfigPoint() {
         beginMasterConfigTransaction();
@@ -1496,6 +1516,13 @@ public enum Configuration {
     public void updateGlobalAdvancedOptionsEnabled(boolean value) throws IOException {
         if (uiConfigurationCache != null)
             uiConfigurationCache.saveGlobalAdvancedOptionsEnabled(value);
+    }
+    
+    public void updateSelection(
+            String machine, MachineConfiguration machineConfiguration, SoftwareConfiguration softwareConfiguration
+    ) throws IOException {
+        if (uiConfigurationCache != null)
+            uiConfigurationCache.saveSelection(machine, machineConfiguration, softwareConfiguration);
     }
     
     public void beginUIConfigurationTransaction() {

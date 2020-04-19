@@ -17,6 +17,7 @@
  */
 package net.babelsoft.negatron.model.favourites;
 
+import java.io.Serializable;
 import net.babelsoft.negatron.model.component.MachineElementList;
 import net.babelsoft.negatron.model.item.Machine;
 
@@ -24,11 +25,12 @@ import net.babelsoft.negatron.model.item.Machine;
  *
  * @author capan
  */
-public class MachineConfiguration {
+public class MachineConfiguration implements Serializable {
+    private static final long serialVersionUID = 1L;
     
-    private final String commandLine;
-    private final boolean configurable;
-    private final MachineElementList parameters;
+    private String commandLine;
+    private boolean configurable;
+    private MachineElementList parameters;
     
     public MachineConfiguration(final String commandLine) {
         this.commandLine = commandLine != null ? commandLine : "";
