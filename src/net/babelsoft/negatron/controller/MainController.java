@@ -749,10 +749,13 @@ public class MainController implements Initializable, AlertController, EditContr
         SelectionData data = new SelectionData(
                 currentMachine, machineLoadingCount, softwareTreePane.getCurrentItem(), currentDeviceController
         );
-        if (data.hasSelection()) try {
-            Configuration.Manager.updateSelection(
-                    data.getMachine().getName(), data.getMachineConfiguration(), data.getSoftwareConfiguration()
-            );
+        try {
+            if (data.hasSelection())
+                Configuration.Manager.updateSelection(
+                        data.getMachine().getName(), data.getMachineConfiguration(), data.getSoftwareConfiguration()
+                );
+            else
+                Configuration.Manager.updateSelection(null, null, null);
         } catch (IOException ex) {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Couldn't save the last selection before Negatron exits", ex);
         }
