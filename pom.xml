@@ -62,9 +62,8 @@
         <javafx.version>14</javafx.version>
         <twelvemonkeys.version>3.5</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
-        <vlcj.version>4.4.0-negatron</vlcj.version>
-        <vlcj-natives.version>4.1.0</vlcj-natives.version>
-        <vlc-jna.version>5.2.0</vlc-jna.version>
+        <vlcj.version>4.5.2</vlcj.version>
+        <vlc-jna.version>5.5.0</vlc-jna.version>
         
         <localLibPath>${project.basedir}/lib</localLibPath>
     </properties>
@@ -643,24 +642,6 @@
                                     </moduleInfo>
                                 </module>
                                 
-                                <module>
-                                    <artifact>
-                                        <groupId>uk.co.caprica</groupId>
-                                        <artifactId>vlcj</artifactId>
-                                        <version>${vlcj.version}</version>
-                                    </artifact>
-                                    <moduleInfo>
-                                        <uses>uk.co.caprica.vlcj.factory.discovery.provider.DiscoveryDirectoryProvider;</uses>
-                                    </moduleInfo>
-                                </module>
-                                <module>
-                                    <artifact>
-                                        <groupId>uk.co.caprica</groupId>
-                                        <artifactId>vlcj-natives</artifactId>
-                                        <version>${vlcj-natives.version}</version>
-                                    </artifact>
-                                    <moduleInfo /> <!-- generates a default module-info -->
-                                </module>
                                 <module>
                                     <artifact>
                                         <groupId>net.java.dev.jna</groupId>
