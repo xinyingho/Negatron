@@ -31,8 +31,8 @@ public class Separator extends Favourite {
         super();
     }
     
-    public Separator(LocalDateTime dateCreated, LocalDateTime dateModified) {
-        super(dateCreated, dateModified);
+    public Separator(long id, LocalDateTime dateCreated, LocalDateTime dateModified) {
+        super(id, dateCreated, dateModified);
     }
     
     @Override
@@ -43,6 +43,7 @@ public class Separator extends Favourite {
     @Override
     public void write(XMLStreamWriter writer) throws XMLStreamException {
         writer.writeEmptyElement("separator");
+        writer.writeAttribute("id", String.valueOf(getId()));
         writer.writeAttribute("dateModified", getDateModified().toString());
         writer.writeAttribute("dateCreated", getDateCreated().toString());
     }

@@ -1201,6 +1201,18 @@ public enum Configuration {
             return uiConfigurationCache.loadSelectedSoftwareConfiguration();
         return null;
     }
+    
+    public boolean isFavouritesDisplayed() {
+        if (uiConfigurationCache != null)
+            return uiConfigurationCache.loadFavouritesDisplayed();
+        return false;
+    }
+    
+    public long getSelectedFavouriteId() {
+        if (uiConfigurationCache != null)
+            return uiConfigurationCache.loadSelectedFavouriteId();
+        return 0;
+    }
 
     public void setMasterConfigPoint() {
         beginMasterConfigTransaction();
@@ -1519,10 +1531,14 @@ public enum Configuration {
     }
     
     public void updateSelection(
-            String machine, MachineConfiguration machineConfiguration, SoftwareConfiguration softwareConfiguration
+            String machine, MachineConfiguration machineConfiguration, SoftwareConfiguration softwareConfiguration,
+            boolean favouritesDisplayed, long favouriteId
     ) throws IOException {
         if (uiConfigurationCache != null)
-            uiConfigurationCache.saveSelection(machine, machineConfiguration, softwareConfiguration);
+            uiConfigurationCache.saveSelection(
+                    machine, machineConfiguration, softwareConfiguration,
+                    favouritesDisplayed, favouriteId
+            );
     }
     
     public void beginUIConfigurationTransaction() {

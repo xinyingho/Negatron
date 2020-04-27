@@ -40,6 +40,7 @@ import net.babelsoft.negatron.model.component.MachineElementList;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.adapter.SelectionData;
 
 /**
@@ -67,6 +68,36 @@ public class Favourite implements XmlOutput {
         @Override
         public String getName() { return "datetime"; }
     }
+    
+    private static long count = 0;
+    private static boolean dirty = false;
+    private long id = 0;
+        
+    private static long getNextId() {
+        return ++count;
+    }
+    
+    public static void checkDirty(Delegate delegate) {
+        if (dirty) {
+            dirty = false;
+            delegate.fire();
+        }
+    }
+    
+    private void setId(long id) {
+        if (id > 0) {
+            if (id > count)
+                count = id;
+            this.id = id;
+        } else {
+            // the favourite loader passed along an invalid id
+            // probably because it's loading some favourites in the old format without ids
+            // so, mark the favourites as dirty in order to get the newly affected ids saved
+            dirty = true;
+            if (this.id <= 0)
+                this.id = getNextId();
+        }
+    }
 
     private final StringProperty name = new SimpleStringProperty();
     private final ObjectProperty<Machine> machine = new SimpleObjectProperty<>();
@@ -84,11 +115,13 @@ public class Favourite implements XmlOutput {
     private transient BooleanProperty mustMigrate = new SimpleBooleanProperty();
     
     protected Favourite() { // separator creation
+        id = getNextId();
         dateCreated.set(LocalDateTime.now());
         dateModified.set(LocalDateTime.now());
     }
     
-    protected Favourite(LocalDateTime dateCreated, LocalDateTime dateModified) { // separator creation
+    protected Favourite(long id, LocalDateTime dateCreated, LocalDateTime dateModified) { // separator creation
+        setId(id);
         this.dateCreated.set(dateCreated);
         this.dateModified.set(dateModified);
     }
@@ -127,9 +160,19 @@ public class Favourite implements XmlOutput {
     }
     
     public Favourite(
-        String name, Machine machine, SoftwareConfiguration softwareConfiguration, MachineConfiguration machineConfiguration,
+        long id, String name, Machine machine, SoftwareConfiguration softwareConfiguration, MachineConfiguration machineConfiguration,
         LocalDateTime dateCreated, LocalDateTime dateModified
     ) { // favourite reloading
+        this(
+            name, machine, softwareConfiguration, machineConfiguration, dateCreated, dateModified
+        );
+        setId(id);
+    }
+    
+    private Favourite(
+        String name, Machine machine, SoftwareConfiguration softwareConfiguration, MachineConfiguration machineConfiguration,
+        LocalDateTime dateCreated, LocalDateTime dateModified
+    ) {
         this(
             name, machine, softwareConfiguration, machineConfiguration, dateCreated, dateModified,
             machine != null ? machine.getIconDescription().getIcon() : null
@@ -140,6 +183,8 @@ public class Favourite implements XmlOutput {
         String name, Machine machine, SoftwareConfiguration softwareConfiguration, MachineConfiguration machineConfiguration,
         LocalDateTime dateCreated, LocalDateTime dateModified, Image image
     ) {
+        id = getNextId();
+        
         setName(name);
         setMachine(machine);
         setSoftwareConfiguration(softwareConfiguration);
@@ -187,6 +232,10 @@ public class Favourite implements XmlOutput {
                 newMachine.iconDescriptionProperty().addListener(listener);
             }
         });
+    }
+    
+    public final long getId() {
+        return id;
     }
 
     public final String getName() {
@@ -356,6 +405,7 @@ public class Favourite implements XmlOutput {
             writer.writeStartElement("favourite");
         else
             writer.writeEmptyElement("favourite");
+        writer.writeAttribute("id", String.valueOf(getId()));
         writer.writeAttribute("name", getName());
         writer.writeAttribute("dateModified", getDateModified().toString());
         writer.writeAttribute("dateCreated", getDateCreated().toString());

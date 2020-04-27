@@ -57,6 +57,8 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
         protected String selectedMachine;
         protected MachineConfiguration selectedMachineConfiguration;
         protected SoftwareConfiguration selectedSoftwareConfiguration;
+        protected boolean favouritesDisplayed;
+        protected long favouriteId;
         
         public Data() {
             treeTableConfiguration = new HashMap<>();
@@ -76,6 +78,8 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
             selectedMachine = null;
             selectedMachineConfiguration = null;
             selectedSoftwareConfiguration = null;
+            favouritesDisplayed = false;
+            favouriteId = 0;
         }
     }
     
@@ -294,12 +298,23 @@ public class UIConfigurationCache extends Cache<UIConfigurationCache.Data, Void>
         return data.selectedSoftwareConfiguration;
     }
     
+    public boolean loadFavouritesDisplayed() {
+        return data.favouritesDisplayed;
+    }
+    
+    public long loadSelectedFavouriteId() {
+        return data.favouriteId;
+    }
+    
     public void saveSelection(
-            String machine, MachineConfiguration machineConfiguration, SoftwareConfiguration softwareConfiguration
+            String machine, MachineConfiguration machineConfiguration, SoftwareConfiguration softwareConfiguration,
+            boolean favouritesDisplayed, long favouriteId
     ) throws IOException {
         data.selectedMachine = machine;
         data.selectedMachineConfiguration = machineConfiguration;
         data.selectedSoftwareConfiguration = softwareConfiguration;
+        data.favouritesDisplayed = favouritesDisplayed;
+        data.favouriteId = favouriteId;
         save(data);
     }
     

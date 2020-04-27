@@ -321,7 +321,7 @@ public class MainController implements Initializable, AlertController, EditContr
                 machineFolderViewWindow.showMaximised();
             else
                 machineFolderViewWindow.close();
-            if (machineFilterWindow.getDisplayMode() != DisplayMode.HIDDEN)
+            if (machineFilterWindow.isDisplayed())
                 machineFilterWindow.close();
         });
         machineTreePane.setFilterPane(machineFilterWindow);
@@ -330,7 +330,7 @@ public class MainController implements Initializable, AlertController, EditContr
                 machineFilterWindow.showMaximised();
             else
                 machineFilterWindow.close();
-            if (machineFolderViewWindow.getDisplayMode() != DisplayMode.HIDDEN)
+            if (machineFolderViewWindow.isDisplayed())
                 machineFolderViewWindow.close();
         });
         machineTreePane.setOnTreeWiseOperation(beginOp -> isDoingMachineTreeWiseOperation = beginOp);
@@ -386,7 +386,7 @@ public class MainController implements Initializable, AlertController, EditContr
         });
         Delegate decrementMachineLoadingCount = () -> {
             int count = machineLoadingCount.decrementAndGet();
-            if (count == 0 && favouriteTreeWindow.getDisplayMode() == DisplayMode.HIDDEN) {
+            if (count == 0 && favouriteTreeWindow.isHidden()) {
                 machineInformationPane.setFavouriteEnabled(true);
                 softwareInformationWindow.setFavouriteEnabled(true);
             }
@@ -450,10 +450,8 @@ public class MainController implements Initializable, AlertController, EditContr
                     fireOnMachineLoaded();
                 machineConfigurationPane.satisfyRequirement(software.getRequirement(), softwareLists);
                 softwareConfigurationTable.setSoftware(software);
-                softwareInformationWindow.setEmulatedItem(software, favouriteTreeWindow.getDisplayMode() == DisplayMode.HIDDEN);
-                if (
-                    softwareInformationWindow.getDisplayMode() == DisplayMode.HIDDEN
-                ) {
+                softwareInformationWindow.setEmulatedItem(software, favouriteTreeWindow.isHidden());
+                if (softwareInformationWindow.isHidden()) {
                     softwareInformationWindow.setSyncWindow(machineConfigurationWindow);
                     if (machineConfigurationWindow.getDisplayMode() != DisplayMode.MAXIMISED)
                         softwareInformationWindow.show();
@@ -466,7 +464,7 @@ public class MainController implements Initializable, AlertController, EditContr
                     if (displayingSoftwareConfiguration != null) {
                         if (displayingSoftwareConfiguration.getSoftwarePart() != null) {
                             softwareConfigurationTable.setCurrentItem(displayingSoftwareConfiguration.getSoftwarePart(), displayingSoftwareConfiguration.getDevice());
-                            if (softwareConfigurationWindow.getDisplayMode() == DisplayMode.HIDDEN)
+                            if (softwareConfigurationWindow.isHidden())
                                 handleSoftwareConfigurationAction(null);
                         }
                         displayingSoftwareConfiguration = null;
@@ -475,7 +473,7 @@ public class MainController implements Initializable, AlertController, EditContr
                     buttonBar.getItems().remove(softwareConfigurationButton);
             } else {
                 softwareConfigurationTable.setSoftware(null);
-                softwareInformationWindow.setEmulatedItem(null, favouriteTreeWindow.getDisplayMode() == DisplayMode.HIDDEN);
+                softwareInformationWindow.setEmulatedItem(null, favouriteTreeWindow.isHidden());
                 if (softwareConfigurationButton.getParent() != null)
                     buttonBar.getItems().remove(softwareConfigurationButton);
             }
@@ -500,20 +498,20 @@ public class MainController implements Initializable, AlertController, EditContr
         ///// Initialisation of the favourite pane
         
         favouriteTreeWindow.setOnClose(() -> {
-            if (favouriteMachineTreeWindow.getDisplayMode() != DisplayMode.HIDDEN) {
+            if (favouriteMachineTreeWindow.isDisplayed()) {
                 favouriteMachineTreeWindow.setContent(null);
                 machineTreeWindow.setContent(machineTreePane);
             }
-            if (favouriteSoftwareTreeWindow.getDisplayMode() != DisplayMode.HIDDEN) {
+            if (favouriteSoftwareTreeWindow.isDisplayed()) {
                 favouriteSoftwareTreeWindow.setContent(null);
                 softwareTreeWindow.setContent(softwareTreePane);
             }
-            if (favouriteSoftwareConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN) {
+            if (favouriteSoftwareConfigurationWindow.isDisplayed()) {
                 favouriteSoftwareConfigurationWindow.setContent(null);
                 softwareConfigurationWindow.setContent(softwareConfigurationTable);
             }
             favouriteTreePane.cancelEdit();
-            if (machineConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+            if (machineConfigurationWindow.isDisplayed())
                 machineConfigurationWindow.close();
             if (favouriteViewButton.isSelected())
                 favouriteViewButton.setSelected(false);
@@ -531,12 +529,12 @@ public class MainController implements Initializable, AlertController, EditContr
             if (softwareConfiguration != null) {
                 if (!machineConfigurationButton.isSelected())
                     machineConfigurationButton.fire();
-                if (softwareTreeWindow.getDisplayMode() == DisplayMode.HIDDEN) {
+                if (softwareTreeWindow.isHidden()) {
                     displayingSoftwareConfiguration = softwareConfiguration;
                     machineConfigurationPane.showList(softwareConfiguration.getDevice());
                 } else if (softwareTreePane.getCurrentItem() != softwareConfiguration.getSoftware()) {
                     softwareTreePane.setCurrentItem(softwareConfiguration.getSoftware());
-                } else if (softwareInformationWindow.getDisplayMode() == DisplayMode.HIDDEN) {
+                } else if (softwareInformationWindow.isHidden()) {
                     softwareInformationWindow.show();
                 }
             }
@@ -557,9 +555,9 @@ public class MainController implements Initializable, AlertController, EditContr
                 softwareTreeWindow.setContent(softwareTreePane);
             });
             
-            if (softwareInformationWindow.getDisplayMode() != DisplayMode.HIDDEN && favouriteTreePane.isEditingMachine())
+            if (softwareInformationWindow.isDisplayed() && favouriteTreePane.isEditingMachine())
                 favouriteSoftwareConfigurationWindow.close();
-            if (favouriteSoftwareConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+            if (favouriteSoftwareConfigurationWindow.isDisplayed())
                 favouriteSoftwareConfigurationWindow.close();
             
             if (favouriteTreePane.isEditingSoftware() && !favouriteTreePane.isCommitting())
@@ -574,7 +572,7 @@ public class MainController implements Initializable, AlertController, EditContr
                 favouriteSoftwareConfigurationWindow.setContent(null);
                 softwareConfigurationWindow.setContent(softwareConfigurationTable);
             });
-            if (softwareConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+            if (softwareConfigurationWindow.isDisplayed())
                 handleSoftwareConfigurationAction(null);
         });
         
@@ -596,7 +594,7 @@ public class MainController implements Initializable, AlertController, EditContr
         };
         // TODO find what prevents event propagations to mainSplitPane.setOnMouseClicked()
         mainSplitPane.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.getButton() == MouseButton.MIDDLE && favouriteTreeWindow.getDisplayMode() == DisplayMode.HIDDEN) {
+            if (event.getButton() == MouseButton.MIDDLE && favouriteTreeWindow.isHidden()) {
                 addToFavourites.accept(event.isShiftDown());
                 event.consume();
             }
@@ -669,15 +667,24 @@ public class MainController implements Initializable, AlertController, EditContr
                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Couldn't display statistics", ex);
             }
             
-            if (selection.hasSelection()) {
-                show(
-                        selection.getMachine(),
-                        selection.getSoftwareConfiguration(),
-                        selection.getMachineConfiguration(),
-                        false
-                );
-                machineTreePane.scrollToSelection();
-            }
+            favouriteTreePane.setOnInitialised(() -> {
+                boolean favouriteSelection = false;
+                if (Configuration.Manager.isFavouritesDisplayed()) {
+                    favouriteViewButton.setSelected(true);
+                    handleFavouriteViewAction(null);
+                    favouriteSelection = favouriteTreePane.select(Configuration.Manager.getSelectedFavouriteId());
+                }
+
+                if (!favouriteSelection && selection.hasSelection()) {
+                    show(
+                            selection.getMachine(),
+                            selection.getSoftwareConfiguration(),
+                            selection.getMachineConfiguration(),
+                            false
+                    );
+                    machineTreePane.scrollToSelection();
+                }
+            });
         }));
         
         cache.execute();
@@ -752,10 +759,14 @@ public class MainController implements Initializable, AlertController, EditContr
         try {
             if (data.hasSelection())
                 Configuration.Manager.updateSelection(
-                        data.getMachine().getName(), data.getMachineConfiguration(), data.getSoftwareConfiguration()
+                        data.getMachine().getName(), data.getMachineConfiguration(), data.getSoftwareConfiguration(),
+                        favouriteTreeWindow.isDisplayed(), favouriteTreePane.getSelectionId()
                 );
             else
-                Configuration.Manager.updateSelection(null, null, null);
+                Configuration.Manager.updateSelection(
+                        null, null, null,
+                        favouriteTreeWindow.isDisplayed(), favouriteTreePane.getSelectionId()
+                );
         } catch (IOException ex) {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Couldn't save the last selection before Negatron exits", ex);
         }
@@ -795,7 +806,7 @@ public class MainController implements Initializable, AlertController, EditContr
             reset();
             
             if (controller.isListButtonSelected()) {
-                if (softwareConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+                if (softwareConfigurationWindow.isDisplayed())
                     handleSoftwareConfigurationAction(null);
                 
                 List<String> interfaceFormats = controller.getMachineComponent().getInterfaceFormats();
@@ -837,7 +848,7 @@ public class MainController implements Initializable, AlertController, EditContr
                 softwareTreeWindow.showMaximised();
                 if (
                     favouriteTreePane.isEditing() && !favouriteTreePane.isEditingSoftware() &&
-                    favouriteSoftwareTreeWindow.getDisplayMode() == DisplayMode.HIDDEN
+                    favouriteSoftwareTreeWindow.isHidden()
                 )   // in the case of software editing, the softlist is already invoked by the cell
                     favouriteTreePane.showSoftwareList();
 
@@ -846,14 +857,14 @@ public class MainController implements Initializable, AlertController, EditContr
 
                 if (displayingSoftwareConfiguration != null) {
                     softwareTreePane.setCurrentItem(displayingSoftwareConfiguration.getSoftware());
-                    if (softwareInformationWindow.getDisplayMode() == DisplayMode.HIDDEN)
+                    if (softwareInformationWindow.isHidden())
                         softwareInformationWindow.show();
                     if (displayingSoftwareConfiguration != null && displayingSoftwareConfiguration.getSoftwarePart() == null)
                         displayingSoftwareConfiguration = null;
                 }
             } else {
                 softwareTreeWindow.hide();
-                if (softwareConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+                if (softwareConfigurationWindow.isDisplayed())
                     handleSoftwareConfigurationAction(null);
                 if (!isHidingConfigurationPane)
                     softwareInformationWindow.hide();
@@ -1036,7 +1047,7 @@ public class MainController implements Initializable, AlertController, EditContr
             //re-wire software tree to replacing device
             if (candidateControl.isPresent()) {
                 currentDeviceController = (DeviceController) candidateControl.get().getController();
-                if (softwareTreeWindow.getDisplayMode() != DisplayMode.HIDDEN)
+                if (softwareTreeWindow.isDisplayed())
                     currentDeviceController.setListButtonSelected(true);
                 return;
             }
@@ -1054,7 +1065,7 @@ public class MainController implements Initializable, AlertController, EditContr
     }
     
     private void loadMachineInformation() {
-        machineInformationPane.setEmulatedItem(currentMachine, favouriteTreeWindow.getDisplayMode() == DisplayMode.HIDDEN);
+        machineInformationPane.setEmulatedItem(currentMachine, favouriteTreeWindow.isHidden());
         machineInformationPane.showTab();
     }
     
@@ -1066,17 +1077,17 @@ public class MainController implements Initializable, AlertController, EditContr
     }
     
     private void closeSoftwareFilterWindow() {
-        if (softwareFilterWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (softwareFilterWindow.isDisplayed())
             softwareFilterWindow.close();
     }
     
     private void closeGlobalConfigurationWindow() {
-        if (globalConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (globalConfigurationWindow.isDisplayed())
             globalConfigurationWindow.close();
     }
     
     private void closeStatisticsWindow() {
-        if (statisticsWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (statisticsWindow.isDisplayed())
             statisticsWindow.close();
     }
     
@@ -1098,7 +1109,7 @@ public class MainController implements Initializable, AlertController, EditContr
         machineTreeWindow.setContent(null);
         favouriteMachineTreeWindow.setContent(machineTreePane);
         favouriteMachineTreeWindow.show();
-        if (machineConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (machineConfigurationWindow.isDisplayed())
             machineConfigurationWindow.close();
     }
     
@@ -1106,7 +1117,7 @@ public class MainController implements Initializable, AlertController, EditContr
     public void dismissMachineList(ConfigurationChangeListener listener) {
         dismissConfigurationPane(listener);
         
-        if (favouriteMachineTreeWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (favouriteMachineTreeWindow.isDisplayed())
             favouriteMachineTreeWindow.close();
     }
     
@@ -1121,7 +1132,7 @@ public class MainController implements Initializable, AlertController, EditContr
     
     @Override
     public void dismissSoftwareList(ConfigurationChangeListener listener) {
-        if (favouriteSoftwareTreeWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (favouriteSoftwareTreeWindow.isDisplayed())
             favouriteSoftwareTreeWindow.close();
         if (!favouriteTreePane.isEditingMachine())
             onMachineLoaded = null;
@@ -1132,7 +1143,7 @@ public class MainController implements Initializable, AlertController, EditContr
         onMachineLoaded = listener;
         editingSoftwareConfiguration = softwareConfiguration;
         
-        if (machineConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (machineConfigurationWindow.isDisplayed())
             machineConfigurationWindow.setOnceOnAnimationEnded(() -> handleMachineConfigurationAction(null));
         handleMachineConfigurationAction(null);
     }
@@ -1144,7 +1155,7 @@ public class MainController implements Initializable, AlertController, EditContr
         onMachineLoaded = null;
         editingSoftwareConfiguration = null;
         
-        if (machineConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (machineConfigurationWindow.isDisplayed())
             handleMachineConfigurationAction(null);
     }
 
@@ -1152,9 +1163,9 @@ public class MainController implements Initializable, AlertController, EditContr
     public void show(Machine machine, SoftwareConfiguration software, MachineConfiguration configuration, boolean mustMigrate) {
         displayingSoftwareConfiguration = software;
         
-        if (softwareConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (softwareConfigurationWindow.isDisplayed())
             handleSoftwareConfigurationAction(null);
-        if (software == null && softwareInformationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+        if (software == null && softwareInformationWindow.isDisplayed())
             softwareInformationWindow.close();
 
         if (machine != null) {
@@ -1278,7 +1289,7 @@ public class MainController implements Initializable, AlertController, EditContr
                 launchMame(currentMachine.parameters());
             } else {
                 alert(AlertType.WARNING, Language.Manager.getString("machineConfMandatory.error.text"));
-                if (machineConfigurationWindow.getDisplayMode() == DisplayMode.HIDDEN)
+                if (machineConfigurationWindow.isHidden())
                     handleMachineConfigurationAction(null);
             }
         } catch (Exception ex) {
@@ -1317,7 +1328,7 @@ public class MainController implements Initializable, AlertController, EditContr
             case MAXIMISED:
                 softwareConfigurationWindow.close();
                 softwareConfigurationButton.setSelected(false);
-                if (favouriteSoftwareConfigurationWindow.getDisplayMode() != DisplayMode.HIDDEN)
+                if (favouriteSoftwareConfigurationWindow.isDisplayed())
                     favouriteSoftwareConfigurationWindow.close();
                 break;
             default:
@@ -1420,15 +1431,11 @@ public class MainController implements Initializable, AlertController, EditContr
     
     @FXML
     private void handleGlobalConfigurationAction(ActionEvent event) {
-        switch (globalConfigurationWindow.getDisplayMode()) {
-            case HIDDEN:
-                closeStatisticsWindow();
-                globalConfigurationWindow.showMaximised();
-                break;
-            default:
-                globalConfigurationWindow.close();
-                break;
-        }
+        if (globalConfigurationWindow.isHidden()) {
+            closeStatisticsWindow();
+            globalConfigurationWindow.showMaximised();
+        } else
+            globalConfigurationWindow.close();
     }
 
     @FXML

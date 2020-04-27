@@ -114,6 +114,14 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
             favouriteTree = new FavouriteTree();
         }
         
+        private long findId(Attributes atts) {
+            try {
+                return Long.parseLong(atts.getValue("id"));
+            } catch (NumberFormatException ex) {
+                return 0;
+            }
+        }
+        
         private Slot findSlot(Slot refSlot, String fullname, String name) {
             String parentName = name;
             int j = parentName.indexOf(":");
@@ -156,6 +164,7 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
             switch (qName) {
                 case "root":
                     Folder root = new Folder(
+                        findId(atts),
                         atts.getValue("name"),
                         LocalDateTime.parse(atts.getValue("dateCreated")),
                         LocalDateTime.parse(atts.getValue("dateModified"))
@@ -164,6 +173,7 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                     break;
                 case "folder":
                     Folder folder = new Folder(
+                        findId(atts),
                         atts.getValue("name"),
                         LocalDateTime.parse(atts.getValue("dateCreated")),
                         LocalDateTime.parse(atts.getValue("dateModified"))
@@ -177,6 +187,7 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                     break;
                 case "separator":
                     Separator separator = new Separator(
+                        findId(atts),
                         LocalDateTime.parse(atts.getValue("dateCreated")),
                         LocalDateTime.parse(atts.getValue("dateModified"))
                     );
@@ -185,6 +196,7 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                     break;
                 case "favourite":
                     favourite = new Favourite(
+                        findId(atts),
                         atts.getValue("name"), null, null, null,
                         LocalDateTime.parse(atts.getValue("dateCreated")),
                         LocalDateTime.parse(atts.getValue("dateModified"))

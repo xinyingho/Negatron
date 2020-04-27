@@ -43,8 +43,8 @@ public class Folder extends Favourite {
         super(name, image, false);
     }
     
-    public Folder(String name, LocalDateTime dateCreated, LocalDateTime dateModified) {
-        super(name, null, null, null, dateCreated, dateModified);
+    public Folder(long id, String name, LocalDateTime dateCreated, LocalDateTime dateModified) {
+        super(id, name, null, null, null, dateCreated, dateModified);
     }
     
     private boolean hasChildren() {
@@ -77,9 +77,10 @@ public class Folder extends Favourite {
             writer.writeEmptyElement(tag);
         if (isRoot) {
             writer.writeDefaultNamespace("http://www.babelsoft.net/products/negatron/favourites");
-            writer.writeAttribute("version", "1.1");
+            writer.writeAttribute("version", "1.2");
             writer.writeAttribute("dateTreeModified", LocalDateTime.now().toString());
         }
+        writer.writeAttribute("id", String.valueOf(getId()));
         writer.writeAttribute("name", getName());
         writer.writeAttribute("dateModified", getDateModified().toString());
         writer.writeAttribute("dateCreated", getDateCreated().toString());

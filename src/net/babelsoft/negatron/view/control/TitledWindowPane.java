@@ -144,6 +144,14 @@ public class TitledWindowPane extends VBox {
         this.content = content;
         propertyChangeSupport.firePropertyChange(PROP_CONTENT, null, content);
     }
+    
+    public boolean isDisplayed() {
+        return getDisplayMode() != DisplayMode.HIDDEN;
+    }
+    
+    public boolean isHidden() {
+        return getDisplayMode() == DisplayMode.HIDDEN;
+    }
 
     /**
      * @return the displayMode

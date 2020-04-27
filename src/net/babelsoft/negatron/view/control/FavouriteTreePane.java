@@ -79,8 +79,20 @@ public class FavouriteTreePane extends SplitPane {
         return controller.isEditingConfiguration();
     }
     
+    public long getSelectionId() {
+        return controller.getSelectionId();
+    }
+    
+    public boolean select(long favouriteId) {
+        return controller.select(favouriteId);
+    }
+    
     public void clearSelection() {
         controller.clearSelection();
+    }
+    
+    public void setOnInitialised(Delegate onInitialised) {
+        controller.setOnInitialised(onInitialised);
     }
     
     public void setOnCommitted(Consumer<Favourite> onCommitted) {

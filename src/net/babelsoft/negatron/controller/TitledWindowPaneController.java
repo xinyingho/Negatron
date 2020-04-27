@@ -124,7 +124,7 @@ public class TitledWindowPaneController implements Initializable {
     public void setControl(TitledWindowPane control) {
         this.control = control;
         control.displayModeProperty().addListener((o, oV, newValue) -> {
-            if (newValue != DisplayMode.HIDDEN)
+            if (newValue != DisplayMode.HIDDEN) // is displayed
                 layoutButtonBox();
         });
         

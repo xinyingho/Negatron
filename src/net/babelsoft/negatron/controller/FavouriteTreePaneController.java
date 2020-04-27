@@ -140,6 +140,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     private boolean isShiftPressed;
     private boolean isDragDone;
     
+    private Delegate onInitialised;
     private Consumer<Favourite> onCommitted;
     private FavouriteTreeTableCell hoveredCell;
     private FavouriteTreeTableCell editingCell;
@@ -258,9 +259,16 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
             treeView.setRoot(root);
             if (editableControl != null)
                 editableControl.setEditable(true);
+            
+            Favourite.checkDirty(() -> saveConfiguration());
+            
+            if (onInitialised != null)
+                onInitialised.fire();
         }
-        
-        initialTree = null;
+    }
+    
+    public void setOnInitialised(Delegate onInitialised) {
+        this.onInitialised = onInitialised;
     }
     
     public void setFavouriteTree(FavouriteTree favourites) {
@@ -300,9 +308,43 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     public boolean isEditingConfiguration() {
         return editingCell != null && editingCell instanceof MachineConfigurationTreeTableCell;
     }
-
+    
+    public long getSelectionId() {
+        TreeItem<Favourite> item = selection.getSelectedItem();
+        if (item != null)
+            return item.getValue().getId();
+        else
+            return 0;
+    }
+    
+    private TreeItem<Favourite> find(TreeItem<Favourite> root, long favouriteId) {
+        if (root.getValue().getId() == favouriteId)
+            return root;
+        
+        if (!root.isLeaf())
+            for (var child : root.getChildren()) {
+                var item = find(child, favouriteId);
+                if (item != null)
+                    return item;
+            }
+        
+        return null;
+    }
+    
+    public boolean select(long favouriteId) {
+        TreeItem<Favourite> item = find(treeView.getRoot(), favouriteId);
+        
+        if (item != null) {
+            selection.select(item);
+            treeView.scrollTo(selection.getSelectedIndex());
+            return true;
+        }
+        
+        return false;
+    }
+    
     public void clearSelection() {
-        treeView.getSelectionModel().clearSelection();
+        selection.clearSelection();
     }
     
     public void setOnCommitted(Consumer<Favourite> onCommitted) {
