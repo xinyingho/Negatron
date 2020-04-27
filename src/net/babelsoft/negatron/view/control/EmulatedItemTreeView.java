@@ -271,6 +271,7 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
                 treeItem.getParent().setExpanded(true);
             
             getSelectionModel().select(treeItem);
+            scrollTo(getSelectionModel().getSelectedIndex());
         } else
             getSelectionModel().clearSelection();
     }
