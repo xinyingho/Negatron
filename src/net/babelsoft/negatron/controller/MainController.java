@@ -584,7 +584,6 @@ public class MainController implements Initializable, AlertController, EditContr
                     if (isShiftDown)
                         favouriteTreeWindow.close();
                     else {
-                        favouriteTreePane.requestTreeFocus();
                         machineInformationPane.setFavouriteEnabled(false);
                         softwareInformationWindow.setFavouriteEnabled(false);
                     }
@@ -673,6 +672,7 @@ public class MainController implements Initializable, AlertController, EditContr
                     favouriteViewButton.setSelected(true);
                     handleFavouriteViewAction(null);
                     favouriteSelection = favouriteTreePane.select(Configuration.Manager.getSelectedFavouriteId());
+                    Platform.runLater(() -> favouriteTreePane.requestTreeFocus());
                 }
 
                 if (!favouriteSelection && selection.hasSelection()) {

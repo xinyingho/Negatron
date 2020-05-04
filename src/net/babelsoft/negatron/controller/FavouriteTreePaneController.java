@@ -156,6 +156,8 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     
     private FavouriteConfiguration xmlConf;
     private FavouriteTree initialTree;
+    
+    private int selectionColumnIdx = -1;
 
     /**
      * Initializes the controller class.
@@ -183,9 +185,8 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         
         selection = treeView.getSelectionModel();
         selection.selectedItemProperty().addListener((o, oV, newItem) -> {
-            if (isInserting)
-                return;
-            show(newItem);
+            if (!isInserting)
+                show(newItem);
         });
         
         folderList = new ArrayList<>();
@@ -212,6 +213,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         });
         treeView.setOnKeyPressed(event -> handleKeyPressed(event));
         treeView.setOnKeyReleased(event -> handleKeyReleased(event));
+        treeView.getSelectionModel().selectedIndexProperty().addListener(e -> selectionColumnIdx = -1);
         
         listDivider = favouriteSplitPane.getDividers().get(0);
         listDivider.setPosition(1.0);
@@ -426,12 +428,13 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         TreeItem<Favourite> favourite = new CopyPastableTreeItem(new Favourite(data));
         insert(favourite);
         
-        if (selection.getSelectedItem() != favourite)
+        if (selection.getSelectedItem() != favourite) {
             selection.select(favourite);
+        }
+        treeView.scrollTo(selection.getSelectedIndex());
+        treeView.edit(selection.getSelectedIndex(), iconName);
         
         isInserting = false;
-        
-        treeView.edit(selection.getSelectedIndex(), iconName);
     }
     
     public void requestTreeFocus() {
@@ -446,16 +449,9 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
             editController.show(null, null, null, false);
     }
     
-    private void cancelEdit(Delegate beforeCancellingDelegate) {
-        if (treeView.getEditingCell() != null) {
-            if (beforeCancellingDelegate != null)
-                beforeCancellingDelegate.fire();
-            treeView.cancelEdit();
-        }
-    }
-    
     public void cancelEdit() {
-        cancelEdit(null);
+        if (treeView.getEditingCell() != null)
+            treeView.cancelEdit();
     }
     
     private void setRowEdit(Machine machine, SoftwareConfiguration software, MachineConfiguration configuration) {
@@ -600,35 +596,43 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         TreeItem<Favourite> selected = selection.getSelectedItem();
         if (selected != null && !(selected.getValue() instanceof Separator)) {
             TreeTableColumn<Favourite, ?> editingColumn;
-            TreeTablePosition<Favourite, ?> position = treeView.getEditingCell();
-            if (position != null) {
-                if (!(selected.getValue() instanceof Folder)) {
-                    // Cycle through columns
-                    int columnIdx = treeView.getVisibleLeafIndex(position.getTableColumn());
-                    do {
-                        if (!isShiftPressed)
-                            if (columnIdx < treeView.getVisibleLeafColumns().size() - 1)
-                                ++columnIdx;
-                            else
-                                columnIdx = 0;
+            if (!(selected.getValue() instanceof Folder)) {
+                // Cycle through columns
+                do {
+                    if (!isShiftPressed)
+                        if (selectionColumnIdx < treeView.getVisibleLeafColumns().size() - 1)
+                            ++selectionColumnIdx;
                         else
-                            if (columnIdx > 0)
-                                --columnIdx;
-                            else
-                                columnIdx = treeView.getVisibleLeafColumns().size() - 1;
-                        editingColumn = treeView.getVisibleLeafColumn(columnIdx);
-                    } while (
-                        editingColumn == dateCreated ||
-                        editingColumn == dateModified ||
-                        editingColumn == softwareConfiguration && selected.getValue().getSoftwareConfiguration() == null ||
-                        editingColumn == machineConfiguration && !selected.getValue().getMachine().isConfigurable()
-                    );
-                    cancelEdit();
-                } else
-                    return; // Folders only have 1 editable column so no need to change the editing field
-            } else
-                editingColumn = iconName;
-            treeView.edit(selection.getSelectedIndex(), editingColumn);
+                            selectionColumnIdx = 0;
+                    else
+                        if (selectionColumnIdx > 0)
+                            --selectionColumnIdx;
+                        else
+                            selectionColumnIdx = treeView.getVisibleLeafColumns().size() - 1;
+                    editingColumn = treeView.getVisibleLeafColumn(selectionColumnIdx);
+                } while (
+                    editingColumn == dateCreated ||
+                    editingColumn == dateModified ||
+                    editingColumn == softwareConfiguration && selected.getValue().getSoftwareConfiguration() == null ||
+                    editingColumn == machineConfiguration && !selected.getValue().getMachine().isConfigurable()
+                );
+            } else {
+                // Folders only have 1 editable column
+                editingColumn = treeView.getVisibleLeafColumn(0);
+            }
+            // 1- If selectionColumnIdx is set to 0, no need to do anything as the default tree behaviour is already to edit the 0th column.
+            // 2- If a column has been selected through mouse-clicking and it's the column designed by selectionColumnIdx, let the default tree behaviour proceed with editing.
+            // 3- Shift+F2 doesn't trigger any default action, so always force edition in this case.
+            // TODO: a better solution would be to directly override the action from the class TreeTableViewBehavior.
+            TreeTablePosition<Favourite, ?> position = treeView.getEditingCell();
+            if (
+                    position == null && selectionColumnIdx > 0 ||
+                    selectionColumnIdx != treeView.getVisibleLeafIndex(position.getTableColumn()) ||
+                    isShiftPressed
+            ) {
+                cancelEdit(); // sometimes required so that the below edit call get through. TODO: see why it's actually required
+                treeView.edit(selection.getSelectedIndex(), editingColumn);
+            }
         }
     }
 
@@ -677,11 +681,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     private void handleKeyPressed(KeyEvent event) {
         handleKey(event);
         
-        // Disable the default TreeView's CancelEdit handler on Escape key !pressed! events.
-        // This is handled by editing fields' cancelEdit() listeners on Escape key !released! events,
-        // which should also disable the default TreeView's CancelEdit handler on Escape key !released! events.
         switch (event.getCode()) {
-            case ESCAPE:
             case F2:
                 event.consume();
                 break;
@@ -712,19 +712,14 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         
         if (event.getCode() == KeyCode.SHIFT)
             isShiftPressed = false;
-
+        
         if (event.getCode() == KeyCode.ESCAPE) {
             if (isDragDone) {
                 event.consume();
-                return;
+            } else if (editingCell != null && editingCell.isEditing()) {
+                cancelEdit();
+                event.consume(); // prevent the pane to get hidden while cancelling editing
             }
-            // Still override the default TreeView's CancelEdit handler on Escape key !released! events
-            // in the advent that editing fields' cancelEdit() listeners don't override it in every case.
-            // As it propagates the event to pane closing listeners by default, the below code block stops it from doing so.
-            cancelEdit(() -> {
-                if (editingCell != null && editingCell.isEditing())
-                    event.consume(); // stop event propagation
-            });
         } else if (cutKeyCombo.match(event) || altCutKeyCombo.match(event)) {
             cutButton.fire();
             event.consume();

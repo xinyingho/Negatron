@@ -527,14 +527,17 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
     
     @Override
     public void handleKeyPressed(KeyEvent event) {
-        Favourite fav = getSelectionModel().getSelectedItem().getValue();
-        
-        if (fav == null || !fav.mustMigrate())
-            super.handleKeyPressed(event);
-        else if ((event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.ALT) && fav.mustMigrate()) {
+        TreeItem<Favourite> item = getSelectionModel().getSelectedItem();
+        if (
+                (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.ALT) &&
+                item != null && item.getValue() != null && item.getValue().mustMigrate()
+        ) {
             showFavouriteMigrationPopup();
             event.consume();
-        }
+        } else if (event.getCode() == KeyCode.ESCAPE)
+            event.consume(); // prevent the escape event to be passed on to the pane while cancelling editing
+        else
+            super.handleKeyPressed(event);
     }
     
     private void showFavouriteMigrationPopup() {
