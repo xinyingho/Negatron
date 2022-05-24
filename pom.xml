@@ -60,7 +60,7 @@
         <package.app.output>${package.basedir}/app</package.app.output>
         
         <javafx.version>14.0.1</javafx.version>
-        <twelvemonkeys.version>3.5</twelvemonkeys.version>
+        <twelvemonkeys.version>3.7.1</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
         <vlcj.version>4.5.2</vlcj.version>
         <vlc-jna.version>5.5.0</vlc-jna.version>
