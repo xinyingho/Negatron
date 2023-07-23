@@ -58,8 +58,7 @@ public class CacheManager extends Task<Void> {
         private final String namePrefix;
 
         CacheThreadFactory() {
-            SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
+            group = Thread.currentThread().getThreadGroup();
             namePrefix = "cache-" + poolNumber.getAndIncrement() + "-thread-";
         }
 
