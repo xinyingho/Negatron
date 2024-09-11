@@ -38,9 +38,10 @@ public class MachineListCache extends Cache<MachineListCache.Data, String> {
     public static class Data extends ArrayList<Machine> {
         static final long serialVersionUID = 3L;
         
-        private MachineStatistics statistics = new MachineStatistics();
+        private final MachineStatistics statistics = new MachineStatistics();
         
         // TODO: override other add methods?
+        @Override
         public boolean add(Machine machine) {
             statistics.add(machine);
             return super.add(machine);
@@ -75,9 +76,9 @@ public class MachineListCache extends Cache<MachineListCache.Data, String> {
             if (
                 !currentVersion.startsWith("MAME ") && // MAME >= 0.170
                 !currentVersion.startsWith("M.A.M.E.") && // MAME <= 0.169
-                !currentVersion.startsWith("M.E.S.S.") /* && // MESS < 0.162
+                !currentVersion.startsWith("M.E.S.S.") && // MESS < 0.162
                 !currentVersion.startsWith("HBMAME ") && // Homebrew MAME >= 0.170
-                !currentVersion.startsWith("HB.M.A.M.E. ") // Homebrew MAME <= 0.169 */
+                !currentVersion.startsWith("HB.M.A.M.E. ") // Homebrew MAME <= 0.169
             ) throw new IOException("Configured MAME executable didn't return a valid MAME signature");
             
             return currentVersion;
