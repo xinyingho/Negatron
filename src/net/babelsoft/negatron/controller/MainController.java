@@ -1349,9 +1349,13 @@ public class MainController implements Initializable, AlertController, EditContr
             String commandLine = null;
             if (currentMachine != null)
                 commandLine = currentMachine.toCommandLine();
-            
+            String name;
+            if (currentDeviceController != null)
+                name = currentDeviceController.getText();
+            else
+                name = currentMachine.getName();
             Dialog<String> dialog = new AdvancedParametrisationDialog(
-                advancedParametrisationButton.getScene().getWindow(), commandLine,
+                advancedParametrisationButton.getScene().getWindow(), name, commandLine,
                 new ButtonType(Language.Manager.getString("launch"), ButtonData.OK_DONE)
             );
             

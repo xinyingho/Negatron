@@ -63,10 +63,14 @@ public class AdvancedParametrisationDialog extends Dialog<String> {
     }
     
     public AdvancedParametrisationDialog(Window owner, String params) {
-        this(owner, params, ButtonType.OK);
+        this(owner, "<video>", params, ButtonType.OK);
     }
     
-    public AdvancedParametrisationDialog(Window owner, String params, ButtonType okButtonType) {
+    public AdvancedParametrisationDialog(Window owner, String name, String params) {
+        this(owner, name, params, ButtonType.OK);
+    }
+    
+    public AdvancedParametrisationDialog(Window owner, String name, String params, ButtonType okButtonType) {
         //// TextInputDialog code
         
         final DialogPane dialogPane = getDialogPane();
@@ -136,12 +140,24 @@ public class AdvancedParametrisationDialog extends Dialog<String> {
         ramSizeButton.setOnAction(evt -> getEditor().appendText(
             String.format(" -ramsize <%s>", language.getString("ramSize.parameter"))
         ));
-
+        Button videoCaptureButton = new Button("videoCapture");
+        //videoCaptureButton.setTooltip(new Infotip(language.getString("videoCapture.tooltip")));
+        videoCaptureButton.setOnAction(evt -> getEditor().appendText(
+            String.format(" -snapview native -aviwrite %s.avi", name)
+        ));
+        Button snapSizeButton = new Button("snapSize");
+        //snapSizeButton.setTooltip(new Infotip(language.getString("snapSize.tooltip")));
+        snapSizeButton.setOnAction(evt -> getEditor().appendText(
+            String.format(" -snapsize 320x224")
+        ));
+        
         HBox box = new HBox();
         box.setSpacing(5);
         box.getChildren().add(noDrcButton);
         box.getChildren().add(biosButton);
         box.getChildren().add(ramSizeButton);
+        box.getChildren().add(videoCaptureButton);
+        box.getChildren().add(snapSizeButton);
         GridPane content = (GridPane) getDialogPane().getContent();
         content.setVgap(5);
         content.add(box, 1, 1);
