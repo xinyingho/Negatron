@@ -68,6 +68,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import net.babelsoft.negatron.io.Audio;
 import net.babelsoft.negatron.io.Audio.Sound;
@@ -231,6 +232,8 @@ public class MainController implements Initializable, AlertController, EditContr
     private SoftwareConfiguration displayingSoftwareConfiguration;
     private SoftwareConfiguration editingSoftwareConfiguration;
     private ConfigurationChangeListener onMachineLoaded;
+    
+    private double mousePosX, mousePosY;
 
     public MainController() {
         onSucceededProperty = new SimpleBooleanProperty(false);
@@ -1453,5 +1456,35 @@ public class MainController implements Initializable, AlertController, EditContr
     @FXML
     private void handleNotifierMouseEntered(MouseEvent event) {
         notifierPopup.show(notifier);
+    }
+    
+    @FXML
+    private void handleWindowMaximized(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            Stage stage = (Stage) buttonBar.getScene().getWindow();
+            stage.setMaximized(!stage.isMaximized());
+        }
+    }
+    
+    @FXML
+    private void handleWindowInitiateDragging(MouseEvent event) {
+        mousePosX = event.getScreenX();
+        mousePosY = event.getScreenY();
+    }
+    
+    @FXML
+    private void handleWindowDragged(MouseEvent event) {
+        if (event.isPrimaryButtonDown()) {
+                double mouseOldX = mousePosX;
+                double mouseOldY = mousePosY;
+                mousePosX = event.getScreenX();
+                mousePosY = event.getScreenY();
+                double mouseDeltaX = mousePosX - mouseOldX;
+                double mouseDeltaY = mousePosY - mouseOldY;
+                
+                Window window = buttonBar.getScene().getWindow();
+                window.setX(window.getX() + mouseDeltaX);
+                window.setY(window.getY() + mouseDeltaY);
+        }
     }
 }

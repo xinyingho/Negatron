@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <URL value="@../../skin/Button.css" />
     </stylesheets>
     <bottom>
-        <ToolBar fx:id="buttonBar">
+        <ToolBar fx:id="buttonBar" onMouseClicked="#handleWindowMaximized" onMousePressed="#handleWindowInitiateDragging" onMouseDragged="#handleWindowDragged">
             <items>
                 <Button fx:id="launchButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleLaunchAction" styleClass="launch-mame-button" text="%launch">
                     <tooltip>
