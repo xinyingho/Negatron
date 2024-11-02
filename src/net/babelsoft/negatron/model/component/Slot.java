@@ -17,7 +17,6 @@
  */
 package net.babelsoft.negatron.model.component;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -45,7 +44,7 @@ public class Slot extends Choice<SlotOption> {
         super(name, ref);
         bios = ref.bios;
     }
-    
+     
     public String getBios() {
         return bios;
     }

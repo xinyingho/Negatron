@@ -68,6 +68,11 @@ public final class Device extends MachineElement<String> implements MachineCompo
     }
     
     @Override
+    public String getIdentifier() {
+        return getTag();
+    }
+    
+    @Override
     public String getValue() {
         return valueProperty().get();
     }
@@ -167,9 +172,7 @@ public final class Device extends MachineElement<String> implements MachineCompo
 
     @Override
     public <S extends MachineComponent<String, StringProperty>> boolean canReplace(S otherComponent) {
-        if (otherComponent instanceof Device) {
-            Device otherDevice = (Device) otherComponent;
-            
+        if (otherComponent instanceof Device otherDevice) {
             List<String> interfaceFormat = getInterfaceFormats();
             List<String> otherInterfaceFormat = otherDevice.getInterfaceFormats();
             
@@ -193,7 +196,7 @@ public final class Device extends MachineElement<String> implements MachineCompo
     
     @Override
     public void write(XMLStreamWriter writer) throws XMLStreamException {
-        if (interfaceFormats.size() > 0 || extensions.size() > 0)
+        if (!interfaceFormats.isEmpty() || !extensions.isEmpty())
             writer.writeStartElement("device");
         else
             writer.writeEmptyElement("device");
@@ -205,7 +208,7 @@ public final class Device extends MachineElement<String> implements MachineCompo
         String v = getValue();
         if (!Strings.isEmpty(v))
             writer.writeAttribute("value", v);
-        if (interfaceFormats.size() > 0) {
+        if (!interfaceFormats.isEmpty()) {
             writer.writeStartElement("interfaces");
             for (String interfaceFormat : interfaceFormats) {
                 writer.writeEmptyElement("interface");
@@ -213,7 +216,7 @@ public final class Device extends MachineElement<String> implements MachineCompo
             }
             writer.writeEndElement();
         }
-        if (extensions.size() > 0) {
+        if (!extensions.isEmpty()) {
             writer.writeEmptyElement("extensions");
             writer.writeAttribute("names", extensions.stream().map(
                 ext -> ext.substring(2)
@@ -223,7 +226,7 @@ public final class Device extends MachineElement<String> implements MachineCompo
                 Collectors.joining(",")
             ));
         }
-        if (interfaceFormats.size() > 0 || extensions.size() > 0)   
+        if (!interfaceFormats.isEmpty() || !extensions.isEmpty())   
             writer.writeEndElement();
     }
 }

@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.util.PathUtil;
 import net.babelsoft.negatron.util.Strings;
-import uk.co.caprica.vlcj.binding.RuntimeUtil;
+import uk.co.caprica.vlcj.binding.support.runtime.RuntimeUtil;
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.factory.discovery.provider.DiscoveryDirectoryProvider;
 

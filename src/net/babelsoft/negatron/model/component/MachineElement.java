@@ -76,6 +76,10 @@ public abstract class MachineElement<T> implements ParametrisedElement, XmlOutpu
         return true;
     }
     
+    public String getIdentifier() {
+        return getName();
+    }
+    
     public void addDependency(MachineElement<?> dependency) {
         if (dependencies == null)
             dependencies = new ArrayList<>();

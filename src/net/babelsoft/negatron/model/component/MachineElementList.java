@@ -19,6 +19,7 @@ package net.babelsoft.negatron.model.component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.util.Pair;
@@ -67,37 +68,38 @@ public class MachineElementList extends ArrayList<MachineElement<?>> {
     }
     
     public List<String> toParameters(String origin) {
-        List<String> params = stream().filter(
-            elt -> !(elt instanceof Device)
-        ).flatMap(
+        Stream<MachineElement<?>> deviceStream = stream().filter(elt -> elt instanceof Device);
+        // if currently processing a slot that has just changed its value
+        if (origin != null && stream().filter(elt -> elt instanceof Slot).anyMatch(
+            slot -> slot.getName().equals(origin)
+        ))
+            // filter out the related subdevices that are now all invalid
+            deviceStream = deviceStream.filter(
+                elt -> !((Device) elt).getTag().startsWith(origin + ":")
+            );
+        List<MachineElement<?>> devices = deviceStream.toList();
+        
+        Stream<MachineElement<?>> slotStream = stream().filter(elt -> elt instanceof Slot).filter(
+            // remove any empty slots that are actually used through an equivalent device e.g. by inputting a game cartridge
+            elt -> elt.getValue() != null && ((SlotOption) elt.getValue()).getDevice() != null
+            || devices.stream().noneMatch(
+                d -> ((Device) d).getTag().equals(elt.getName())
+            )
+        );
+        
+        Function<Stream<MachineElement<?>>, List<String>> flatten = stream -> stream.flatMap(
             value -> value.parameters().stream()
         ).collect(
             Collectors.toList()
         );
-        
-        Stream<MachineElement<?>> stream = null;
-        if (origin != null) {
-            // if currently processing a slot that has just changed its value
-            if (stream().filter(elt -> elt instanceof Slot).filter(
-                slot -> slot.getName().equals(origin)
-            ).findAny().isPresent())
-                // filter out the related subdevices that are now all invalid
-                stream = stream().filter(elt -> {
-                    if (elt instanceof Device)
-                        return !((Device) elt).getTag().startsWith(origin + ":");
-                    else
-                        return false;
-                });
-        }
-        if (stream == null)
-            stream = stream().filter(elt -> elt instanceof Device);
-        
-        params.addAll(stream.flatMap(
-            value -> value.parameters().stream()
-        ).collect(
-            Collectors.toList()
+  
+        List<String> params = flatten.apply(stream().filter(
+            elt -> !(elt instanceof Device)
+        ).filter(
+            elt -> !(elt instanceof Slot)
         ));
-        
+        params.addAll(flatten.apply(slotStream));
+        params.addAll(flatten.apply(devices.stream()));
         params.add(0, machine);
         return params;
     }
