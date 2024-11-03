@@ -48,9 +48,11 @@ public class LoadingData {
         iconPane.setPrefHeight(20.0);
         iconPane.setPrefWidth(20.0);
 
-        grid.add(new Label(Language.Manager.getString(id)), 0, rowIndex);
-        grid.add(bar, 1, rowIndex);
-        grid.add(iconPane, 2, rowIndex);
+        Platform.runLater(() -> {
+            grid.add(new Label(Language.Manager.getString(id)), 0, rowIndex);
+            grid.add(bar, 1, rowIndex);
+            grid.add(iconPane, 2, rowIndex);
+        });
     }
 
     public void incrementProcessed(int processed) {

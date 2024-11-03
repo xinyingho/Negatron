@@ -52,7 +52,7 @@ public class NotifierPopupController implements Initializable, LoadingObserver {
     public void initialize(URL url, ResourceBundle rb) { }
 
     @Override
-    public void begin(String id, int total) {
+    public synchronized void begin(String id, int total) {
         if (InformationLoader.OBS_ID.equals(id)) {
             if (informationThreadCount == 0)
                 subjects.put(id, new LoadingData(grid, id, subjects.size(), total));
@@ -67,7 +67,7 @@ public class NotifierPopupController implements Initializable, LoadingObserver {
     }
 
     @Override
-    public void end(String id) {
+    public synchronized void end(String id) {
         if (InformationLoader.OBS_ID.equals(id)) {
             --informationThreadCount;
             if (informationThreadCount == 0)
