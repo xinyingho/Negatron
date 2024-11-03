@@ -49,6 +49,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
@@ -521,8 +522,12 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
                         from = 1;
                 }
                 
-                Pattern pattern = Pattern.compile("https?:\\/\\/\\S+[\\w/]|- ([A-Z\\d]+ )+-|={6} (\\S+ )+={6}|={5} (\\S+ )+={5}|={2} (\\S+ )+={2}");
+                Pattern pattern = Pattern.compile(
+                        "https?:\\/\\/\\S+[\\w/]|^- ([\\wα-ω\\(\\)\\.\\-/'\"!?&]+ )+-|={6} (\\S+ )+={6}|={5} (\\S+ )+={5}|={2} (\\S+ )+={2}|^─{10,}",
+                        Pattern.MULTILINE
+                );
                 Matcher matcher = pattern.matcher(content);
+                Pattern capitaliser = Pattern.compile("\\b(.)(.*?)\\b");
                 while (matcher.find()) {
                     int to = matcher.start();
                     nodes.add(new Text(content.substring(from, to)));
@@ -537,9 +542,15 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
                         hyperlink.setOnAction(event -> application.getHostServices().showDocument(match));
                         nodes.add(hyperlink);
                     } else if (match.startsWith("-")) {
-                        Text text = new Text(match.substring(2, 3) + match.substring(3, match.length() - 2).toLowerCase());
+                        Text text = new Text(capitaliser.matcher(
+                                match.substring(2, match.length() - 2)
+                        ).replaceAll(
+                                str -> str.group(1).toUpperCase() + str.group(2).toLowerCase()
+                        ));
                         text.getStyleClass().add("h2");
                         nodes.add(text);
+                    } else if (match.startsWith("─")) {
+                        // swallow the line
                     } else if (match.startsWith("======")) {
                         Text text = new Text(match.substring(7, match.length() - 7));
                         text.getStyleClass().add("h1");

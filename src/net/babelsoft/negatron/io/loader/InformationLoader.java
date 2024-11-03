@@ -82,7 +82,7 @@ public class InformationLoader implements InitialisedCallable<Void> {
             InputStreamReader stream = new InputStreamReader(input, decoder);
             BufferedReader reader = new BufferedReader(stream);
         ) {
-            String line; 
+            String line;
             String systems = null;
             String items = null;
             boolean mustAppend = false;
@@ -94,11 +94,13 @@ public class InformationLoader implements InitialisedCallable<Void> {
                 if (!mustAppend && line.startsWith("$") && line.contains("=")) {
                     // start processing a new entry
                     String[] systemItems = line.substring(1).split("=");
-                    systems = systemItems[0];
-                    items = systemItems[1];
+                    if (systemItems.length == 2) { // ignore invalid entries like "$info="
+                        systems = systemItems[0];
+                        items = systemItems[1];
 
-                    sb = new StringBuilder();
-                    mustAppend = true;
+                        sb = new StringBuilder();
+                        mustAppend = true;
+                    }
                 } else if (mustAppend && "$end".equals(line)) {
                     // end processing the entry
                     if (information.get(systems) == null)
@@ -169,7 +171,7 @@ public class InformationLoader implements InitialisedCallable<Void> {
                     // don't care about MAME driver history
                     sb = null;
                     mustAppend = false;
-                } else if (mustAppend && !"$bio".equals(line) && !"$mame".equals(line) && !"$story".equals(line))
+                } else if (mustAppend && !"$bio".equals(line) && !"$mame".equals(line) && !"$story".equals(line) && !"$cmd".equals(line))
                     sb.append(line).append("\n");
                 // else do nothing
             }
