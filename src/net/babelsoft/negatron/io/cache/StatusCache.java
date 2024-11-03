@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -100,7 +99,7 @@ public class StatusCache extends Cache<StatusCache.Data, StatusVersion> implemen
                     }
                 });
             } catch (IOException ex) {
-                Logger.getLogger(MachineStatusLoader.class.getName()).log(Level.WARNING, "Couldn't retrieve status versioning", ex);
+                Logger.getLogger(StatusCache.class.getName()).log(Level.WARNING, "Couldn't retrieve status versioning", ex);
             }
         });
     }

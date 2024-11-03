@@ -362,6 +362,8 @@ public class MainController implements Initializable, AlertController, EditContr
                 previousMachine = null;
                 reset();
                 
+                if (machineConfigurationButton.getParent() != null)
+                    buttonBar.getItems().remove(machineConfigurationButton);
                 machineConfigurationWindow.close();
                 machineInformationPane.hideTab(
                     event -> loadMachineInformation() // reset the information pane to its default state as well
@@ -1355,8 +1357,11 @@ public class MainController implements Initializable, AlertController, EditContr
             String name;
             if (currentDeviceController != null)
                 name = currentDeviceController.getText();
-            else
+            else if (currentMachine != null)
                 name = currentMachine.getName();
+            else
+                name = "test";
+            
             Dialog<String> dialog = new AdvancedParametrisationDialog(
                 advancedParametrisationButton.getScene().getWindow(), name, commandLine,
                 new ButtonType(Language.Manager.getString("launch"), ButtonData.OK_DONE)
