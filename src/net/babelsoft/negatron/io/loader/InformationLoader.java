@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.parsers.SAXParserFactory;
 import net.babelsoft.negatron.io.cache.InformationCache;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.PathCharset;
@@ -39,6 +40,11 @@ import net.babelsoft.negatron.io.configuration.Property;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.SoftwareList;
 import net.babelsoft.negatron.util.Strings;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
@@ -64,19 +70,41 @@ public class InformationLoader implements InitialisedCallable<Void> {
 
     @Override
     public Void call() throws Exception {
-        List<PathCharset> encodings = Configuration.Manager.getFilePaths(Property.INFORMATION);
-        Optional<PathCharset> encoding = encodings.stream().filter(
-            pathCharset -> pathCharset.getPath().equals(datFilePath)
-        ).findAny();
-        CharsetDecoder decoder = Charset.forName(encoding.get().getCharSet()).newDecoder();
-        decoder.onMalformedInput(CodingErrorAction.REPLACE);
-        
         observer.begin(OBS_ID, -1);
         
         Map<String, List<String>> systemIndex = new HashMap<>(); // system > system aliases
         Map<String, Map<String, String>> itemIndex = new HashMap<>(); // systems > item > item alias
         Map<String, Map<String, String>> information = new HashMap<>(); // system alias > item alias > content
 
+        try {
+            if (datFilePath.endsWith("dat")) {
+                CharsetDecoder decoder;
+                {
+                    List<PathCharset> encodings = Configuration.Manager.getFilePaths(Property.INFORMATION);
+                    Optional<PathCharset> encoding = encodings.stream().filter(
+                        pathCharset -> pathCharset.getPath().equals(datFilePath)
+                    ).findAny();
+                    decoder = Charset.forName(encoding.get().getCharSet()).newDecoder();
+                    decoder.onMalformedInput(CodingErrorAction.REPLACE);
+                }
+
+                parseDatFile(datFilePath, information, systemIndex, itemIndex, decoder);
+            } else
+                parseXmlFile(datFilePath, information, systemIndex, itemIndex);
+
+            cache.save(new InformationData(datFilePath, information, systemIndex, itemIndex));
+        } finally {
+            observer.end(OBS_ID);
+        }
+        
+        return null;
+    }
+
+    private void parseDatFile(
+            Path datFilePath,
+            Map<String, Map<String, String>> information, Map<String, List<String>> systemIndex, Map<String, Map<String, String>> itemIndex,
+            CharsetDecoder decoder
+    ) throws Exception {
         try (
             InputStream input = Files.newInputStream(datFilePath);
             InputStreamReader stream = new InputStreamReader(input, decoder);
@@ -149,7 +177,7 @@ public class InformationLoader implements InitialisedCallable<Void> {
                                         folders = new ArrayList<>();
                                         systemIndex.put(system, folders);
                                     }
-                                    if (folders.contains(systems))
+                                    if (!folders.contains(systems))
                                         folders.add(systems);
                                 }
                         if (items.contains(","))
@@ -176,9 +204,90 @@ public class InformationLoader implements InitialisedCallable<Void> {
                 // else do nothing
             }
         }
+    }
 
-        cache.save(new InformationData(datFilePath, information, systemIndex, itemIndex));
-        observer.end(OBS_ID);
-        return null;
+    private void parseXmlFile(
+            Path datFilePath,
+            Map<String, Map<String, String>> information, Map<String, List<String>> systemIndex, Map<String, Map<String, String>> itemIndex
+    ) throws Exception {
+        try (InputStream input = Files.newInputStream(datFilePath)) {
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setNamespaceAware(false);
+            XMLReader xmlReader = spf.newSAXParser().getXMLReader();
+
+            xmlReader.setContentHandler(new InputHandler(information, systemIndex, itemIndex));
+            xmlReader.parse(new InputSource(input));
+        }
+    }
+    
+    private class InputHandler extends DefaultHandler {
+
+        private final Map<String, Map<String, String>> information;
+        private final Map<String, List<String>> sysIndex;
+        private final Map<String, Map<String, String>> itemIndex;
+        
+        private StringBuilder text;
+        private Map<String, List<String>> systemItemMap;
+        private String systemAlias, itemAlias;
+        
+        private InputHandler(Map<String, Map<String, String>> information, Map<String, List<String>> systemIndex, Map<String, Map<String, String>> itemIndex) {
+            this.information = information;
+            this.sysIndex = systemIndex;
+            this.itemIndex = itemIndex;
+        }
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+            switch (qName) {
+                case "entry" -> systemItemMap = new HashMap<>();
+                case "system", "item" -> {
+                    String system = attributes.getValue("list"),
+                            item = attributes.getValue("name");
+                    if (system == null)
+                        system = "info";
+                    
+                    if (systemItemMap.isEmpty()) {
+                        systemAlias = system;
+                        itemAlias = item;
+                    }
+                    
+                    if (!systemItemMap.containsKey(system))
+                        systemItemMap.put(system, new ArrayList<>());
+                    systemItemMap.get(system).add(item);
+                }
+                case "text" -> text = new StringBuilder();
+            }
+        }
+        
+        @Override
+        public void characters(char[] chars, int start, int length) throws SAXException {
+            if (text != null)
+                text.append(chars, start, length);
+        }
+    
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            if (qName.equals("text")) {
+                if (!information.containsKey(systemAlias))
+                    information.put(systemAlias, new HashMap<>());
+                information.get(systemAlias).put(itemAlias, text.toString());
+
+                text = null;
+
+                for (String system : systemItemMap.keySet()) {
+                    for (String item : systemItemMap.get(system)) {
+                        if (!sysIndex.containsKey(system))
+                            sysIndex.put(system, new ArrayList<>());
+                        List<String> systemAliases = sysIndex.get(system);
+                        if (!systemAliases.contains(systemAlias))
+                            systemAliases.add(systemAlias);
+                        
+                        if (!itemIndex.containsKey(system))
+                            itemIndex.put(system, new HashMap<>());
+                        itemIndex.get(system).put(item, itemAlias);
+                    }
+                }
+            }
+        }
     }
 }

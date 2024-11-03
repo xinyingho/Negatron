@@ -45,7 +45,13 @@ public enum Property {
     GAME_OVER       ("gameoverpath",     Domain.EXTRAS_MACHINE_ONLY,         "gameover|M"), // new since 0.172
     HASH            ("hashpath",         Domain.MAME_FOLDER_ONLY),
     HOW_TO          ("howtopath",        Domain.EXTRAS_MACHINE_ONLY,         "howto|M"), // new since 0.172
-    INFORMATION     ("informationpath",  Domain.EXTRAS_INFORMATION,          "dats/history.dat|UTF-8", "dats/sysinfo.dat|ISO-8859-1", "dats/mameinfo.dat|ISO-8859-1", "dats/messinfo.dat|UTF-8", "dats/gameinit.dat|UTF-8", "dats/story.dat|UTF-8", "dats/command.dat|UTF-8"),
+    INFORMATION     ("informationpath",  Domain.EXTRAS_INFORMATION,          "dats/history.xml|UTF-8", "dats/history.dat|UTF-8",
+                                                                             "dats/sysinfo.dat|ISO-8859-1",
+                                                                             "dats/mameinfo.dat|ISO-8859-1", "dats/messinfo.dat|UTF-8",
+                                                                             "dats/gameinit.dat|UTF-8",
+                                                                             "dats/story.dat|UTF-8",
+                                                                             "dats/command.dat|UTF-8"
+    ),
     ICON            ("iconpath",         Domain.EXTRAS_MACHINE_SOFTWARE,     "icons|SM"),
     LOGO            ("logopath",         Domain.EXTRAS_MACHINE_ONLY,         "logo|M"), // new since 0.172
     MANUAL          ("manualpath",       Domain.EXTRAS_MACHINE_SOFTWARE,     "manuals|M", "manuals_SL|S"),
