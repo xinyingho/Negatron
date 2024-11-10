@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -58,6 +59,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
@@ -67,6 +70,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
@@ -169,11 +174,18 @@ public class MainController implements Initializable, AlertController, EditContr
     private StatisticsPane statisticsWindow;
     
     @FXML
+    private TitledWindowPane loggingWindow;
+    @FXML
+    private ScrollPane loggingPane;
+    @FXML
+    private TextFlow loggingTextFlow;
+    
+    @FXML
     private ToolBar buttonBar;
     @FXML
     private Label statusLabel;
     @FXML
-    private Button launchButton;
+    private SplitMenuButton launchButton;
     @FXML
     private ToggleButton machineConfigurationButton;
     @FXML
@@ -252,6 +264,18 @@ public class MainController implements Initializable, AlertController, EditContr
                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Main divider layout configuration failed", ex);
             }
         }));
+    }
+    
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private void log(String s, Object... args) {
+        loggingTextFlow.getChildren().add(
+                new Text(
+                        String.format("%s - %s\n\n",
+                                ZonedDateTime.now().format(dateTimeFormatter),
+                                String.format(s, args)
+                        )
+                )
+        );
     }
 
     @Override
@@ -638,7 +662,7 @@ public class MainController implements Initializable, AlertController, EditContr
         
         try {
             Path root = Configuration.getRootFolder();
-            EmulationErrorWatcher watcher = new EmulationErrorWatcher(launchButton, root);
+            EmulationErrorWatcher watcher = new EmulationErrorWatcher(root);
             emulationErrorWatcherTimeline.setOnFinished((evt) -> watcher.displayAlert());
             SimpleDirectoryWatchService.getInstance().register(
                 watcher,
@@ -649,6 +673,9 @@ public class MainController implements Initializable, AlertController, EditContr
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Unable to register file change listener for *.log", ex);
         }
         SimpleDirectoryWatchService.getInstance().start();
+        
+        loggingPane.vvalueProperty().bind(loggingTextFlow.heightProperty()); // make the logs pane to always scroll automatically to the bottom
+        log("Negatron started and ready");
     }
     
     public void initialiseData() {
@@ -883,19 +910,21 @@ public class MainController implements Initializable, AlertController, EditContr
     }
     
     private class EmulationErrorWatcher implements DirectoryWatchService.OnFileChangeListener {
-        
-        private final Node node;
+
         private final Path root;
         private Path filePath;
+        private long readLines;
         
-        public EmulationErrorWatcher(Node node, Path root) {
-            this.node = node;
+        public EmulationErrorWatcher(Path root) {
             this.root = root;
         }
         
         @Override
         public void onFileModify(Path filePath) {
-            this.filePath = filePath;
+            if (!filePath.equals(this.filePath)) {
+                this.filePath = filePath;
+                readLines = 0;
+            }
             // instead of directly displaying file content,
             // do it after a delay in order to avoid having several message boxes
             // because of very fast successive file update notifications
@@ -905,18 +934,28 @@ public class MainController implements Initializable, AlertController, EditContr
         public void displayAlert() {
             try {
                 StringBuilder sb = new StringBuilder();
-                Files.newBufferedReader(root.resolve(filePath)).lines().forEach(
-                    line -> sb.append(line).append(System.lineSeparator())
-                );
+                Files.newBufferedReader(root.resolve(filePath)).lines().skip(readLines).forEach(line -> {
+                    if (sb.length() > 0)
+                        sb.append(System.lineSeparator());
+                    sb.append(line);
+                    ++readLines;
+                });
                 String msg = sb.toString();
                 
-                if (Strings.isValid(msg) &&
-                    // ignore error messages that are actually minor warnings already displayed from MAME's internal UI
-                    !msg.contains("NO GOOD DUMP KNOWN") &&
-                    !msg.contains("NEEDS REDUMP") &&
-                    !msg.contains("WARNING: the machine might not run correctly")
-                )
-                    Platform.runLater(() -> alert(AlertType.WARNING, msg));
+                if (Strings.isValid(msg)) Platform.runLater(() -> {
+                    log(msg);
+
+                    if (loggingWindow.isHidden()) {
+                        String s = msg.toLowerCase();
+                        if (
+                            !s.contains("no good dump known") && // ignore messages about bad rom dumps
+                            !s.contains("needs redump") &&
+                            !s.contains("warning") && // do not bother users with bezel layout warnings
+                            !s.contains("deprecated") // or deprecated elements of LUA scripts
+                        )
+                            loggingWindow.show();
+                    }
+                });
             } catch (IOException ex) {
                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -1289,8 +1328,10 @@ public class MainController implements Initializable, AlertController, EditContr
         // end of workaround
         if (!isLoading) try {
             if (currentMachine == null) {
+                log("Launching MAME");
                 launchMame(new ArrayList<>());
             } else if (currentMachine.isReady()) {
+                log("Launching MAME with those parameters: %s", currentMachine.toCommandLine());
                 launchMame(currentMachine.parameters());
             } else {
                 alert(AlertType.WARNING, Language.Manager.getString("machineConfMandatory.error.text"));
@@ -1302,6 +1343,12 @@ public class MainController implements Initializable, AlertController, EditContr
             alert(AlertType.ERROR, String.format(Language.Manager.getString("mameLaunching.error.text"), ex));
         } else
             mustTriggerLaunchAction = true;
+    }
+    
+    @FXML
+    private void handleShowLogs(ActionEvent event) {
+        if (loggingWindow.isHidden())
+            loggingWindow.show();
     }
 
     @FXML

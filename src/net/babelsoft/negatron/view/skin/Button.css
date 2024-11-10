@@ -124,6 +124,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/mess-logo.png");
 }
 
+.show-logs-button > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/text-x-log.png");
+}
+
 .machine-configuration-button {
     -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/configure.png");
 }

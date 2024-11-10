@@ -37,6 +37,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     -fx-padding: 0 80; /* margin for title text so that it doesn't get hidden behind command buttons */
 }
 
+#loggingWindow.titled-pane > .title > .header-pane > .label {
+    -fx-graphic: url("/net/babelsoft/negatron/resource/icon/button/text-x-log@2x.png");
+}
+
 #machineTreeWindow.titled-pane, #favouriteMachineTreeWindow.titled-pane > .title > .header-pane > .label {
     -fx-graphic: url("/net/babelsoft/negatron/resource/icon/machine@2x.png");
 }

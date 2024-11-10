@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 <?import net.babelsoft.negatron.view.control.*?>
 
 <BorderPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.MainController">
@@ -36,11 +38,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <bottom>
         <ToolBar fx:id="buttonBar" onMouseClicked="#handleWindowMaximized" onMousePressed="#handleWindowInitiateDragging" onMouseDragged="#handleWindowDragged">
             <items>
-                <Button fx:id="launchButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleLaunchAction" styleClass="launch-mame-button" text="%launch">
+                <SplitMenuButton fx:id="launchButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleLaunchAction" styleClass="launch-mame-button" text="%launch">
                     <tooltip>
                         <Infotip text="%launch.tooltip" />
                     </tooltip>
-                </Button>
+                    <items>
+                        <MenuItem onAction="#handleShowLogs" styleClass="show-logs-button" text="%showLogs" />
+                    </items>
+                </SplitMenuButton>
                 <ToggleButton fx:id="machineConfigurationButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#handleMachineConfigurationAction" styleClass="machine-configuration-button" text="%machineConfiguration">
                     <tooltip>
                         <Infotip text="%machineConfiguration.tooltip" />
@@ -110,149 +115,172 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
                 <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <top>
-                        <StatisticsPane fx:id="statisticsWindow" id="statisticsWindow" intermediateSize="false" />
-                    </top>
                     <bottom>
-                        <GlobalConfigurationPane fx:id="globalConfigurationWindow" id="globalConfigurationWindow" intermediateSize="false" />
+                        <TitledWindowPane fx:id="loggingWindow" id="loggingWindow" text="%logViewer" intermediateSize="true">
+                            <content>
+                                <ScrollPane fx:id="loggingPane" fitToHeight="true" fitToWidth="true">
+                                    <content>
+                                        <TextFlow fx:id="loggingTextFlow" styleClass="textFlow">
+                                            <padding>
+                                                <Insets top="10" right="10" bottom="10" left="10" />
+                                            </padding>
+                                        </TextFlow>
+                                    </content>
+                                </ScrollPane>
+                            </content>
+                        </TitledWindowPane>
                     </bottom>
                     <content>
-                        <SplitPane fx:id="mainSplitPane" dividerPositions="0.5" prefHeight="300.0" prefWidth="590.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                            <items>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                    <children>
-                                        <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                            <bottom>
-                                                <TitledWindowPane fx:id="favouriteSoftwareConfigurationWindow" id="favouriteSoftwareConfigurationWindow" text="%softwareConfiguration" />
-                                            </bottom>
-                                            <content>
-                                                <HiddenSidePane>
-                                                    <bottom>
-                                                        <TitledWindowPane fx:id="favouriteSoftwareTreeWindow" id="favouriteSoftwareTreeWindow" text="%softwareList" />
-                                                    </bottom>
-                                                    <content>
-                                                        <HiddenSidePane>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                            <children>
+                                <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <top>
+                                        <StatisticsPane fx:id="statisticsWindow" id="statisticsWindow" intermediateSize="false" />
+                                    </top>
+                                    <bottom>
+                                        <GlobalConfigurationPane fx:id="globalConfigurationWindow" id="globalConfigurationWindow" intermediateSize="false" />
+                                    </bottom>
+                                    <content>
+                                        <SplitPane fx:id="mainSplitPane" dividerPositions="0.5" prefHeight="300.0" prefWidth="590.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <items>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                    <children>
+                                                        <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                             <bottom>
-                                                                <TitledWindowPane fx:id="favouriteMachineTreeWindow" id="favouriteMachineTreeWindow" text="%machineList" />
+                                                                <TitledWindowPane fx:id="favouriteSoftwareConfigurationWindow" id="favouriteSoftwareConfigurationWindow" text="%softwareConfiguration" />
                                                             </bottom>
                                                             <content>
                                                                 <HiddenSidePane>
-                                                                    <left>
-                                                                        <TitledWindowPane fx:id="favouriteTreeWindow" id="favouriteTreeWindow" text="%favourites" intermediateSize="false">
-                                                                            <content>
-                                                                                <FavouriteTreePane fx:id="favouriteTreePane" />
-                                                                            </content>
-                                                                        </TitledWindowPane>
-                                                                    </left>
                                                                     <bottom>
-                                                                        <TitledWindowPane fx:id="softwareConfigurationWindow" id="softwareConfigurationWindow" text="%softwareConfiguration">
-                                                                            <content>
-                                                                                <ScrollPane fitToHeight="true" fitToWidth="true">
-                                                                                    <padding>
-                                                                                        <Insets top="5" right="5" bottom="5" left="5" />
-                                                                                    </padding>
-                                                                                    <SoftwareConfigurationPane fx:id="softwareConfigurationTable" />
-                                                                                </ScrollPane>
-                                                                            </content>
-                                                                        </TitledWindowPane>
+                                                                        <TitledWindowPane fx:id="favouriteSoftwareTreeWindow" id="favouriteSoftwareTreeWindow" text="%softwareList" />
                                                                     </bottom>
                                                                     <content>
-                                                                        <AnchorPane>
-                                                                            <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                                <left>
-                                                                                    <TitledWindowPane fx:id="softwareTreeWindow" id="softwareTreeWindow" text="%softwareList" intermediateSize="false">
-                                                                                        <content>
-                                                                                            <EmulatedItemTreePane fx:id="softwareTreePane" moreViews="false">
-                                                                                                <configurationIcon>
-                                                                                                    <Image url="/net/babelsoft/negatron/resource/icon/button/preferences-system.png" />
-                                                                                                </configurationIcon>
-                                                                                                <headers>
-                                                                                                    <HashMap company="%publisher" />
-                                                                                                </headers>
-                                                                                            </EmulatedItemTreePane>
-                                                                                        </content>
-                                                                                    </TitledWindowPane>
-                                                                                </left>
-                                                                                <content>
-                                                                                    <AnchorPane>
-                                                                                        <children>
-                                                                                            <TitledPane fx:id="machineTreeWindow" id="machineTreeWindow" text="%machineList" alignment="CENTER" collapsible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                        <HiddenSidePane>
+                                                                            <bottom>
+                                                                                <TitledWindowPane fx:id="favouriteMachineTreeWindow" id="favouriteMachineTreeWindow" text="%machineList" />
+                                                                            </bottom>
+                                                                            <content>
+                                                                                <HiddenSidePane>
+                                                                                    <left>
+                                                                                        <TitledWindowPane fx:id="favouriteTreeWindow" id="favouriteTreeWindow" text="%favourites" intermediateSize="false">
+                                                                                            <content>
+                                                                                                <FavouriteTreePane fx:id="favouriteTreePane" />
+                                                                                            </content>
+                                                                                        </TitledWindowPane>
+                                                                                    </left>
+                                                                                    <bottom>
+                                                                                        <TitledWindowPane fx:id="softwareConfigurationWindow" id="softwareConfigurationWindow" text="%softwareConfiguration">
+                                                                                            <content>
+                                                                                                <ScrollPane fitToHeight="true" fitToWidth="true">
+                                                                                                    <padding>
+                                                                                                        <Insets top="5" right="5" bottom="5" left="5" />
+                                                                                                    </padding>
+                                                                                                    <SoftwareConfigurationPane fx:id="softwareConfigurationTable" />
+                                                                                                </ScrollPane>
+                                                                                            </content>
+                                                                                        </TitledWindowPane>
+                                                                                    </bottom>
+                                                                                    <content>
+                                                                                        <AnchorPane>
+                                                                                            <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                                                <left>
+                                                                                                    <TitledWindowPane fx:id="softwareTreeWindow" id="softwareTreeWindow" text="%softwareList" intermediateSize="false">
+                                                                                                        <content>
+                                                                                                            <EmulatedItemTreePane fx:id="softwareTreePane" moreViews="false">
+                                                                                                                <configurationIcon>
+                                                                                                                    <Image url="/net/babelsoft/negatron/resource/icon/button/preferences-system.png" />
+                                                                                                                </configurationIcon>
+                                                                                                                <headers>
+                                                                                                                    <HashMap company="%publisher" />
+                                                                                                                </headers>
+                                                                                                            </EmulatedItemTreePane>
+                                                                                                        </content>
+                                                                                                    </TitledWindowPane>
+                                                                                                </left>
                                                                                                 <content>
-                                                                                                    <EmulatedItemTreePane fx:id="machineTreePane" moreViews="true">
-                                                                                                        <configurationIcon>
-                                                                                                            <Image url="/net/babelsoft/negatron/resource/icon/button/configure.png" />
-                                                                                                        </configurationIcon>
-                                                                                                        <headers>
-                                                                                                            <HashMap company="%manufacturer" />
-                                                                                                        </headers>
-                                                                                                    </EmulatedItemTreePane>
+                                                                                                    <AnchorPane>
+                                                                                                        <children>
+                                                                                                            <TitledPane fx:id="machineTreeWindow" id="machineTreeWindow" text="%machineList" alignment="CENTER" collapsible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                                                                <content>
+                                                                                                                    <EmulatedItemTreePane fx:id="machineTreePane" moreViews="true">
+                                                                                                                        <configurationIcon>
+                                                                                                                            <Image url="/net/babelsoft/negatron/resource/icon/button/configure.png" />
+                                                                                                                        </configurationIcon>
+                                                                                                                        <headers>
+                                                                                                                            <HashMap company="%manufacturer" />
+                                                                                                                        </headers>
+                                                                                                                    </EmulatedItemTreePane>
+                                                                                                                </content>
+                                                                                                            </TitledPane>
+                                                                                                        </children>
+                                                                                                    </AnchorPane>
                                                                                                 </content>
-                                                                                            </TitledPane>
-                                                                                        </children>
-                                                                                    </AnchorPane>
-                                                                                </content>
-                                                                            </HiddenSidePane>
-                                                                        </AnchorPane>
+                                                                                            </HiddenSidePane>
+                                                                                        </AnchorPane>
+                                                                                    </content>
+                                                                                </HiddenSidePane>
+                                                                            </content>
+                                                                        </HiddenSidePane>
                                                                     </content>
                                                                 </HiddenSidePane>
                                                             </content>
                                                         </HiddenSidePane>
-                                                    </content>
-                                                </HiddenSidePane>
-                                            </content>
-                                        </HiddenSidePane>
-                                    </children>
-                                </AnchorPane>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                    <children>
-                                        <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                            <right>
-                                                <MachineFolderViewPane fx:id="machineFolderViewWindow" styleClass="folderViewWindow" intermediateSize="false" />
-                                            </right>
-                                            <content>
-                                                <AnchorPane>
-                                                    <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                        <right>
-                                                            <MachineFilterPane fx:id="machineFilterWindow" styleClass="filterWindow" intermediateSize="false" />
-                                                        </right>
-                                                        <content>
-                                                            <AnchorPane>
-                                                                <children>
+                                                    </children>
+                                                </AnchorPane>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                    <children>
+                                                        <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                            <right>
+                                                                <MachineFolderViewPane fx:id="machineFolderViewWindow" styleClass="folderViewWindow" intermediateSize="false" />
+                                                            </right>
+                                                            <content>
+                                                                <AnchorPane>
                                                                     <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                         <right>
-                                                                            <SoftwareFilterPane fx:id="softwareFilterWindow" styleClass="filterWindow" intermediateSize="false" />
+                                                                            <MachineFilterPane fx:id="machineFilterWindow" styleClass="filterWindow" intermediateSize="false" />
                                                                         </right>
                                                                         <content>
                                                                             <AnchorPane>
                                                                                 <children>
                                                                                     <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                                        <top>
-                                                                                            <SoftwareInformationPane fx:id="softwareInformationWindow" id="softwareInformationWindow" />
-                                                                                        </top>
-                                                                                        <bottom>
-                                                                                            <TitledWindowPane fx:id="machineConfigurationWindow" id="machineConfigurationWindow" text="%machineConfiguration">
-                                                                                                <content>
-                                                                                                    <ScrollPane fitToHeight="true" fitToWidth="true">
-                                                                                                        <content>
-                                                                                                            <MachineConfigurationPane fx:id="machineConfigurationPane" hgap="5.0" vgap="5.0">
-                                                                                                                <padding>
-                                                                                                                    <Insets bottom="5.0" left="5.0" />
-                                                                                                                </padding>
-                                                                                                                <columnConstraints>
-                                                                                                                    <ColumnConstraints />
-                                                                                                                    <ColumnConstraints minWidth="70" />
-                                                                                                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                                                                                                </columnConstraints>
-                                                                                                            </MachineConfigurationPane>
-                                                                                                        </content>
-                                                                                                    </ScrollPane>
-                                                                                                </content>
-                                                                                            </TitledWindowPane>
-                                                                                        </bottom>
+                                                                                        <right>
+                                                                                            <SoftwareFilterPane fx:id="softwareFilterWindow" styleClass="filterWindow" intermediateSize="false" />
+                                                                                        </right>
                                                                                         <content>
                                                                                             <AnchorPane>
                                                                                                 <children>
-                                                                                                    <MachineInformationPane fx:id="machineInformationPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                                                                    <HiddenSidePane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                                                        <top>
+                                                                                                            <SoftwareInformationPane fx:id="softwareInformationWindow" id="softwareInformationWindow" />
+                                                                                                        </top>
+                                                                                                        <bottom>
+                                                                                                            <TitledWindowPane fx:id="machineConfigurationWindow" id="machineConfigurationWindow" text="%machineConfiguration">
+                                                                                                                <content>
+                                                                                                                    <ScrollPane fitToHeight="true" fitToWidth="true">
+                                                                                                                        <content>
+                                                                                                                            <MachineConfigurationPane fx:id="machineConfigurationPane" hgap="5.0" vgap="5.0">
+                                                                                                                                <padding>
+                                                                                                                                    <Insets bottom="5.0" left="5.0" />
+                                                                                                                                </padding>
+                                                                                                                                <columnConstraints>
+                                                                                                                                    <ColumnConstraints />
+                                                                                                                                    <ColumnConstraints minWidth="70" />
+                                                                                                                                    <ColumnConstraints hgrow="SOMETIMES" />
+                                                                                                                                </columnConstraints>
+                                                                                                                            </MachineConfigurationPane>
+                                                                                                                        </content>
+                                                                                                                    </ScrollPane>
+                                                                                                                </content>
+                                                                                                            </TitledWindowPane>
+                                                                                                        </bottom>
+                                                                                                        <content>
+                                                                                                            <AnchorPane>
+                                                                                                                <children>
+                                                                                                                    <MachineInformationPane fx:id="machineInformationPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                                                                                </children>
+                                                                                                            </AnchorPane>
+                                                                                                        </content>
+                                                                                                    </HiddenSidePane>
                                                                                                 </children>
                                                                                             </AnchorPane>
                                                                                         </content>
@@ -261,17 +289,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                                                                             </AnchorPane>
                                                                         </content>
                                                                     </HiddenSidePane>
-                                                                </children>
-                                                            </AnchorPane>
-                                                        </content>
-                                                    </HiddenSidePane>
+                                                                </AnchorPane>
+                                                            </content>
+                                                        </HiddenSidePane>
+                                                    </children>
                                                 </AnchorPane>
-                                            </content>
-                                        </HiddenSidePane>
-                                    </children>
-                                </AnchorPane>
-                            </items>
-                        </SplitPane>
+                                            </items>
+                                        </SplitPane>
+                                    </content>
+                                </HiddenSidePane>
+                            </children>
+                        </AnchorPane>
                     </content>
                 </HiddenSidePane>
             </children>
