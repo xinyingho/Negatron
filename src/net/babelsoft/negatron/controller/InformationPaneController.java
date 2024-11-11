@@ -38,6 +38,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -49,7 +50,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
@@ -583,13 +583,21 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
             addTab.accept("readme.txt", content);
         } else {
             String _systemName = systemName != null ? systemName : "info";
-            Map<String, String> data = cache.get(_systemName, currentName, parentName);
-            data.keySet().stream().forEachOrdered(
-                tabName -> {
-                    String content = data.get(tabName);
-                    addTab.accept(tabName, content);
-                }
-            );
+            
+            Delegate displayInformation = () -> {
+                Map<String, String> data = cache.get(_systemName, currentName, parentName);
+                data.keySet().stream().forEachOrdered(
+                        tabName -> {
+                            String content = data.get(tabName);
+                            addTab.accept(tabName, content);
+                        }
+                );
+            };
+            
+            if (cache.isReady()) {
+                displayInformation.fire();
+            } else
+                Platform.runLater(displayInformation::fire); // the cache should hopefully be ready by the next pulse
         }
     }
     

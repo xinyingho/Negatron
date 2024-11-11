@@ -86,6 +86,10 @@ public class InformationCache extends Cache<InformationCache.Data, InformationCa
         super("info");
     }
     
+    public boolean isReady() {
+        return data != null;
+    }
+    
     public Map<String, String> get(String system, String item, String parentItem) {
         Map<String, String> sourceContent = new LinkedHashMap<>();
         

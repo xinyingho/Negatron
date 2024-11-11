@@ -127,7 +127,7 @@ public class DeviceController extends MachineComponentController<Device, String,
         text.textProperty().bindBidirectional(device.valueProperty());
         textListener = (o, oV, newValue) -> {
             if (device.isMandatory())
-                if (newValue.isEmpty())
+                if (Strings.isEmpty(newValue))
                     text.pseudoClassStateChanged(ERROR_CLASS, true);
                 else
                     text.pseudoClassStateChanged(ERROR_CLASS, false);
@@ -142,7 +142,7 @@ public class DeviceController extends MachineComponentController<Device, String,
         combo.valueProperty().bindBidirectional(device.valueProperty());
         valueListener = (o, oV, newValue) -> {
             if (device.isMandatory())
-                if (newValue.isEmpty())
+                if (Strings.isEmpty(newValue))
                     combo.pseudoClassStateChanged(ERROR_CLASS, true);
                 else
                     combo.pseudoClassStateChanged(ERROR_CLASS, false);

@@ -37,7 +37,7 @@ public class SoftwarePartChoiceCell extends TableCell<SoftwarePartAdapter, Devic
         converter = new StringConverter<DeviceController>() {
             @Override
             public String toString(DeviceController device) {
-                return device.getMachineComponent().getName();
+                return device != null ? device.getMachineComponent().getName() : "";
             }
 
             @Override

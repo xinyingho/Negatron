@@ -161,10 +161,10 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
             if (newValue != null) {
                 selectedItem = newValue.getValue();
                 
-                if (selectedItem.isNotCompatible() && onForbidAction != null)
-                    onForbidAction.fire();
-                else if (onAllowAction != null)
-                    onAllowAction.fire();
+                if (selectedItem.isNotCompatible())
+                    if (onForbidAction != null) onForbidAction.fire();
+                else
+                    if (onAllowAction != null) onAllowAction.fire();
             } else
                 selectedItem = null;
         });
