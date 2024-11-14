@@ -30,6 +30,7 @@ import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
+import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -67,7 +68,9 @@ import net.babelsoft.negatron.view.control.tree.SortableTreeItem;
  */
 public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTreeView<T> {
     
+    private final PseudoClass disabledClass = PseudoClass.getPseudoClass("disabled");
     private final Timeline timer;
+    
     private Map<Character, Collection<TreeItem<T>>> shortcutMap;
     private Map<String, SortableTreeItem<T>> map;
     private String shortcut;
@@ -89,7 +92,21 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setRowFactory(tree -> {
-            TreeTableRow<T> cell = new TreeTableRow<>();
+            TreeTableRow<T> cell = new TreeTableRow<>() {
+                @Override
+                protected void updateItem(T item, boolean empty) {
+                    super.updateItem(item, empty);
+                    
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                        pseudoClassStateChanged(disabledClass, false);
+                    } else if (item.isNotCompatible())
+                        pseudoClassStateChanged(disabledClass, true);
+                    else
+                        pseudoClassStateChanged(disabledClass, false);
+                }
+            };
 
             // Add disclosure
             final StackPane disclosureNode = new DisclosureNode(cell);
@@ -128,20 +145,12 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
                 @SuppressWarnings("unchecked")
                 TreeTableColumn<T, String> col5 = (TreeTableColumn<T, String>) col;
                 Callback<CellDataFeatures<T, String>, ObservableValue<String>> valueFactory;
-                switch (col.getId()) {
-                    case "name":
-                        valueFactory = cell -> new ReadOnlyStringWrapper(cell.getValue().getValue().getName());
-                        break;
-                    case "group":
-                        valueFactory = cell -> new ReadOnlyStringWrapper(cell.getValue().getValue().getGroup());
-                        break;
-                    case "year":
-                        valueFactory = cell -> new ReadOnlyStringWrapper(cell.getValue().getValue().getYear());
-                        break;
-                    default:
-                        valueFactory = cell -> new ReadOnlyStringWrapper(cell.getValue().getValue().getCompany());
-                        break;
-                }
+                valueFactory = switch (col.getId()) {
+                    case "name" -> cell -> new ReadOnlyStringWrapper(cell.getValue().getValue().getName());
+                    case "group" -> cell -> new ReadOnlyStringWrapper(cell.getValue().getValue().getGroup());
+                    case "year" -> cell -> new ReadOnlyStringWrapper(cell.getValue().getValue().getYear());
+                    default -> cell -> new ReadOnlyStringWrapper(cell.getValue().getValue().getCompany());
+                };
                 setColumnFactory(col5, LabelTreeTableCell<T>::new, valueFactory);
                 break;
         }});
@@ -161,10 +170,13 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
             if (newValue != null) {
                 selectedItem = newValue.getValue();
                 
-                if (selectedItem.isNotCompatible())
-                    if (onForbidAction != null) onForbidAction.fire();
-                else
-                    if (onAllowAction != null) onAllowAction.fire();
+                if (selectedItem.isNotCompatible()) {
+                    if (onForbidAction != null)
+                        onForbidAction.fire();
+                } else {
+                    if (onAllowAction != null)
+                        onAllowAction.fire();
+                }
             } else
                 selectedItem = null;
         });

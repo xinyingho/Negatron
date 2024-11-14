@@ -20,6 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : capan
 */
 
+.tree-table-row-cell:disabled > .tree-table-cell {
+    -fx-opacity: 0.4;
+}
+
 .tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:odd:filled {
     -fx-background: derive(-fx-base, 26.4%);
 }
