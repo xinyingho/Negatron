@@ -20,6 +20,7 @@ package net.babelsoft.negatron.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -116,9 +117,8 @@ public class SoftwareConfigurationPaneController implements Initializable {
         if (software != null) software.getSoftwareParts().forEach(softwarePart -> {
             List<DeviceController> devices = new ArrayList<>();
             devices.add(DEFAULT_DEVICE);
-            DeviceController[] assignedController = new DeviceController[1];
 
-            machineConfigurationPane.getControllers().stream().filter(
+            Iterator<DeviceController> it = machineConfigurationPane.getControllers().stream().filter(
                 controller -> controller instanceof DeviceController
             ).map(
                 controller -> (DeviceController) controller
@@ -126,20 +126,21 @@ public class SoftwareConfigurationPaneController implements Initializable {
                 controller -> ((Device) controller.getMachineComponent()).getInterfaceFormats().contains(
                     softwarePart.getInterfaceFormat()
                 )
-            ).forEach(
-                controller -> {
-                    devices.add(controller);
-                    
-                    String name = SoftwarePartAdapter.getName(software, softwarePart);
-                    controller.addSoftwarePart(name);
-                    if (name.equals(controller.getText()))
-                        assignedController[0] = controller;
-                }
-            );
+            ).iterator();
+            
+            DeviceController assignedController = null;
+            for (DeviceController controller : (Iterable<DeviceController>) () -> it) {
+                devices.add(controller);
+
+                String name = SoftwarePartAdapter.getName(software, softwarePart);
+                controller.addSoftwarePart(name);
+                if (name.equals(controller.getText()))
+                    assignedController = controller;
+            }
 
             SoftwarePartAdapter adapter = new SoftwarePartAdapter(software, softwarePart, devices);
-            if (assignedController[0] != null)
-                adapter.setAssignment(assignedController[0]);
+            if (assignedController != null)
+                adapter.setAssignment(assignedController);
             adapters.add(adapter);
         });
         
