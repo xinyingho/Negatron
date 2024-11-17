@@ -20,6 +20,7 @@ package net.babelsoft.negatron.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -29,8 +30,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -38,6 +41,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
@@ -242,6 +246,7 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
     private void switchView() {
         switchView(true);
     }
+    Map<String, SortableTreeItem<T>> parentMap = new HashMap<>();
     private void switchView(boolean performTreeWiseEncapsulateOps) {
         if (performTreeWiseEncapsulateOps)
             treeView.beginTreeWiseOperation();
@@ -249,9 +254,9 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
         List<TreeTableColumn<T, ?>> sortOrder = new ArrayList<>(treeView.getSortOrder());
         treeView.getSortOrder().clear();
         
-        SortableTreeItem<T> root = treeView.getSortableRoot();
-        if (mustFlatten)
-            root.getInternalChildren().stream().map(
+        ObservableList<TreeItem<T>> rootChildren = treeView.getSortableRoot().getInternalChildren();
+        if (mustFlatten) {
+            rootChildren.stream().map(
                 item -> (SortableTreeItem<T>) item
             ).flatMap(
                 item -> item.getInternalChildren().stream()
@@ -259,21 +264,60 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
                 Collectors.toList()
             ).forEach(item -> {
                 SortableTreeItem<T> parent = (SortableTreeItem<T>) item.getParent();
-                if (parent != null)
+                if (parent != null && parent.getValue() != null) {
                     parent.getInternalChildren().clear();
-                root.getInternalChildren().add(item);
+                    
+                    if (parent.getValue().isNotCompatible()) {
+                        rootChildren.remove(parent);
+                        // Tree item caching for subsequent view switchings.
+                        // Tree items must be recycled as tree views completely ignore subsequent creations of tree items on the same value for some reasons.
+                        // A nice side-effect of this caching is that it improves graphical performances.
+                        parentMap.put(parent.getValue().getName(), parent);
+                    }
+                }
+                rootChildren.add(item);
             });
-        else
-            root.getInternalChildren().stream().filter(
+        } else {
+            List<TreeItem<T>> list = rootChildren.stream().filter(
                 item -> item.getValue().hasParent()
             ).collect(
                 Collectors.toList()
-            ).forEach(item -> {
-                root.getInternalChildren().remove(item);
-                treeView.getTreeItem(
-                    item.getValue().getParent().getName()
-                ).getInternalChildren().add(item);
-            });
+            );
+            
+            boolean dirty = false;
+            for (TreeItem<T> item : list) {
+                rootChildren.remove(item);
+                String parentName = item.getValue().getParent().getName();
+                SortableTreeItem<T> parentTreeItem = (SortableTreeItem<T>) treeView.getTreeItem(parentName);
+                if (parentTreeItem == null)
+                    parentTreeItem = parentMap.get(parentName);
+                if (parentTreeItem == null) {
+                    T parent = item.getValue().getParent();
+                    parent.setNotCompatible();
+                    parentTreeItem = new SortableTreeItem<>(parent);
+                    parentMap.put(parentName, parentTreeItem);
+                    rootChildren.add(parentTreeItem);
+                } else if (!rootChildren.contains(parentTreeItem)) {
+                    rootChildren.add(parentTreeItem);
+                    dirty = true; // flag to indicate that previously removed tree items have been added back to the tree view
+                }
+                parentTreeItem.getInternalChildren().add(item);
+            }
+            
+            if (dirty) {
+                // A tree view easily handles:
+                // - New tree items added to its children collection,
+                // - Tree items that were added then removed from this collection.
+                // But for some reasons, it badly handles:
+                // - Tree items that are removed and then added back to it,
+                // - New tree items that have the same value as a removed tree item.
+                // Adding such items to its children collection should trigger the wires to update its graphical state but it does not.
+                // So, the current tree view is forcefully reset to a clean state
+                list = new ArrayList<>(rootChildren);
+                rootChildren.clear();
+                rootChildren.addAll(list);
+            }
+        }
         
         treeView.getSortOrder().addAll(sortOrder);
         
