@@ -947,12 +947,7 @@ public class MainController implements Initializable, AlertController, EditContr
 
                     if (loggingWindow.isHidden()) {
                         String s = msg.toLowerCase();
-                        if (
-                            !s.contains("no good dump known") && // ignore messages about bad rom dumps
-                            !s.contains("needs redump") &&
-                            !s.contains("warning") && // do not bother users with bezel layout warnings
-                            !s.contains("deprecated") // or deprecated elements of LUA scripts
-                        )
+                        if (s.contains("error:")) // only bother users when actual errors have been raised by MAME
                             loggingWindow.show();
                     }
                 });
