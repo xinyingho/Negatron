@@ -121,7 +121,7 @@ public class MachineLoader extends Service<List<Control<?>>> {
                 synchronized (dataSync) {
                     dataHandler = new MachineDataHandler(this, machine, softwareLists, origin, mode);
                     if (Configuration.Manager.isAsyncExecutionMode() || Configuration.Manager.isXmlMediaOptionAvailable()) {
-                        params = parameters;
+                        params = new ArrayList<>(parameters);
                         if (Configuration.Manager.isAsyncExecutionMode())
                             params.add("-lx");
                         else
