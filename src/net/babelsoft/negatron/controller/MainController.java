@@ -35,7 +35,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -269,12 +268,12 @@ public class MainController implements Initializable, AlertController, EditContr
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private void log(String s, Object... args) {
         loggingTextFlow.getChildren().add(
-                new Text(
-                        String.format("%s - %s\n\n",
-                                ZonedDateTime.now().format(dateTimeFormatter),
-                                String.format(s, args)
-                        )
+            new Text(
+                String.format("%s - %s\n\n",
+                    ZonedDateTime.now().format(dateTimeFormatter),
+                    String.format(s, args)
                 )
+            )
         );
     }
 
@@ -709,10 +708,10 @@ public class MainController implements Initializable, AlertController, EditContr
 
                 if (!favouriteSelection && selection.hasSelection()) {
                     show(
-                            selection.getMachine(),
-                            selection.getSoftwareConfiguration(),
-                            selection.getMachineConfiguration(),
-                            false
+                        selection.getMachine(),
+                        selection.getSoftwareConfiguration(),
+                        selection.getMachineConfiguration(),
+                        false
                     );
                     machineTreePane.scrollToSelection();
                 }
@@ -786,18 +785,18 @@ public class MainController implements Initializable, AlertController, EditContr
     @Override
     public void dispose() {
         SelectionData data = new SelectionData(
-                currentMachine, machineLoadingCount, softwareTreePane.getCurrentItem(), currentDeviceController
+            currentMachine, machineLoadingCount, softwareTreePane.getCurrentItem(), currentDeviceController
         );
         try {
             if (data.hasSelection())
                 Configuration.Manager.updateSelection(
-                        data.getMachine().getName(), data.getMachineConfiguration(), data.getSoftwareConfiguration(),
-                        favouriteTreeWindow.isDisplayed(), favouriteTreePane.getSelectionId()
+                    data.getMachine().getName(), data.getMachineConfiguration(), data.getSoftwareConfiguration(),
+                    favouriteTreeWindow.isDisplayed(), favouriteTreePane.getSelectionId()
                 );
             else
                 Configuration.Manager.updateSelection(
-                        null, null, null,
-                        favouriteTreeWindow.isDisplayed(), favouriteTreePane.getSelectionId()
+                    null, null, null,
+                    favouriteTreeWindow.isDisplayed(), favouriteTreePane.getSelectionId()
                 );
         } catch (IOException ex) {
             Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Couldn't save the last selection before Negatron exits", ex);
@@ -866,14 +865,15 @@ public class MainController implements Initializable, AlertController, EditContr
                         if (softwareList != null)
                             return softwareList.getSoftwares(interfaceFormats, softwareListFilter.getFilter()).stream();
                         
-                        alert(AlertType.WARNING, String.format(
-                                "Negatron couldn't find the software list %s for the machine %s within MAME's internal database.\n\n" +
-                                "Please, contact the MAME team at https://www.mamedev.org/ or report this issue to http://www.babelsoft.net/forum/index.php",
-                                softwareListFilter.getSoftwareList(), machine.getName()
+                        alert(AlertType.WARNING, String.format("""
+                            Negatron couldn't find the software list %s for the machine %s within MAME's internal database.
+
+                            Please, contact the MAME team at https://www.mamedev.org/ or report this issue to http://www.babelsoft.net/forum/index.php""",
+                            softwareListFilter.getSoftwareList(), machine.getName()
                         ));
                         return Stream.ofNullable(null);
                     }
-                ).collect(Collectors.toList());
+                ).toList();
                 softwareTreePane.setItems(softwares);
 
                 // Show software tree
@@ -887,8 +887,23 @@ public class MainController implements Initializable, AlertController, EditContr
                 // Link software tree to current device
                 currentDeviceController = controller;
 
+                boolean mustShowSoftwareInformation = false;
                 if (displayingSoftwareConfiguration != null) {
                     softwareTreePane.setCurrentItem(displayingSoftwareConfiguration.getSoftware());
+                    mustShowSoftwareInformation = true;
+                } else {
+                    String softwareName = controller.getText();
+                    if (Strings.isValid(softwareName)) {
+                        Optional<Software> software = softwares.stream().filter(
+                            soft -> soft.getName().equals(softwareName)
+                        ).findAny();
+                        if (software.isPresent()) {
+                            softwareTreePane.setCurrentItem(software.get());
+                            mustShowSoftwareInformation = true;
+                        }
+                    }
+                }
+                if (mustShowSoftwareInformation) {
                     if (softwareInformationWindow.isHidden())
                         softwareInformationWindow.show();
                     if (displayingSoftwareConfiguration != null && displayingSoftwareConfiguration.getSoftwarePart() == null)
@@ -1092,7 +1107,7 @@ public class MainController implements Initializable, AlertController, EditContr
             }
         }
         
-        if (controls != null && controls.size() > 0) {
+        if (controls != null && !controls.isEmpty()) {
             if (machineConfigurationButton.getParent() == null) {
                 buttonBar.getItems().add(1, machineConfigurationButton);
                 highlight(machineConfigurationButton);
@@ -1294,6 +1309,11 @@ public class MainController implements Initializable, AlertController, EditContr
                         if (!machineConfigurationButton.isSelected())
                             machineConfigurationButton.fire();
                         machineConfigurationPane.showList(displayingSoftwareConfiguration.getDevice());
+                        // When Negatron starts up and reloads the last selected machine configuration of the last session,
+                        // the machine tree pane gets and holds the focus because of the final line in postInitialise().
+                        // But here the machine configuration also got a selected software and therefore the software tree pane is about to cover the machine tree pane.
+                        // So, force the focus to the software tree pane.
+                        Platform.runLater(() -> softwareTreePane.requestTreeFocus());
                     } else
                         displayingSoftwareConfiguration = null;
                 }
@@ -1307,7 +1327,7 @@ public class MainController implements Initializable, AlertController, EditContr
         if (mustTriggerLaunchAction) {
             mustTriggerLaunchAction = false;
             handleLaunchAction(null);
-        } else if (soundButton.isSelected() && machineLoader.getMode() == Mode.CREATE && controls.size() > 0)
+        } else if (soundButton.isSelected() && machineLoader.getMode() == Mode.CREATE && !controls.isEmpty())
             Audio.play(Sound.MACHINE_SETTINGS);
     }
 
@@ -1352,17 +1372,16 @@ public class MainController implements Initializable, AlertController, EditContr
         closeSoftwareFilterWindow();
         
         switch (machineConfigurationWindow.getDisplayMode()) {
-            case INTERMEDIATE:
-            case MAXIMISED:
+            case INTERMEDIATE, MAXIMISED -> {
                 machineConfigurationWindow.close();
                 machineConfigurationButton.setSelected(false);
-                break;
-            default:
+            }
+            default -> {
                 machineTreePane.closeFilterPane();
                 machineTreePane.closeViewPane();
                 machineConfigurationWindow.show();
                 machineConfigurationButton.setSelected(true);
-                break;
+            }
         }
     }
     
@@ -1371,14 +1390,13 @@ public class MainController implements Initializable, AlertController, EditContr
         closeGlobalConfigurationWindow();
         
         switch (softwareConfigurationWindow.getDisplayMode()) {
-            case INTERMEDIATE:
-            case MAXIMISED:
+            case INTERMEDIATE, MAXIMISED -> {
                 softwareConfigurationWindow.close();
                 softwareConfigurationButton.setSelected(false);
                 if (favouriteSoftwareConfigurationWindow.isDisplayed())
                     favouriteSoftwareConfigurationWindow.close();
-                break;
-            default:
+            }
+            default -> {
                 softwareConfigurationWindow.show();
                 softwareConfigurationButton.setSelected(true);
                 if (favouriteTreePane.isEditing()) {
@@ -1386,7 +1404,7 @@ public class MainController implements Initializable, AlertController, EditContr
                     favouriteSoftwareConfigurationWindow.setContent(softwareConfigurationTable);
                     favouriteSoftwareConfigurationWindow.show();
                 }
-                break;
+            }
         }
     }
 
@@ -1522,16 +1540,16 @@ public class MainController implements Initializable, AlertController, EditContr
     @FXML
     private void handleWindowDragged(MouseEvent event) {
         if (event.isPrimaryButtonDown()) {
-                double mouseOldX = mousePosX;
-                double mouseOldY = mousePosY;
-                mousePosX = event.getScreenX();
-                mousePosY = event.getScreenY();
-                double mouseDeltaX = mousePosX - mouseOldX;
-                double mouseDeltaY = mousePosY - mouseOldY;
-                
-                Window window = buttonBar.getScene().getWindow();
-                window.setX(window.getX() + mouseDeltaX);
-                window.setY(window.getY() + mouseDeltaY);
+            double mouseOldX = mousePosX;
+            double mouseOldY = mousePosY;
+            mousePosX = event.getScreenX();
+            mousePosY = event.getScreenY();
+            double mouseDeltaX = mousePosX - mouseOldX;
+            double mouseDeltaY = mousePosY - mouseOldY;
+
+            Window window = buttonBar.getScene().getWindow();
+            window.setX(window.getX() + mouseDeltaX);
+            window.setY(window.getY() + mouseDeltaY);
         }
     }
 }

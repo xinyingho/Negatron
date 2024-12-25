@@ -62,7 +62,7 @@ import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem.CutCopyStat
 import net.babelsoft.negatron.view.control.tree.DisclosureNode;
 
 /**
- * For drag'n drop of tree rows, use some code from http://programmingtipsandtraps.blogspot.fr/2015/10/drag-and-drop-in-treetableview-with.html
+ * For drag'n drop of tree rows, used some code from http://programmingtipsandtraps.blogspot.fr/2015/10/drag-and-drop-in-treetableview-with.html
  * @author capan
  */
 public class FavouriteTreeView extends NegatronTreeView<Favourite> {
@@ -156,21 +156,22 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
                     event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                     Position position = getDragDroppedPosition(cell, event);
                     switch (position) {
-                        case BEFORE:
+                        case BEFORE -> {
                             cell.pseudoClassStateChanged(CSS_MOVE_BEFORE, true);
                             cell.pseudoClassStateChanged(CSS_MOVE_AFTER, false);
                             cell.pseudoClassStateChanged(CSS_MOVE_INSIDE, false);
-                            break;
-                        case AFTER:
+                        }
+                        case AFTER -> {
                             cell.pseudoClassStateChanged(CSS_MOVE_BEFORE, false);
                             cell.pseudoClassStateChanged(CSS_MOVE_AFTER, true);
                             cell.pseudoClassStateChanged(CSS_MOVE_INSIDE, false);
-                            break;
-                        default: // INSIDE
+                        }
+                        default -> {
+                            // INSIDE
                             cell.pseudoClassStateChanged(CSS_MOVE_BEFORE, false);
                             cell.pseudoClassStateChanged(CSS_MOVE_AFTER, false);
                             cell.pseudoClassStateChanged(CSS_MOVE_INSIDE, true);
-                            break;
+                        }
                     }
                     event.consume();
                 }
@@ -253,7 +254,7 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
             });
         });
         
-        return processList.size() > 0;
+        return !processList.isEmpty();
     }
 
     private CopyPastableTreeItem getTarget(TreeTableRow<Favourite> row) {
@@ -296,14 +297,9 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
 
     private void dragScroll() {
         ScrollBar sb = null;
-        for (Node n : lookupAll(".scroll-bar")) {
-            if (n instanceof ScrollBar) {
-                ScrollBar bar = (ScrollBar) n;
-                if (bar.getOrientation().equals(Orientation.VERTICAL)) {
-                    sb = bar;
-                }
-            }
-        }
+        for (Node n : lookupAll(".scroll-bar"))
+            if (n instanceof ScrollBar bar && bar.getOrientation().equals(Orientation.VERTICAL))
+                sb = bar;
         
         if (sb != null) {
             double newValue = sb.getValue() + scrollDirection;
@@ -370,7 +366,7 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
     public void cutCopy(CutCopyState state) {
         resetCutCopy();
         ObservableList<TreeItem<Favourite>> list = getSelectionModel().getSelectedItems();
-        if (list != null && list.size() > 0) {
+        if (list != null && !list.isEmpty()) {
             cutCopyList = new ArrayList<>(list.size());
             TreeItem<Favourite> root = getRoot();
 
@@ -408,7 +404,7 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         final CutCopyState cutCopyState = cutCopyList.get(0).getCutCopyState();
         getSelectionModel().clearSelection();
         switch (position) {
-            case BEFORE:
+            case BEFORE -> {
                 CopyPastableTreeItem parent = (CopyPastableTreeItem) selected.getParent();
                 ObservableList<TreeItem<Favourite>> list = parent.getInternalChildren();
                 processList.forEach(favourite -> {
@@ -418,10 +414,10 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
                         favourite = favourite.copy();
                     list.add(list.indexOf(selected), favourite);
                 });
-                break;
-            case AFTER:
-                parent = (CopyPastableTreeItem) selected.getParent();
-                list = parent.getInternalChildren();
+            }
+            case AFTER -> {
+                CopyPastableTreeItem parent = (CopyPastableTreeItem) selected.getParent();
+                ObservableList<TreeItem<Favourite>> list = parent.getInternalChildren();
                 ReversedIterator.stream(processList).forEachOrdered(favourite -> {
                     if (cutCopyState == CutCopyState.Cut)
                         ((CopyPastableTreeItem) favourite.getParent()).getInternalChildren().remove(favourite);
@@ -429,8 +425,8 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
                         favourite = favourite.copy();
                     list.add(list.indexOf(selected) + 1, favourite);
                 });
-                break;
-            case INSIDE:
+            }
+            case INSIDE -> {
                 if (!selected.isExpanded())
                     selected.setExpanded(true);
                 processList.forEach(favourite -> {
@@ -440,9 +436,10 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
                         favourite = favourite.copy();
                     selected.getInternalChildren().add(favourite);
                 });
-                break;
-            default:
+            }
+            default -> {
                 return;
+            }
         }
         if (processList.size() == 1)
             getSelectionModel().select(processList.get(0));
@@ -517,8 +514,8 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         } else if (event.getClickCount() == 1) {
             getSelectionModel().clearAndSelect(cell.getIndex(), cell.getTableColumn());
             editableControl.setEditable(false);
-        } else if (cell.getTreeTableRow().getItem() != null && cell.getTreeTableRow().getItem().getMachine() != null)
-            if (!cell.getTreeTableRow().getItem().mustMigrate())
+        } else if (cell.getTableRow().getItem() != null && cell.getTableRow().getItem().getMachine() != null)
+            if (!cell.getTableRow().getItem().mustMigrate())
                 super.handleMouseClicked(event);
             else
                 showFavouriteMigrationPopup();
