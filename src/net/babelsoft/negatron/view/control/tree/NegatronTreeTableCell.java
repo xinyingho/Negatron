@@ -17,10 +17,12 @@
  */
 package net.babelsoft.negatron.view.control.tree;
 
+import javafx.scene.control.Skin;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import net.babelsoft.negatron.view.skin.NegatronTreeTableCellSkin;
 
 /**
  *
@@ -33,9 +35,14 @@ public abstract class NegatronTreeTableCell<T, I> extends TreeTableCell<T, I> {
         
         // Disable node expansion/collapsing on double-clicking
         addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
-            TreeItem<T> treeItem = getTreeTableRow().getTreeItem();
+            TreeItem<T> treeItem = getTableRow().getTreeItem();
             if (event.getButton() == MouseButton.PRIMARY && treeItem != null && !treeItem.isLeaf() && event.getClickCount() % 2 == 0)
                 event.consume();
         });
+    }
+    
+    /** {@inheritDoc} */
+    @Override protected Skin<?> createDefaultSkin() {
+        return new NegatronTreeTableCellSkin<>(this);
     }
 }

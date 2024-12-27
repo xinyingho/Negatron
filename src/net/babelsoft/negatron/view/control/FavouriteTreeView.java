@@ -22,25 +22,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.Cell;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Skin;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTablePosition;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.control.skin.TreeTableViewSkin;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
@@ -54,12 +60,16 @@ import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import net.babelsoft.negatron.model.favourites.Favourite;
 import net.babelsoft.negatron.model.favourites.Folder;
+import net.babelsoft.negatron.model.favourites.Separator;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.ReversedIterator;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem.CutCopyState;
+import net.babelsoft.negatron.view.control.tree.DateTimeTreeTableCell;
 import net.babelsoft.negatron.view.control.tree.DisclosureNode;
+import net.babelsoft.negatron.view.control.tree.FavouriteTreeTableCell;
+import net.babelsoft.negatron.view.skin.FavouriteTreeViewSkin;
 
 /**
  * For drag'n drop of tree rows, used some code from http://programmingtipsandtraps.blogspot.fr/2015/10/drag-and-drop-in-treetableview-with.html
@@ -91,6 +101,15 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
     private boolean isDragDropping;
     
     private PopOver popup;
+    
+    private Function<TreeTablePosition<Favourite, ?>, Boolean> isCellEditable;
+    
+    public enum Cycle {
+        LOOK_FORWARD,
+        LOOK_BACKWARD
+    }
+    
+    private Cycle fieldJumpMode = Cycle.LOOK_FORWARD;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -208,6 +227,11 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         
         getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         setupScrolling();
+    }
+
+    /** {@inheritDoc} */
+    @Override protected Skin<?> createDefaultSkin() {
+        return new FavouriteTreeViewSkin(this);
     }
     
     //////////////////////// Drag'n drop management
@@ -459,14 +483,6 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         col.setCellFactory(column -> {
             TreeTableCell<Favourite, S> cell = builder.get();
             cell.setOnMouseClicked(evt -> handleMouseClicked(evt));
-            
-            EventHandler<MouseEvent> eventFilter = e -> {
-                if (e.isAltDown())
-                    handleMouseClicked(e);
-            };
-            cell.addEventFilter(MouseEvent.MOUSE_PRESSED, eventFilter);
-            cell.addEventFilter(MouseEvent.MOUSE_RELEASED, eventFilter);
-            
             return cell;
         });
     }
@@ -477,6 +493,80 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
     
     public void setOnDragDone(Delegate delegate) {
         onDragDone = delegate;
+    }
+    
+    public void setIsCellEditable(Function<TreeTablePosition<Favourite, ? extends Object>, Boolean> function) {
+        isCellEditable = function;
+    }
+    
+    public void setFieldJumpMode(Cycle mode) {
+        fieldJumpMode = mode;
+    }
+    
+    private record Cell(int rowIndex, TreeTableColumn<Favourite, ?> column) {}
+    
+    private Cell getEditableCell(TreeTablePosition<Favourite, ?> cell, boolean ignoreCurrentCell) {
+        List<TreeTableColumn<Favourite, ?>> list = getVisibleLeafColumns();
+        int nbCol = list.size();
+        int rowIndex = cell.getRow();
+        int colIndex = cell.getColumn();
+        TreeTableColumn<Favourite, ?> column;
+        
+        // Field jump cycling: find the next editable cell
+        if (!ignoreCurrentCell) {
+            column = cell.getTableColumn();
+            while (!isCellEditable.apply(cell)) {
+                colIndex += fieldJumpMode == Cycle.LOOK_FORWARD ? 1 : -1;
+                if (colIndex >= nbCol)
+                    colIndex = 0; // cycled through the visible columns forward, so go back to the first
+                else if (colIndex < 0)
+                    colIndex = nbCol - 1; // cycled through the visible columns backward, so go back to the last
+                column = list.get(colIndex);
+                cell = new TreeTablePosition<>(this, rowIndex, column);
+            }
+        } else {
+            do {
+                colIndex += fieldJumpMode == Cycle.LOOK_FORWARD ? 1 : -1;
+                if (colIndex >= nbCol)
+                    colIndex = 0; // cycled through the visible columns forward, so go back to the first
+                else if (colIndex < 0)
+                    colIndex = nbCol - 1; // cycled through the visible columns backward, so go back to the last
+                column = list.get(colIndex);
+                cell = new TreeTablePosition<>(this, rowIndex, column);
+            } while (!isCellEditable.apply(cell));
+        }
+
+        getFocusModel().focus(rowIndex, column);
+        getSelectionModel().select(rowIndex, column);
+        return new Cell(rowIndex, column);
+    }
+    
+    public void edit() {
+        TreeTablePosition<Favourite, ?> cell = getFocusModel().getFocusedCell();
+        if (cell.getRow() >= 0)
+            editCell(cell.getRow(), cell.getTableColumn());
+    }
+    
+    public void editCell(int i, TreeTableColumn<Favourite, ?> ttc) {
+        TreeTablePosition<Favourite, ?> cell = getEditingCell();
+        if (cell != null) {
+            // Already editing a cell, so perform a field jump by passing editing on to the next cell in the same row.
+            Cell c = getEditableCell(cell, true);
+            if (c.column() != cell.getTableColumn()) {
+                cancelEdit();
+                edit(c.rowIndex(), c.column());
+            }
+        } else {
+            cell = new TreeTablePosition<>(this, i, ttc);
+            switch (cell.getTreeItem().getValue()) {
+                case Separator s -> { }
+                default -> {
+                    Cell c = getEditableCell(cell, false);
+                    edit(i, c.column());
+                }
+            }
+        }
+        Platform.runLater(() -> this.requestFocus());
     }
     
     @Override
@@ -508,17 +598,29 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1 && !cell.isEditing())
             cancelEdit();
         else if (event.getButton() == MouseButton.MIDDLE) {
-            if (getSelectionModel().isEmpty())
-                getSelectionModel().select(cell.getIndex());
-            edit(cell.getIndex(), cell.getTableColumn());
+            int index = cell.getIndex();
+            TreeTableColumn<Favourite, ?> column = cell.getTableColumn();
+            
+            getFocusModel().focus(index, column);
+            getSelectionModel().select(index, column);
+            
+            boolean canEdit = switch (cell) {
+                case DateTimeTreeTableCell c -> false;
+                default -> ((FavouriteTreeTableCell) cell).canEdit();
+            };
+            if (canEdit)
+                edit(index, column);
         } else if (event.getClickCount() == 1) {
             getSelectionModel().clearAndSelect(cell.getIndex(), cell.getTableColumn());
             editableControl.setEditable(false);
-        } else if (cell.getTableRow().getItem() != null && cell.getTableRow().getItem().getMachine() != null)
-            if (!cell.getTableRow().getItem().mustMigrate())
-                super.handleMouseClicked(event);
-            else
-                showFavouriteMigrationPopup();
+        } else {
+            Favourite favourite = cell.getTableRow().getItem();
+            if (favourite != null && favourite.getMachine() != null)
+                if (!favourite.mustMigrate())
+                    super.handleMouseClicked(event);
+                else
+                    showFavouriteMigrationPopup();
+        }
         event.consume();
     }
     

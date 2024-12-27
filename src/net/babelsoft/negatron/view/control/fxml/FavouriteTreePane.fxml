@@ -154,6 +154,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <TreeTableColumn fx:id="machine" minWidth="0" prefWidth="90.0" text="%machine" />
                         <TreeTableColumn fx:id="softwareConfiguration" minWidth="0" prefWidth="90.0" text="%software" />
                         <TreeTableColumn fx:id="machineConfiguration" minWidth="0" prefWidth="120.0" text="%configuration" />
+                        <!-- do not mark below columns with editable=false as it will break the field jump cycling when typing several times on F2 or Shift+F2 -->
                         <TreeTableColumn fx:id="dateModified" minWidth="0" prefWidth="140.0" style="-fx-alignment: center;" text="%dateModified" />
                         <TreeTableColumn fx:id="dateCreated" minWidth="0" prefWidth="140.0" style="-fx-alignment: center;" text="%dateCreated" visible="false" />
                     </columns>

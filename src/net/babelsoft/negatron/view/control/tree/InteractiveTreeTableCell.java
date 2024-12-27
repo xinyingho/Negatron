@@ -80,14 +80,14 @@ public abstract class InteractiveTreeTableCell<I> extends FavouriteTreeTableCell
     }
     
     private void initRowEdit() {
-        getTreeTableRow().getChildrenUnmodifiable().stream().filter(
+        getTableRow().getChildrenUnmodifiable().stream().filter(
             cell -> cell != this && cell instanceof InteractiveTreeTableCell
         ).map(
             cell -> (InteractiveTreeTableCell) cell
         ).forEach(
             cell -> cell.initEdit()
         );
-        controller.show(getTreeTableRow().getTreeItem());
+        controller.show(getTableRow().getTreeItem());
     }
     
     public abstract void setEdit(Machine machine, SoftwareConfiguration softwareConfiguration, MachineConfiguration machineConfiguration);
@@ -116,13 +116,13 @@ public abstract class InteractiveTreeTableCell<I> extends FavouriteTreeTableCell
             hideInteractivePane();
             
             cancelRowEdit();
-            controller.show(getTreeTableRow().getTreeItem());
+            controller.show(getTableRow().getTreeItem());
         } else
             super.cancelEdit();
     }
     
     private void cancelRowEdit() {
-        getTreeTableRow().getChildrenUnmodifiable().stream().filter(
+        getTableRow().getChildrenUnmodifiable().stream().filter(
             cell -> cell != this && cell instanceof InteractiveTreeTableCell
         ).map(
             cell -> (InteractiveTreeTableCell) cell
@@ -135,7 +135,7 @@ public abstract class InteractiveTreeTableCell<I> extends FavouriteTreeTableCell
         if (isEditing())
             commitEdit(editField);
         else
-            updateItem(getTreeTableRow().getItem());
+            updateItem(getTableRow().getItem());
         editField = null;
     }
     
@@ -149,11 +149,11 @@ public abstract class InteractiveTreeTableCell<I> extends FavouriteTreeTableCell
     }
     
     private void commitRowEdit() {
-        Favourite fav = getTreeTableRow().getItem();
+        Favourite fav = getTableRow().getItem();
         if (fav.mustMigrate())
             fav.setMustMigrate(false);
         
-        getTreeTableRow().getChildrenUnmodifiable().stream().filter(
+        getTableRow().getChildrenUnmodifiable().stream().filter(
             cell -> cell != this && cell instanceof InteractiveTreeTableCell
         ).map(
             cell -> (InteractiveTreeTableCell) cell
@@ -182,7 +182,7 @@ public abstract class InteractiveTreeTableCell<I> extends FavouriteTreeTableCell
             if (separator == null) {
                 setText(toString());
                 
-                Favourite fav = getTreeTableRow().getItem();
+                Favourite fav = getTableRow().getItem();
                 if (fav != null && fav.mustMigrate())
                     pseudoClassStateChanged(ERROR_CLASS, true);
                 else

@@ -53,6 +53,10 @@ public class SoftwareConfigurationTreeTableCell extends DescribableTreeTableCell
         editField = softwareConfiguration;
     }
     
+    public static boolean canEdit(Favourite item) {
+        return item.getSoftwareConfiguration() != null;
+    }
+    
     @Override
     protected void updateItem(Favourite item) {
         item.setSoftwareConfiguration(editField);

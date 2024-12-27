@@ -21,11 +21,9 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Separator;
-import javafx.scene.control.Skin;
 import javafx.scene.control.TreeTableView;
 import net.babelsoft.negatron.controller.FavouriteTreePaneController;
 import net.babelsoft.negatron.model.favourites.Favourite;
-import net.babelsoft.negatron.view.skin.FavouriteTreeTableCellSkin;
 
 /**
  *
@@ -44,7 +42,7 @@ public class FavouriteTreeTableCell<I> extends NegatronTreeTableCell<Favourite, 
         
         setOnMouseEntered(e -> controller.setHoveredCell(this));
         setOnMouseMoved(e -> {
-            if (!e.isAltDown() && getTreeTableRow().isSelected() && !isEditing() && canEdit())
+            if (!e.isAltDown() && getTableRow().isSelected() && !isEditing() && canEdit())
                 pseudoClassStateChanged(EDITABLE_CLASS, true);
             else
                 pseudoClassStateChanged(EDITABLE_CLASS, false);
@@ -52,12 +50,7 @@ public class FavouriteTreeTableCell<I> extends NegatronTreeTableCell<Favourite, 
     }
     
     private boolean isSeparator() {
-        return getTreeTableRow().getItem() instanceof net.babelsoft.negatron.model.favourites.Separator;
-    }
-    
-    /** {@inheritDoc} */
-    @Override protected Skin<?> createDefaultSkin() {
-        return new FavouriteTreeTableCellSkin<>(this);
+        return getTableRow().getItem() instanceof net.babelsoft.negatron.model.favourites.Separator;
     }
     
     protected Node getSeparator() {
@@ -105,7 +98,7 @@ public class FavouriteTreeTableCell<I> extends NegatronTreeTableCell<Favourite, 
         controller.setEditingCell(null);
         controller.saveConfiguration();
         
-        Favourite favourite = getTreeTableRow().getItem();
+        Favourite favourite = getTableRow().getItem();
         if (favourite.isInvalidated())
             favourite.checkValidity();
     }

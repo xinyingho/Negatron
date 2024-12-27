@@ -25,6 +25,8 @@ import javafx.scene.image.ImageView;
 import javafx.util.StringConverter;
 import net.babelsoft.negatron.controller.FavouriteTreePaneController;
 import net.babelsoft.negatron.model.IconDescription;
+import net.babelsoft.negatron.model.favourites.Favourite;
+import net.babelsoft.negatron.model.favourites.Separator;
 import net.babelsoft.negatron.view.control.adapter.IconDescriptionStringConverter;
 
 /**
@@ -133,6 +135,10 @@ public class IconNameTreeTableCell extends FavouriteTreeTableCell<IconDescriptio
      *                                                                         *
      **************************************************************************/
 
+    public static boolean canEdit(Favourite item) {
+        return !(item instanceof Separator);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void startEdit() {

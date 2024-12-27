@@ -63,7 +63,7 @@ public class FilterableTreeItem<T> extends TreeItem<T> {
                 if (this.predicate.get() == null)
                     return true;
                 // If there are children, keep this tree item
-                if (child.getChildren().size() > 0)
+                if (!child.getChildren().isEmpty())
                     return true;
                 // Otherwise ask the TreeItemPredicate
                 return this.predicate.get().test(this, child.getValue());

@@ -96,6 +96,10 @@ public class MachineConfigurationTreeTableCell extends InteractiveTreeTableCell<
         editField = machineConfiguration;
     }
     
+    public static boolean canEdit(Favourite item) {
+        return item.getMachineConfiguration() != null && item.getMachineConfiguration().isConfigurable();
+    }
+    
     @Override
     public boolean canEdit() {
         return super.canEdit() && getItem().isConfigurable();

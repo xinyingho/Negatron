@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -38,6 +39,7 @@ import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTablePosition;
 import javafx.scene.control.TreeTableView.TreeTableViewSelectionModel;
@@ -47,6 +49,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 import javafx.util.Duration;
@@ -64,6 +67,7 @@ import net.babelsoft.negatron.util.Editable;
 import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.FavouriteTreeView;
+import net.babelsoft.negatron.view.control.FavouriteTreeView.Cycle;
 import net.babelsoft.negatron.view.control.FavouriteTreeView.Position;
 import net.babelsoft.negatron.view.control.adapter.SelectionData;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem;
@@ -137,7 +141,6 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     private List<Folder> folderList;
     private TreeTableViewSelectionModel<Favourite> selection;
     
-    private boolean isShiftPressed;
     private boolean isDragDone;
     
     private Delegate onInitialised;
@@ -156,8 +159,6 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     
     private FavouriteConfiguration xmlConf;
     private FavouriteTree initialTree;
-    
-    private int selectionColumnIdx = -1;
 
     /**
      * Initializes the controller class.
@@ -172,6 +173,41 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         treeView.setColumnFactory(machineConfiguration, () -> new MachineConfigurationTreeTableCell(this));
         treeView.setColumnFactory(dateCreated, DateTimeTreeTableCell<Favourite>::new);
         treeView.setColumnFactory(dateModified, DateTimeTreeTableCell<Favourite>::new);
+        treeView.setIsCellEditable(cell -> {
+            final TreeTableColumn<Favourite, ?> column = cell.getTableColumn();
+            final Favourite favourite = cell.getTreeItem().getValue();
+            
+            if (column == iconName) 
+                return IconNameTreeTableCell.canEdit(favourite);
+            else if (column == machine)
+                return MachineTreeTableCell.canEdit(favourite);
+            else if (column == softwareConfiguration)
+                return SoftwareConfigurationTreeTableCell.canEdit(favourite);
+            else if (column == machineConfiguration)
+                return MachineConfigurationTreeTableCell.canEdit(favourite);
+            else
+                return false;
+            
+            /*
+            final Set<Node> treeCells = treeView.lookupAll( ".tree-table-cell" );
+            final TreeTableCell treeCell = treeCells.stream().map(
+                node -> (TreeTableCell) node
+            ).filter(
+                node -> node.getIndex() == cell.getRow() && node.getTableColumn() == column
+            ).findAny().get();
+            
+            return column.isEditable() && switch (treeCell) {
+                case DateTimeTreeTableCell c -> false;
+                default -> ((FavouriteTreeTableCell) treeCell).canEdit();
+            };*/
+            /*
+            return column.isEditable() && 
+                !(favourite instanceof Separator) &&
+                (column != machine || favourite.getMachine() != null) &&
+                (column != softwareConfiguration || favourite.getSoftwareConfiguration() != null) &&
+                (column != machineConfiguration || favourite.getMachine() != null && favourite.getMachine().isConfigurable())
+            ;*/
+        });
         
         treeView.setOnDragDone(() -> {
             isDragDone = true; // used to prevent the favourite pane to get hidden when cancelling a drag operation by pressing the Escape key
@@ -213,7 +249,6 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         });
         treeView.setOnKeyPressed(event -> handleKeyPressed(event));
         treeView.setOnKeyReleased(event -> handleKeyReleased(event));
-        treeView.getSelectionModel().selectedIndexProperty().addListener(e -> selectionColumnIdx = -1);
         
         listDivider = favouriteSplitPane.getDividers().get(0);
         listDivider.setPosition(1.0);
@@ -455,7 +490,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     }
     
     private void setRowEdit(Machine machine, SoftwareConfiguration software, MachineConfiguration configuration) {
-        editingCell.getTreeTableRow().getChildrenUnmodifiable().stream().filter(
+        editingCell.getTableRow().getChildrenUnmodifiable().stream().filter(
             cell -> cell instanceof InteractiveTreeTableCell
         ).map(
             cell -> (InteractiveTreeTableCell) cell
@@ -593,54 +628,14 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
 
     @FXML
     private void handleEditAction(ActionEvent event) {
-        TreeItem<Favourite> selected = selection.getSelectedItem();
-        if (selected != null && !(selected.getValue() instanceof Separator)) {
-            TreeTableColumn<Favourite, ?> editingColumn;
-            if (!(selected.getValue() instanceof Folder)) {
-                // Cycle through columns
-                do {
-                    if (!isShiftPressed)
-                        if (selectionColumnIdx < treeView.getVisibleLeafColumns().size() - 1)
-                            ++selectionColumnIdx;
-                        else
-                            selectionColumnIdx = 0;
-                    else
-                        if (selectionColumnIdx > 0)
-                            --selectionColumnIdx;
-                        else
-                            selectionColumnIdx = treeView.getVisibleLeafColumns().size() - 1;
-                    editingColumn = treeView.getVisibleLeafColumn(selectionColumnIdx);
-                } while (
-                    editingColumn == dateCreated ||
-                    editingColumn == dateModified ||
-                    editingColumn == softwareConfiguration && selected.getValue().getSoftwareConfiguration() == null ||
-                    editingColumn == machineConfiguration && !selected.getValue().getMachine().isConfigurable()
-                );
-            } else {
-                // Folders only have 1 editable column
-                editingColumn = treeView.getVisibleLeafColumn(0);
-            }
-            // 1- If selectionColumnIdx is set to 0, no need to do anything as the default tree behaviour is already to edit the 0th column.
-            // 2- If a column has been selected through mouse-clicking and it's the column designed by selectionColumnIdx, let the default tree behaviour proceed with editing.
-            // 3- Shift+F2 doesn't trigger any default action, so always force edition in this case.
-            // TODO: a better solution would be to directly override the action from the class TreeTableViewBehavior.
-            TreeTablePosition<Favourite, ?> position = treeView.getEditingCell();
-            if (
-                    position == null && selectionColumnIdx > 0 ||
-                    selectionColumnIdx != treeView.getVisibleLeafIndex(position.getTableColumn()) ||
-                    isShiftPressed
-            ) {
-                cancelEdit(); // sometimes required so that the below edit call get through. TODO: see why it's actually required
-                treeView.edit(selection.getSelectedIndex(), editingColumn);
-            }
-        }
+        treeView.edit();
     }
 
     @FXML
     private void handleDeleteAction(ActionEvent event) {
         List<TreeItem<Favourite>> list = new ArrayList<>(selection.getSelectedItems()); // shallow copy
         
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             TreeItem<Favourite> selected = selection.getSelectedItem();
             
             // Search for the item that will become the new selection after the deletion operation
@@ -672,7 +667,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     private void handleKey(KeyEvent event) {
         if (hoveredCell == null)
             return;
-        if (!event.isAltDown() && hoveredCell.getTreeTableRow().isSelected() && !hoveredCell.isEditing() && hoveredCell.canEdit())
+        if (!event.isAltDown() && hoveredCell.getTableRow().isSelected() && !hoveredCell.isEditing() && hoveredCell.canEdit())
             hoveredCell.pseudoClassStateChanged(EDITABLE_CLASS, true);
         else
             hoveredCell.pseudoClassStateChanged(EDITABLE_CLASS, false);
@@ -681,16 +676,8 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
     private void handleKeyPressed(KeyEvent event) {
         handleKey(event);
         
-        switch (event.getCode()) {
-            case F2:
-                event.consume();
-                break;
-            case SHIFT:
-                isShiftPressed = true;
-                break;
-            default:
-                break;
-        }
+        if (event.getCode() == KeyCode.SHIFT)
+            treeView.setFieldJumpMode(Cycle.LOOK_BACKWARD);
     }
     
     private void handleKeyReleased(KeyEvent event) {
@@ -703,7 +690,6 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         final KeyCombination pasteKeyCombo = new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN);
         final KeyCombination altPasteKeyCombo = new KeyCodeCombination(KeyCode.INSERT, KeyCombination.SHIFT_DOWN);
         
-        final KeyCombination editKey = new KeyCodeCombination(KeyCode.F2);
         final KeyCombination altEditKey = new KeyCodeCombination(KeyCode.F2, KeyCodeCombination.SHIFT_DOWN);
         final KeyCombination newFolderKey = new KeyCodeCombination(KeyCode.INSERT);
         final KeyCombination newFavouriteKeyCombo = new KeyCodeCombination(KeyCode.INSERT, KeyCodeCombination.ALT_DOWN);
@@ -711,7 +697,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         final KeyCombination deleteKey = new KeyCodeCombination(KeyCode.DELETE);
         
         if (event.getCode() == KeyCode.SHIFT)
-            isShiftPressed = false;
+            treeView.setFieldJumpMode(Cycle.LOOK_FORWARD);
         
         if (event.getCode() == KeyCode.ESCAPE) {
             if (isDragDone) {
@@ -721,30 +707,31 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
                 event.consume(); // prevent the pane to get hidden while cancelling editing
             }
         } else if (cutKeyCombo.match(event) || altCutKeyCombo.match(event)) {
-            cutButton.fire();
+            handleCutAction(null);
             event.consume();
         } else if (copyKeyCombo.match(event) || altCopyKeyCombo.match(event)) {
-            copyButton.fire();
+            handleCopyAction(null);
             event.consume();
         } else if (pasteKeyCombo.match(event) || altPasteKeyCombo.match(event)) {
-            pasteButton.fire();
+            handlePasteAction(null);
             event.consume();
         } else if (newFolderKey.match(event)) {
-            newFolderButton.fire();
+            handleNewFolderAction(null);
             event.consume();
         } else if (newFavouriteKeyCombo.match(event)) {
-            newFavouriteButton.fire();
+            handleNewFavouriteAction(null);
             event.consume();
         } else if (newSeparatorKeyCombo.match(event)) {
-            newSeparatorButton.fire();
+            handleNewSeparatorAction(null);
             event.consume();
         } else if (deleteKey.match(event)) {
             if (treeView.getEditingCell() == null || !editingCell.isEditing()) {
-                deleteButton.fire();
+                handleDeleteAction(null);
                 event.consume();
             }
-        } else if (editKey.match(event) || altEditKey.match(event)) {
-            editButton.fire();
+        } else if (altEditKey.match(event)) {
+            // TreeTableView already triggers edit mode with F2, add Shift+F2
+            handleEditAction(null);
             event.consume();
         }
     }

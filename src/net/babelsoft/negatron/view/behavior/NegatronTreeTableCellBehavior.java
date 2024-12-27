@@ -26,16 +26,16 @@ import javafx.scene.input.MouseButton;
  *
  * @author capan
  */
-public class FavouriteTreeTableCellBehavior<S,T> extends TreeTableCellBehavior<S,T> {
+public class NegatronTreeTableCellBehavior<S,T> extends TreeTableCellBehavior<S,T> {
     
-    public FavouriteTreeTableCellBehavior(TreeTableCell<S,T> control) {
+    public NegatronTreeTableCellBehavior(TreeTableCell<S,T> control) {
         super(control);
     }
     
     @Override
     protected void handleClicks(MouseButton button, int clickCount, boolean isAlreadySelected) {
         // handle editing, which only occurs with the middle mouse button
-        TreeItem<S> treeItem = getNode().getTreeTableRow().getTreeItem();
+        TreeItem<S> treeItem = getNode().getTableRow().getTreeItem();
         if (button == MouseButton.MIDDLE && clickCount == 1 && isAlreadySelected) {
             edit(getNode());
         } else if ((button == MouseButton.PRIMARY || button == MouseButton.MIDDLE) && clickCount == 1) {

@@ -43,9 +43,13 @@ public class MachineTreeTableCell extends DescribableTreeTableCell<Machine> {
         controller.hideMachineList();
     }
     
+    public static boolean canEdit(Favourite item) {
+        return item.getMachine() != null || item.isMachineEditable();
+    }
+    
     @Override
     public boolean canEdit() {
-        return super.canEdit() || getTreeTableRow().getItem().isMachineEditable();
+        return super.canEdit() || getTableRow().getItem().isMachineEditable();
     }
     
     @Override

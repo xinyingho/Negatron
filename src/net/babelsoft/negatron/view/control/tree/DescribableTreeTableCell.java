@@ -35,7 +35,7 @@ public abstract class DescribableTreeTableCell<T extends Describable> extends In
     public DescribableTreeTableCell(FavouriteTreePaneController controller, Function<Favourite, Boolean> isCellInvalid) {
         super(controller);
         ChangeListener<Boolean> invalidatedListener = (o, oV, invalidated) -> {
-            if (invalidated && isCellInvalid.apply(getTreeTableRow().getItem()))
+            if (invalidated && isCellInvalid.apply(getTableRow().getItem()))
                 pseudoClassStateChanged(CSS_INVALID, true);
             else
                 pseudoClassStateChanged(CSS_INVALID, false);

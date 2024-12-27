@@ -2,7 +2,7 @@
 ${licenseFirst}
 </#if>
 ${licensePrefix}This file is part of Negatron.
-${licensePrefix}Copyright (C) 2015-2020 BabelSoft S.A.S.U.
+${licensePrefix}Copyright (C) 2015-2024 BabelSoft S.A.S.U.
 ${licensePrefix}
 ${licensePrefix}This program is free software: you can redistribute it and/or modify
 ${licensePrefix}it under the terms of the GNU General Public License as published by

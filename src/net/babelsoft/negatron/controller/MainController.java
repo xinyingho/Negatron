@@ -1312,8 +1312,9 @@ public class MainController implements Initializable, AlertController, EditContr
                         // When Negatron starts up and reloads the last selected machine configuration of the last session,
                         // the machine tree pane gets and holds the focus because of the final line in postInitialise().
                         // But here the machine configuration also got a selected software and therefore the software tree pane is about to cover the machine tree pane.
-                        // So, force the focus to the software tree pane.
-                        Platform.runLater(() -> softwareTreePane.requestTreeFocus());
+                        // So, force the focus to the software tree pane when the favourite pane is not covering it yet.
+                        if (!favouriteTreeWindow.isDisplayed())
+                            Platform.runLater(() -> softwareTreePane.requestTreeFocus());
                     } else
                         displayingSoftwareConfiguration = null;
                 }
