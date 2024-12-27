@@ -372,6 +372,14 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         TreeItem<Favourite> item = find(treeView.getRoot(), favouriteId);
         
         if (item != null) {
+            // Selection isn't always successfull on hidden items,
+            // so ensure that the item's visible
+            TreeItem<Favourite> i = item.getParent();
+            while (i != null && !i.isExpanded()) {
+                i.setExpanded(true);
+                i = i.getParent();
+            }
+            
             selection.select(item);
             treeView.scrollTo(selection.getSelectedIndex());
             return true;
