@@ -72,17 +72,15 @@ public class HddCreationDialog extends Dialog<HddGeometry> {
             Attributes atts
         ) throws SAXException {
             switch (qName) {
-                case "manufacturer":
-                    manufacturer = atts.getValue("name");
-                    break;
-                case "model":
+                case "manufacturer" -> manufacturer = atts.getValue("name");
+                case "model" -> {
                     HddGeometry model = new HddGeometry(
                         manufacturer, atts.getValue("name"),
                         atts.getValue("cylinder"), atts.getValue("head"),
                         atts.getValue("sector"), atts.getValue("sectorSize")
                     );
                     hddModels.getItems().add(model);
-                    break;
+                }
             }
         }
     }

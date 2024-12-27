@@ -30,19 +30,15 @@ public enum SoundType {
     public static SoundType getValue(String value) {
         int val;
         try {
-            val = Integer.valueOf(value);
+            val = Integer.parseInt(value);
         } catch (NumberFormatException ex) {
             return NONE;
         }
-        switch (val) {
-            case 0:
-                return NONE;
-            case 1:
-                return MONO;
-            case 2:
-                return STEREO;
-            default:
-                return SURROUND;
-        }
+        return switch (val) {
+            case 0 -> NONE;
+            case 1 -> MONO;
+            case 2 -> STEREO;
+            default -> SURROUND;
+        };
     }
 }

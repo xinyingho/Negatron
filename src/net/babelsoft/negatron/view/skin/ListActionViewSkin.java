@@ -81,18 +81,10 @@ public class ListActionViewSkin<T> extends SkinBase<ListActionView<T>> {
         if (!getSkinnable().getActions().isEmpty()) {
             Side side = getSkinnable().getSide();
             switch (side) {
-                case TOP:
-                    borderPane.setTop(createButtonBar(HORIZONTAL));
-                    break;
-                case RIGHT:
-                    borderPane.setRight(createButtonBar(VERTICAL, "right"));
-                    break;
-                case BOTTOM:
-                    borderPane.setBottom(createButtonBar(HORIZONTAL, "bottom"));
-                    break;
-                case LEFT:
-                    borderPane.setLeft(createButtonBar(VERTICAL));
-                    break;
+                case TOP -> borderPane.setTop(createButtonBar(HORIZONTAL));
+                case RIGHT -> borderPane.setRight(createButtonBar(VERTICAL, "right"));
+                case BOTTOM -> borderPane.setBottom(createButtonBar(HORIZONTAL, "bottom"));
+                case LEFT -> borderPane.setLeft(createButtonBar(VERTICAL));
             }
         }
     }

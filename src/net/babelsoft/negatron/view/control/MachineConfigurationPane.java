@@ -139,7 +139,7 @@ public class MachineConfigurationPane extends GridPane implements Editable {
                 add(label, 1, rowIndex);
                 add(node, 2, rowIndex);
                 switch (control.getStatus()) {
-                    case ADDED:
+                    case ADDED -> {
                         label.setGraphic(new ImageView(NEW_BADGE));
                         badgedLabels.add(label);
 
@@ -148,13 +148,13 @@ public class MachineConfigurationPane extends GridPane implements Editable {
                         KeyValues.accept(node, 0.0, 1.0);
                         
                         controllers.add(controller);
-                        break;
-                    case DELETED:
+                    }
+                    case DELETED -> {
                         KeyValues.accept(image, 1.0, 0.0);
                         KeyValues.accept(label, 1.0, 0.0);
                         KeyValues.accept(node, 1.0, 0.0);
-                        break;
-                    case CHANGED:
+                    }
+                    case CHANGED -> {
                         label.setGraphic(new ImageView(MODIFIED_BADGE));
                         badgedLabels.add(label);
 
@@ -166,8 +166,8 @@ public class MachineConfigurationPane extends GridPane implements Editable {
                         KeyValuesEx.accept(node);
                         
                         controllers.add(controller);
-                        break;
-                    default:
+                    }
+                    default -> {
                         if (startedFromScratch) {
                             KeyValues.accept(image, 0.0, 1.0);
                             KeyValues.accept(label, 0.0, 1.0);
@@ -175,7 +175,7 @@ public class MachineConfigurationPane extends GridPane implements Editable {
                         }
                         
                         controllers.add(controller);
-                        break;
+                    }
                 }
 
                 controller.requestFocus(focusData);
@@ -203,7 +203,7 @@ public class MachineConfigurationPane extends GridPane implements Editable {
     }
 
     public void clearControls() {
-        if (getChildren().size() > 0) {
+        if (!getChildren().isEmpty()) {
             List<KeyValue> keyValues1 = new ArrayList<>();
             List<KeyValue> keyValues2 = new ArrayList<>();
             
@@ -222,7 +222,7 @@ public class MachineConfigurationPane extends GridPane implements Editable {
     }
 
     public void clearBadges() {
-        if (badgedLabels.size() > 0) {
+        if (!badgedLabels.isEmpty()) {
             List<KeyValue> keyValues1 = new ArrayList<>();
             List<KeyValue> keyValues2 = new ArrayList<>();
 
@@ -291,29 +291,18 @@ public class MachineConfigurationPane extends GridPane implements Editable {
         }
             
         controllers.stream().filter(
-            controller -> {
-                MachineComponent machineComponent = controller.getMachineComponent();
-                if (machineComponent instanceof Device) {
-                    Device device = (Device) machineComponent;
-                    if (device.getInterfaceFormats().contains(interfaceFormat))
-                        return true;
-                }
-                return false;
-            }
+            controller -> controller.getMachineComponent() instanceof Device device && device.getInterfaceFormats().contains(interfaceFormat)
+        ).map(
+            controller -> (DeviceController) controller
         ).findAny().ifPresent(
-            controller -> ((DeviceController) controller).setText(requirement.getSoftware())
+            controller -> controller.setText(requirement.getSoftware())
         );
     }
 
     public void showList(String deviceName) {
-        controllers.stream().filter(controller -> {
-            MachineComponent machineComponent = controller.getMachineComponent();
-            if (machineComponent instanceof Device) {
-                Device device = (Device) machineComponent;
-                return deviceName.equals(device.getName());
-            } else
-                return false;
-        }).findAny().map(
+        controllers.stream().filter(
+            controller -> controller.getMachineComponent() instanceof Device device && deviceName.equals(device.getName())
+        ).findAny().map(
             controller -> (DeviceController) controller
         ).ifPresent(
             device -> device.showList()

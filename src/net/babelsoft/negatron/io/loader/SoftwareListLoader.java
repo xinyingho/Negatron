@@ -99,28 +99,22 @@ public class SoftwareListLoader implements Callable<Void> {
             super.startElement(namespaceURI, localName, qName, atts);
             
             switch (qName) {
-                case "softwarelist":
-                    softwareList = new SoftwareList( name, atts.getValue("description") );
-                    break;
-                case "software":
+                case "softwarelist" -> softwareList = new SoftwareList( name, atts.getValue("description") );
+                case "software" -> {
                     buildCurrentItem(
                         atts.getValue("name"),
                         softwareList.getName(),
                         atts.getValue("cloneof")
                     );
                     currentItem.setSupport(atts.getValue("supported"));
-                    break;
-                case "publisher":
-                    startTextElement();
-                    break;
-                case "sharedfeat":
+                }
+                case "publisher" -> startTextElement();
+                case "sharedfeat" -> {
                     switch (atts.getValue("name")) {
-                        case "compatibility":
-                            startConsumeCurrentItem(
-                                Software::setCompatibility, atts.getValue("value").split(",")
-                            );
-                            break;
-                        case "requirement":
+                        case "compatibility" -> startConsumeCurrentItem(
+                            Software::setCompatibility, atts.getValue("value").split(",")
+                        );
+                        case "requirement" -> {
                             String requirement = atts.getValue("value");
                             
                             // requirements should follow the format [<software list>:<software>] like in c64_cass.xml <sharedfeat name="requirement" value="c64_cart:music64"/>
@@ -132,16 +126,14 @@ public class SoftwareListLoader implements Callable<Void> {
                             startConsumeCurrentItem(
                                 Software::setRequirement, requirement
                             );
-                            break;
+                        }
                     }
-                    break;
-                case "part":
-                    startConsumeCurrentItem(Software::addSoftwarePart, new SoftwarePart(
-                            atts.getValue("name"), atts.getValue("interface")
-                        )
-                    );
-                    break;
-                case "feature":
+                }
+                case "part" -> startConsumeCurrentItem(Software::addSoftwarePart, new SoftwarePart(
+                        atts.getValue("name"), atts.getValue("interface")
+                    )
+                );
+                case "feature" -> {
                     // features listed here are those used for multi-part software as of v0.168
                     switch(atts.getValue("name")) {
                         case "Disc Code":
@@ -161,7 +153,7 @@ public class SoftwareListLoader implements Callable<Void> {
                         default:
                             break;
                     }
-                    break;
+                }
             }
         }
         
@@ -174,15 +166,13 @@ public class SoftwareListLoader implements Callable<Void> {
             super.endElement(namespaceURI, localName, qName);
             
             switch (qName) {
-                case "software":
+                case "software" -> {
                     // Do not reverse the 2 following lines as
                     // SoftwareList::addSoftware can remove data important to generate stats
                     statistics.add(currentItem);
                     endConsumeCurrentItem(SoftwareList::addSoftware, softwareList);
-                    break;
-                case "publisher":
-                    endTextElement(Software::setPublisher);
-                    break;
+                }
+                case "publisher" -> endTextElement(Software::setPublisher);
             }
         }
     }

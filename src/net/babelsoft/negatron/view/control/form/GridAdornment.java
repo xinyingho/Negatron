@@ -68,18 +68,12 @@ public class GridAdornment {
         grid.add(box, 0, row, 3, 1);
 
         switch (style) {
-            case EXTRAS_MACHINE_SOFTWARE:
-            case MULTIMEDIA_MACHINE_SOFTWARE:
+            case EXTRAS_MACHINE_SOFTWARE, MULTIMEDIA_MACHINE_SOFTWARE -> {
                 box.getChildren().add(new ImageView(MACHINE_IMG));
                 box.getChildren().add(new ImageView(SOFTWARE_IMG));
-                break;
-            case EXTRAS_MACHINE_ONLY:
-            case MULTIMEDIA_MACHINE_ONLY:
-                box.getChildren().add(new ImageView(MACHINE_IMG));
-                break;
-            case EXTRAS_SOFTWARE_ONLY:
-                box.getChildren().add(new ImageView(SOFTWARE_IMG));
-                break;
+            }
+            case EXTRAS_MACHINE_ONLY, MULTIMEDIA_MACHINE_ONLY -> box.getChildren().add(new ImageView(MACHINE_IMG));
+            case EXTRAS_SOFTWARE_ONLY -> box.getChildren().add(new ImageView(SOFTWARE_IMG));
         }
     }
 }

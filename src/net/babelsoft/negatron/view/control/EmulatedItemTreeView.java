@@ -116,7 +116,7 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
         });
 
         getColumns().stream().forEach(col -> { switch (col.getId()) {
-            case "iconDescription":
+            case "iconDescription" -> {
                 @SuppressWarnings("unchecked")
                 TreeTableColumn<T, IconDescription> col1 = (TreeTableColumn<T, IconDescription>) col;
                 setColumnFactory(col1, IconDescriptionTreeTableCell<T>::new, cell -> cell.getValue().getValue().iconDescriptionProperty());
@@ -125,23 +125,23 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
                     iconDescription -> iconDescription.getDescription(),
                     (desc1, desc2) -> desc1.compareToIgnoreCase(desc2)
                 ));
-                break;
-            case "configurable":
+            }
+            case "configurable" -> {
                 @SuppressWarnings("unchecked")
                 TreeTableColumn<T, Boolean> col2 = (TreeTableColumn<T, Boolean>) col;
                 setColumnFactory(col2, ConfigurableTreeTableCell<T>::new, cell -> new ReadOnlyBooleanWrapper(cell.getValue().getValue().isConfigurable()));
-                break;
-            case "support":
+            }
+            case "support" -> {
                 @SuppressWarnings("unchecked")
                 TreeTableColumn<T, Support> col3 = (TreeTableColumn<T, Support>) col;
                 setColumnFactory(col3, ImageEnumTreeTableCell<T, Support>::new, cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getValue().getSupport()));
-                break;
-            case "status":
+            }
+            case "status" -> {
                 @SuppressWarnings("unchecked")
                 TreeTableColumn<T, Status> col4 = (TreeTableColumn<T, Status>) col;
                 setColumnFactory(col4, ImageEnumTreeTableCell<T, Status>::new, cell -> cell.getValue().getValue().statusProperty());
-                break;
-            default:
+            }
+            default -> {
                 @SuppressWarnings("unchecked")
                 TreeTableColumn<T, String> col5 = (TreeTableColumn<T, String>) col;
                 Callback<CellDataFeatures<T, String>, ObservableValue<String>> valueFactory;
@@ -152,7 +152,7 @@ public class EmulatedItemTreeView<T extends EmulatedItem<T>> extends NegatronTre
                     default -> cell -> new ReadOnlyStringWrapper(cell.getValue().getValue().getCompany());
                 };
                 setColumnFactory(col5, LabelTreeTableCell<T>::new, valueFactory);
-                break;
+            }
         }});
 
         setSortPolicy(tree -> {

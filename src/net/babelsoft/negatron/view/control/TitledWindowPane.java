@@ -68,18 +68,10 @@ public class TitledWindowPane extends VBox {
             controller = fxmlLoader.getController();
             propertyChangeSupport.addPropertyChangeListener(evt -> {
                 switch (evt.getPropertyName()) {
-                    case PROP_TEXT:
-                        controller.setText(text);
-                        break;
-                    case PROP_GRAPHIC:
-                        controller.setGraphic(graphic);
-                        break;
-                    case PROP_HEADER:
-                        controller.setHeader(header);
-                        break;
-                    case PROP_CONTENT:
-                        controller.setContent(content);
-                        break;
+                    case PROP_TEXT -> controller.setText(text);
+                    case PROP_GRAPHIC -> controller.setGraphic(graphic);
+                    case PROP_HEADER -> controller.setHeader(header);
+                    case PROP_CONTENT -> controller.setContent(content);
                 }
             });
             previousDisplayMode = DisplayMode.HIDDEN;

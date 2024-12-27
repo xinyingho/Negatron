@@ -240,15 +240,9 @@ public class MachineFilterPaneController extends FilterPaneController<Machine> {
         supportPreliminary.setSelected(false);
         
         switch (currentItem.getSupport()) {
-            case GOOD:
-                supportGood.setSelected(true);
-                break;
-            case IMPERFECT:
-                supportImperfect.setSelected(true);
-                break;
-            default: //case PRELIMINARY
-                supportPreliminary.setSelected(true);
-                break;
+            case Support.GOOD -> supportGood.setSelected(true);
+            case Support.IMPERFECT -> supportImperfect.setSelected(true);
+            default -> supportPreliminary.setSelected(true); //case PRELIMINARY
         }
         
         filterTimeline.playFromStart();
@@ -305,18 +299,10 @@ public class MachineFilterPaneController extends FilterPaneController<Machine> {
         numberPlayersMore.setSelected(false);
         
         switch (currentItem.getMaxNumberPlayers()) {
-            case 0:
-                numberPlayersNone.setSelected(true);
-                break;
-            case 1:
-                numberPlayersSingle.setSelected(true);
-                break;
-            case 2:
-                numberPlayersDuo.setSelected(true);
-                break;
-            default:
-                numberPlayersMore.setSelected(true);
-                break;
+            case 0 -> numberPlayersNone.setSelected(true);
+            case 1 -> numberPlayersSingle.setSelected(true);
+            case 2 -> numberPlayersDuo.setSelected(true);
+            default -> numberPlayersMore.setSelected(true);
         }
         
         filterTimeline.playFromStart();
@@ -391,24 +377,12 @@ public class MachineFilterPaneController extends FilterPaneController<Machine> {
         displayUnknown.setSelected(false);
         
         switch (currentItem.getDisplayType()) {
-            case none:
-                displayNone.setSelected(true);
-                break;
-            case raster:
-                displayRaster.setSelected(true);
-                break;
-            case vector:
-                displayVector.setSelected(true);
-                break;
-            case lcd:
-                displayLcd.setSelected(true);
-                break;
-            case svg:
-                displaySvg.setSelected(true);
-                break;
-            default: //case unknown
-                displayUnknown.setSelected(true);
-                break;
+            case none -> displayNone.setSelected(true);
+            case raster -> displayRaster.setSelected(true);
+            case vector -> displayVector.setSelected(true);
+            case lcd -> displayLcd.setSelected(true);
+            case svg -> displaySvg.setSelected(true);
+            default -> displayUnknown.setSelected(true);
         }
         
         filterTimeline.playFromStart();
@@ -421,12 +395,8 @@ public class MachineFilterPaneController extends FilterPaneController<Machine> {
         screenOrientationVertical.setSelected(false);
         
         switch (currentItem.getScreenOrientation()) {
-            case VERTICAL:
-                screenOrientationVertical.setSelected(true);
-                break;
-            default: //case HORIZONTAL
-                screenOrientationHorizontal.setSelected(true);
-                break;
+            case ScreenOrientation.VERTICAL -> screenOrientationVertical.setSelected(true);
+            default -> screenOrientationHorizontal.setSelected(true); //case HORIZONTAL
         }
         
         filterTimeline.playFromStart();
@@ -441,18 +411,10 @@ public class MachineFilterPaneController extends FilterPaneController<Machine> {
         soundSurround.setSelected(false);
         
         switch (currentItem.getSoundType()) {
-            case NONE:
-                soundNone.setSelected(true);
-                break;
-            case MONO:
-                soundMono.setSelected(true);
-                break;
-            case STEREO:
-                soundStereo.setSelected(true);
-                break;
-            default: //case SURROUND
-                soundSurround.setSelected(true);
-                break;
+            case SoundType.NONE -> soundNone.setSelected(true);
+            case SoundType.MONO -> soundMono.setSelected(true);
+            case SoundType.STEREO -> soundStereo.setSelected(true);
+            case SoundType.SURROUND -> soundSurround.setSelected(true);
         }
         
         filterTimeline.playFromStart();

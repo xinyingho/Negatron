@@ -162,7 +162,7 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
             super.startElement(namespaceURI, localName, qName, atts);
             
             switch (qName) {
-                case "root":
+                case "root" -> {
                     Folder root = new Folder(
                         findId(atts),
                         atts.getValue("name"),
@@ -170,8 +170,8 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                         LocalDateTime.parse(atts.getValue("dateModified"))
                     );
                     favouriteTree.setRoot(parentItem = new CopyPastableTreeItem(root));
-                    break;
-                case "folder":
+                }
+                case "folder" -> {
                     Folder folder = new Folder(
                         findId(atts),
                         atts.getValue("name"),
@@ -182,29 +182,29 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                     parentItem.getInternalChildren().add(item);
                     parentItem = item;
                     favouriteTree.addFolder(folder);
-                    break;
-                case "children":
-                    break;
-                case "separator":
+                }
+                case "children" -> {
+                }
+                case "separator" -> {
                     Separator separator = new Separator(
                         findId(atts),
                         LocalDateTime.parse(atts.getValue("dateCreated")),
                         LocalDateTime.parse(atts.getValue("dateModified"))
                     );
-                    item = new CopyPastableTreeItem(separator);
+                    CopyPastableTreeItem item = new CopyPastableTreeItem(separator);
                     parentItem.getInternalChildren().add(item);
-                    break;
-                case "favourite":
+                }
+                case "favourite" -> {
                     favourite = new Favourite(
                         findId(atts),
                         atts.getValue("name"), null, null, null,
                         LocalDateTime.parse(atts.getValue("dateCreated")),
                         LocalDateTime.parse(atts.getValue("dateModified"))
                     );
-                    item = new CopyPastableTreeItem(favourite);
+                    CopyPastableTreeItem item = new CopyPastableTreeItem(favourite);
                     parentItem.getInternalChildren().add(item);
-                    break;
-                case "machineConfiguration":
+                }
+                case "machineConfiguration" -> {
                     Machine machine = machines.get(atts.getValue("name"));
                     if (machine == null) {
                         machine = new Machine(atts.getValue("name"), "");
@@ -212,14 +212,10 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                     }
                     favourite.resetMachine(machine);
                     configurable = Boolean.parseBoolean(atts.getValue("configurable"));
-                    break;
-                case "commandLine":
-                    commandLine = new StringBuilder();
-                    break;
-                case "parameters":
-                    parameters = new MachineElementList(favourite.getMachine());
-                    break;
-                case "bios":
+                }
+                case "commandLine" -> commandLine = new StringBuilder();
+                case "parameters" -> parameters = new MachineElementList(favourite.getMachine());
+                case "bios" -> {
                     Bios bios = new Bios();
                     if (atts.getValue("name") != null) {
                         BiosSet set = new BiosSet(atts.getValue("name"), atts.getValue("description"));
@@ -230,8 +226,8 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                     } else
                         bios.setDefaultValue();
                     parameters.add(bios);
-                    break;
-                case "ramsize":
+                }
+                case "ramsize" -> {
                     Ram ram = new Ram();
                     if (atts.getValue("value") != null) {
                         RamOption option = new RamOption(atts.getValue("value"));
@@ -242,8 +238,8 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                     } else
                         ram.setDefaultValue();
                     parameters.add(ram);
-                    break;
-                case "device":
+                }
+                case "device" -> {
                     device = new Device(
                         atts.getValue("name"),
                         atts.getValue("type"),
@@ -256,18 +252,14 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                     if (atts.getValue("value") != null)
                         device.setValue(atts.getValue("value"));
                     parameters.add(device);
-                    break;
-                case "interfaces":
-                    break;
-                case "interface":
-                    device.addInterfaceFormat(atts.getValue("name"));
-                    break;
-                case "extensions":
-                    Arrays.stream(atts.getValue("names").split(",")).forEach(
-                        ext -> device.addExtension(ext)
-                    );
-                    break;
-                case "slot":
+                }
+                case "interfaces" -> {
+                }
+                case "interface" -> device.addInterfaceFormat(atts.getValue("name"));
+                case "extensions" -> Arrays.stream(atts.getValue("names").split(",")).forEach(
+                    ext -> device.addExtension(ext)
+                );
+                case "slot" -> {
                     if (Configuration.Manager.isAsyncExecutionMode()) {
                         // MAME 0.185 and older
                         Slot slot = new Slot(atts.getValue("name"));
@@ -330,8 +322,8 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                             parameters.add(slot);
                         }
                     }
-                    break;
-                case "softwareConfiguration":
+                }
+                case "softwareConfiguration" -> {
                     Software software = null;
                     SoftwareList softwareList = softwareLists.get(atts.getValue("list"));
                     if (softwareList != null)
@@ -353,9 +345,8 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
                         favourite.getMachine(), device, software
                     );
                     favourite.resetSoftwareConfiguration(softwareConfiguration);
-                    break;
-                default:
-                    throw new RuntimeException("Unknown XML element during favourites parsing: " + qName);
+                }
+                default -> throw new RuntimeException("Unknown XML element during favourites parsing: " + qName);
             }
         }
     
@@ -374,41 +365,39 @@ public class FavouriteLoader implements Callable<FavouriteTree> {
             super.endElement(namespaceURI, localName, qName);
             
             switch (qName) {
-                case "folder":
-                    parentItem = (CopyPastableTreeItem) parentItem.getParent();
-                    break;
-                case "favourite":
+                case "folder" -> parentItem = (CopyPastableTreeItem) parentItem.getParent();
+                case "favourite" -> {
                     if (favourite.getMachine() == null) {
                         favourite.resetMachine();
                         favouriteTree.addEmptyFavourite(favourite);
                     }
                     favourite.checkValidity();
                     favourite = null;
-                    break;
-                case "machineConfiguration":
+                }
+                case "machineConfiguration" -> {
                     if (favourite.getMachineConfiguration() == null) {
                         favourite.resetMachineConfiguration(new MachineConfiguration(
                             new MachineElementList(favourite.getMachine()), configurable
                         ));
                     }
-                    break;
-                case "commandLine":
+                }
+                case "commandLine" -> {
                     favourite.resetMachineConfiguration(new MachineConfiguration(
                         commandLine.toString()
                     ));
                     commandLine = null;
-                    break;
-                case "parameters":
+                }
+                case "parameters" -> {
                     favourite.resetMachineConfiguration(new MachineConfiguration(
                         parameters, configurable
                     ));
                     parameters = null;
-                    break;
-                case "device":
+                }
+                case "device" -> {
                     if (Configuration.Manager.isSyncExecutionMode() && device.getExtensions().isEmpty())
                         favourite.setMustMigrate(true);
                     device = null;
-                    break;
+                }
             }
         }
     }

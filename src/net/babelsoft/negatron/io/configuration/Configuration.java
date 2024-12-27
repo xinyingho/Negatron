@@ -160,79 +160,57 @@ public enum Configuration {
                     content[0] = Property.SNAPSHOT.name;
                 
                 switch (content[0]) {
-                    case MAME_ENTRY:
-                        setMamePath(tidyStringPath(content[1]));
-                        break;
-                    case MESS_ENTRY:
+                    case MAME_ENTRY -> setMamePath(tidyStringPath(content[1]));
+                    case MESS_ENTRY -> {
                         setMamePath(tidyStringPath(content[1]));
                         isMess = true;
-                        break;
-                    case MAME_INI_ENTRY:
+                    }
+                    case MAME_INI_ENTRY -> {
                         String iniPath = tidyStringPath(content[1]);
                         if (!iniPath.isEmpty())
                             mameIni = iniPath;
-                        break;
-                    case CHDMAN_ENTRY:
-                        chdmanExec = tidyStringPath(content[1]);
-                        break;
-                    case EXTRAS_ENTRY:
+                    }
+                    case CHDMAN_ENTRY -> chdmanExec = tidyStringPath(content[1]);
+                    case EXTRAS_ENTRY -> {
                         if (content.length > 1)
                             extrasPath = tidyStringPath(content[1]);
-                        break;
-                    case MULTIMEDIA_ENTRY:
+                    }
+                    case MULTIMEDIA_ENTRY -> {
                         if (content.length > 1)
                             multimediaPath = tidyStringPath(content[1]);
-                        break;
-                    case VLC_ENTRY:
+                    }
+                    case VLC_ENTRY -> {
                         if (content.length > 1)
                             vlcPath = tidyStringPath(content[1]);
-                        break;
-                    case SKIN_ENTRY:
+                    }
+                    case SKIN_ENTRY -> {
                         if (content.length > 1)
                             skin = tidyStringPath(content[1]);
-                        break;
-                    case LANGUAGE_ENTRY:
-                        language = tidyStringPath(content[1]);
-                        break;
-                    case INFOTIP_TIMING_ENTRY:
-                        infotipTiming = tidyStringPath(content[1]);
-                        break;
-                    case CHEAT_MENU_ENTRY:
-                        cheatMenuEnabled = digitToBoolean(content[1]);
-                        break;
-                    case VSYNC_ENTRY:
-                        vsync = Arrays.stream(VsyncMethod.values()).filter(
-                            vsyncMethod -> vsyncMethod.equals(content[1])
-                        ).findAny().orElse(null);
-                        break;
-                    case FONT_FAMILY_ENTRY:
+                    }
+                    case LANGUAGE_ENTRY -> language = tidyStringPath(content[1]);
+                    case INFOTIP_TIMING_ENTRY -> infotipTiming = tidyStringPath(content[1]);
+                    case CHEAT_MENU_ENTRY -> cheatMenuEnabled = digitToBoolean(content[1]);
+                    case VSYNC_ENTRY -> vsync = Arrays.stream(VsyncMethod.values()).filter(
+                        vsyncMethod -> vsyncMethod.equals(content[1])
+                    ).findAny().orElse(null);
+                    case FONT_FAMILY_ENTRY -> {
                         if (content.length > 1)
                             fontFamily = content[1].trim();
-                        break;
-                    case FONT_SIZE_ENTRY:
-                        fontSize = Double.parseDouble(content[1]);
-                        break;
-                    case SOUND_ENTRY:
-                        soundEnabled = digitToBoolean(content[1]);
-                        break;
-                    case VIDEO_ENTRY:
-                        videoEnabled = digitToBoolean(content[1]);
-                        break;
-                    case VIEW3D_ENTRY:
-                        view3dEnabled = digitToBoolean(content[1]);
-                        break;
-                    default:
-                        Arrays.stream(Property.values()).filter(
-                            property -> property.name.equals(content[0])
-                        ).findAny().ifPresent(
-                            property -> {
-                                if (property.domain == Domain.EXTRAS_INFORMATION)
-                                    files.put(property, pathStringToFileArray(content[1]));
-                                else
-                                    folders.put(property, pathStringToFolderArray(property, content[1]));
-                            }
-                        );
-                        break;
+                    }
+                    case FONT_SIZE_ENTRY -> fontSize = Double.parseDouble(content[1]);
+                    case SOUND_ENTRY -> soundEnabled = digitToBoolean(content[1]);
+                    case VIDEO_ENTRY -> videoEnabled = digitToBoolean(content[1]);
+                    case VIEW3D_ENTRY -> view3dEnabled = digitToBoolean(content[1]);
+                    default -> Arrays.stream(Property.values()).filter(
+                        property -> property.name.equals(content[0])
+                    ).findAny().ifPresent(
+                        property -> {
+                            if (property.domain == Domain.EXTRAS_INFORMATION)
+                                files.put(property, pathStringToFileArray(content[1]));
+                            else
+                                folders.put(property, pathStringToFolderArray(property, content[1]));
+                        }
+                    );
                 }
             });
         }

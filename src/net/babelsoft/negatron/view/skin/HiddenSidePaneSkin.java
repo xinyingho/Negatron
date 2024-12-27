@@ -94,29 +94,17 @@ public class HiddenSidePaneSkin extends SkinBase<HiddenSidePane> {
         for (Side side : Side.values()) {
             TitledWindowPane window = null;
             switch (side) {
-                case TOP:
-                    window = getSkinnable().getTop();
-                    break;
-                case RIGHT:
-                    window = getSkinnable().getRight();
-                    break;
-                case BOTTOM:
-                    window = getSkinnable().getBottom();
-                    break;
-                case LEFT:
-                    window = getSkinnable().getLeft();
-                    break;
+                case TOP -> window = getSkinnable().getTop();
+                case RIGHT -> window = getSkinnable().getRight();
+                case BOTTOM -> window = getSkinnable().getBottom();
+                case LEFT -> window = getSkinnable().getLeft();
             }
             
             double value = 0.0;
             if (window != null) {
                 switch (window.getDisplayMode()) {
-                    case INTERMEDIATE:
-                        value = 0.5;
-                        break;
-                    case MAXIMISED:
-                        value = 1.0;
-                        break;
+                    case INTERMEDIATE -> value = 0.5;
+                    case MAXIMISED -> value = 1.0;
                 }
                 if (window.getOnceOnAnimationEnded() != null) {
                     onceOnAnimationEnded = window.getOnceOnAnimationEnded();

@@ -228,19 +228,17 @@ public class MachineFolderViewPaneController implements Initializable {
             for (String line : lines) {
                 line = line.trim();
                 if (line.startsWith("[")) switch (line) {
-                    case "[FOLDER_SETTINGS]":
+                    case "[FOLDER_SETTINGS]" -> {
                         skip = true;
                         isMame32Format = true;
-                        break;
-                    case "[ROOT_FOLDER]":
-                        skip = false;
-                        break;
-                    default:
+                    }
+                    case "[ROOT_FOLDER]" -> skip = false;
+                    default -> {
                         if (skip)
                             skip = false;
                         if (isMame32Format)
                             items = addFolder(index, view, line.substring(1, line.length() - 1));
-                        break;
+                    }
                 }
                 
                 if (!skip && !line.isEmpty() && !line.startsWith("[") && !line.startsWith(";"))

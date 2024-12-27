@@ -196,8 +196,7 @@ public class MachineListLoader implements Callable<MachineListData> {
             super.startElement(namespaceURI, localName, qName, atts);
             
             switch (qName) {
-                case "machine":
-                case "game":
+                case "machine", "game" -> {
                     if (Configuration.Manager.isSyncExecutionMode() || "yes".equals(atts.getValue("runnable"))) {
                         buildCurrentItem(
                             atts.getValue("name"),
@@ -210,11 +209,9 @@ public class MachineListLoader implements Callable<MachineListData> {
                         ramCount = 0;
                         attributes = null;
                     }
-                    break;
-                case "manufacturer":
-                    startTextElement();
-                    break;
-                case "input":
+                }
+                case "manufacturer" -> startTextElement();
+                case "input" -> {
                     startConsumeCurrentItem(
                         Machine::setCoinSlot, atts.getValue("coins") != null
                     );
@@ -227,31 +224,26 @@ public class MachineListLoader implements Callable<MachineListData> {
                     startConsumeCurrentItem(
                         Machine::setMaxNumberPlayers, atts.getValue("players")
                     );
-                    break;
-                case "control": // input > control
+                }
+                case "control" -> // input > control
                     startConsumeCurrentItem(
                         Machine::addControllerType, atts.getValue("type")
                     );
-                    break;
-                case "sound":
-                    startConsumeCurrentItem(
-                        Machine::setSoundType, atts.getValue("channels")
-                    );
-                    break;
-                case "display":
+                case "sound" -> startConsumeCurrentItem(
+                    Machine::setSoundType, atts.getValue("channels")
+                );
+                case "display" -> {
                     startConsumeCurrentItem(
                         Machine::setDisplayType, atts.getValue("type")
                     );
                     startConsumeCurrentItem(
                         Machine::setScreenOrientation, atts.getValue("rotate")
                     );
-                    break;
-                case "driver":
-                    startConsumeCurrentItem(
-                        Machine::setSupport, atts.getValue("status")
-                    );
-                    break;
-                case "biosset":
+                }
+                case "driver" -> startConsumeCurrentItem(
+                    Machine::setSupport, atts.getValue("status")
+                );
+                case "biosset" -> {
                     if (++biosCount > 1)
                         startConsumeCurrentItem(Machine::setConfigurable, true);
                     if (Configuration.Manager.isSyncExecutionMode())
@@ -261,16 +253,16 @@ public class MachineListLoader implements Callable<MachineListData> {
                             atts.getValue("description"),
                             "yes".equals(atts.getValue("default"))
                         );
-                    break;
-                case "ramoption":
+                }
+                case "ramoption" -> {
                     if (++ramCount > 1)
                         startConsumeCurrentItem(Machine::setConfigurable, true);
                     if (Configuration.Manager.isSyncExecutionMode()) {
                         clone(atts);
                         startTextElement();
                     }
-                    break;
-                case "device_ref":
+                }
+                case "device_ref" -> {
                     if (Configuration.Manager.isSyncExecutionMode() && currentItem != null) {
                         List<String> internalDevices = internalDeviceMap.get(currentItem.getName());
                         if (internalDevices == null) {
@@ -279,12 +271,13 @@ public class MachineListLoader implements Callable<MachineListData> {
                         }
                         internalDevices.add(atts.getValue("name"));
                     }
-                    break;
-                case "device":
+                }
+                case "device" -> {
                     if (Configuration.Manager.isSyncExecutionMode())
                         clone(atts);
-                    break;
-                case "instance": // device > instance
+                }
+                case "instance" -> {
+                    // device > instance
                     if (Configuration.Manager.isSyncExecutionMode()) {
                         startConsumeCurrentItem(
                             Machine::addDevice,
@@ -295,24 +288,26 @@ public class MachineListLoader implements Callable<MachineListData> {
                             attributes.get("mandatory") != null
                         );
                     }
-                    break;
-                case "extension": // device > extension
+                }
+                case "extension" -> {
+                    // device > extension
                     startConsumeCurrentItem(Machine::setConfigurable, true);
                     if (Configuration.Manager.isSyncExecutionMode())
                         startConsumeCurrentItem(
                             Machine::addExtensionToLastDevice,
                             atts.getValue("name")
                         );
-                    break;
-                case "slot":
+                }
+                case "slot" -> {
                     slotOptionCount = 0;
                     if (Configuration.Manager.isSyncExecutionMode())
                         startConsumeCurrentItem(
                             Machine::addSlot,
                             atts.getValue("name")
                         );
-                    break;
-                case "slotoption": // slot > slotoption
+                }
+                case "slotoption" -> {
+                    // slot > slotoption
                     if (++slotOptionCount > 1)
                         startConsumeCurrentItem(Machine::setConfigurable, true);
                     if (Configuration.Manager.isSyncExecutionMode()) {
@@ -328,8 +323,8 @@ public class MachineListLoader implements Callable<MachineListData> {
                         }
                         slotOptionList.add(option);
                     }
-                    break;
-                case "softwarelist":
+                }
+                case "softwarelist" -> {
                     startConsumeCurrentItem(
                         Machine::setSoftwareEmbedded, false
                     );
@@ -339,7 +334,7 @@ public class MachineListLoader implements Callable<MachineListData> {
                             atts.getValue("name"),
                             atts.getValue("filter")
                         );
-                    break;
+                }
             }
         }
 
@@ -352,7 +347,7 @@ public class MachineListLoader implements Callable<MachineListData> {
             super.endElement(namespaceURI, localName, qName);
             
             switch (qName) {
-                case "mame":
+                case "mame" -> {
                     if (Configuration.Manager.isSyncExecutionMode()) {
                         Map<String, Machine> machineMap = machines.getMap();
                         internalDeviceMap.forEach((key, devices) -> {
@@ -371,9 +366,8 @@ public class MachineListLoader implements Callable<MachineListData> {
                             );
                         });
                     }
-                    break;
-                case "machine":
-                case "game":
+                }
+                case "machine", "game" -> {
                     if (Configuration.Manager.isSyncExecutionMode())
                         startConsumeCurrentItem(Machine::initialise, softwareLists);
                     endConsumeCurrentItem(MachineListData::add, machines);
@@ -381,14 +375,12 @@ public class MachineListLoader implements Callable<MachineListData> {
                     ++currentCount;
                     if (currentCount % 50 == 0)
                         progressProperty.set((double) currentCount / (double) totalCount);
-                    break;
-                case "manufacturer":
-                    endTextElement(Machine::setManufacturer);
-                    break;
-                case "ramoption":
+                }
+                case "manufacturer" -> endTextElement(Machine::setManufacturer);
+                case "ramoption" -> {
                     if (Configuration.Manager.isSyncExecutionMode())
                         endTextElement(Machine::addRamOption, attributes.get("default") != null);
-                    break;
+                }
             }
         }
     }

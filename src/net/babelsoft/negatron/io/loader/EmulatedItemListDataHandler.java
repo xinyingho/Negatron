@@ -71,10 +71,7 @@ public abstract class EmulatedItemListDataHandler<T extends EmulatedItem<T>> ext
         Attributes atts
     ) throws SAXException {
         switch (qName) {
-            case "description":
-            case "year":
-                startTextElement();
-                break;
+            case "description", "year" -> startTextElement();
         }
     }
     
@@ -149,12 +146,8 @@ public abstract class EmulatedItemListDataHandler<T extends EmulatedItem<T>> ext
         String qName
     ) throws SAXException {
         switch (qName) {
-            case "description":
-                endTextElement(T::setDescription);
-                break;
-            case "year":
-                endTextElement(T::setYear);
-                break;
+            case "description" -> endTextElement(T::setDescription);
+            case "year" -> endTextElement(T::setYear);
         }
     }
 }

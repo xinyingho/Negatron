@@ -285,7 +285,7 @@ public class MachineLoader extends Service<List<Control<?>>> {
                     return device;
                 }
             ).filter(
-                device -> device.getExtensions().size() > 0
+                device -> !device.getExtensions().isEmpty()
             ).forEach(
                 device -> merger.add(device)
             );
@@ -515,7 +515,7 @@ public class MachineLoader extends Service<List<Control<?>>> {
                 if (devices != null) {
                     devices.removeIf(candidate -> candidate.getTag().startsWith(filter));
                     devices.stream().filter(
-                        device -> device.getExtensions().size() > 0
+                        device -> !device.getExtensions().isEmpty()
                     ).forEach(
                         device -> merger.add(device.copy())
                     );
@@ -586,22 +586,21 @@ public class MachineLoader extends Service<List<Control<?>>> {
                     Difference status = mergedUnit.getStatus();
 
                     switch (status) {
-                        case ADDED:
-                        case UNCHANGED:
+                        case Difference.ADDED:
+                        case Difference.UNCHANGED:
                         default:
                             element = mergedUnit.getNewElement();
                             break;
-                        case DELETED:
+                        case Difference.DELETED:
                             element = mergedUnit.getOldElement();
                             break;
                     }
 
-                    if (element instanceof Device)
-                        views.add(new DeviceControl((Device) element, status));
-                    else if (element instanceof Slot)
-                        views.add(new SlotControl((Slot) element, status));
-                    else // Bios / Ram
-                        views.add(new ChoiceControl((Choice) element, status));
+                    switch (element) {
+                        case Device d ->  views.add(new DeviceControl(d, status));
+                        case Slot s -> views.add(new SlotControl(s, status));
+                        default -> views.add(new ChoiceControl((Choice) element, status)); // Bios / Ram
+                    }
                 }
             );
             return views;

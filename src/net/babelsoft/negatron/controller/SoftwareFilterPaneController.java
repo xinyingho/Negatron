@@ -106,15 +106,9 @@ public class SoftwareFilterPaneController extends FilterPaneController<Software>
         supportUnsupported.setSelected(false);
         
         switch (currentItem.getSupport()) {
-            case YES:
-                supportSupported.setSelected(true);
-                break;
-            case PARTIAL:
-                supportPartial.setSelected(true);
-                break;
-            default: //case NO
-                supportUnsupported.setSelected(true);
-                break;
+            case Support.YES -> supportSupported.setSelected(true);
+            case PARTIAL -> supportPartial.setSelected(true);
+            default -> supportUnsupported.setSelected(true); //case NO
         }
         
         filterTimeline.playFromStart();

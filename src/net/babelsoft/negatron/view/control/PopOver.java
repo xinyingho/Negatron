@@ -309,32 +309,20 @@ public class PopOver extends PopupControl {
         Bounds bounds = owner.localToScreen(owner.getBoundsInLocal());
 
         switch (getArrowLocation()) {
-        case BOTTOM_CENTER:
-        case BOTTOM_LEFT:
-        case BOTTOM_RIGHT:
-            show(owner, bounds.getMinX() + bounds.getWidth() / 2,
-                    bounds.getMinY() + offset);
-            break;
-        case LEFT_BOTTOM:
-        case LEFT_CENTER:
-        case LEFT_TOP:
-            show(owner, bounds.getMaxX() - offset,
-                    bounds.getMinY() + bounds.getHeight() / 2);
-            break;
-        case RIGHT_BOTTOM:
-        case RIGHT_CENTER:
-        case RIGHT_TOP:
-            show(owner, bounds.getMinX() + offset,
-                    bounds.getMinY() + bounds.getHeight() / 2);
-            break;
-        case TOP_CENTER:
-        case TOP_LEFT:
-        case TOP_RIGHT:
-            show(owner, bounds.getMinX() + bounds.getWidth() / 2,
-                    bounds.getMinY() + bounds.getHeight() - offset);
-            break;
-        default:
-            break;
+            case BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT -> show(
+                owner, bounds.getMinX() + bounds.getWidth() / 2, bounds.getMinY() + offset
+            );
+            case LEFT_BOTTOM, LEFT_CENTER, LEFT_TOP -> show(
+                owner, bounds.getMaxX() - offset, bounds.getMinY() + bounds.getHeight() / 2
+            );
+            case RIGHT_BOTTOM, RIGHT_CENTER, RIGHT_TOP -> show(
+                owner, bounds.getMinX() + offset, bounds.getMinY() + bounds.getHeight() / 2
+            );
+            case TOP_CENTER, TOP_LEFT, TOP_RIGHT -> show(
+                owner, bounds.getMinX() + bounds.getWidth() / 2, bounds.getMinY() + bounds.getHeight() - offset
+            );
+            default -> {
+            }
         }
     }
 
@@ -540,69 +528,49 @@ public class PopOver extends PopupControl {
         Bounds bounds = PopOver.this.getSkin().getNode().getBoundsInParent();
 
         switch (getArrowLocation()) {
-        case TOP_CENTER:
-        case TOP_LEFT:
-        case TOP_RIGHT:
-            setAnchorX(getAnchorX() + bounds.getMinX() - computeXOffset());
-            setAnchorY(getAnchorY() + bounds.getMinY() + getArrowSize());
-            break;
-        case LEFT_TOP:
-        case LEFT_CENTER:
-        case LEFT_BOTTOM:
-            setAnchorX(getAnchorX() + bounds.getMinX() + getArrowSize());
-            setAnchorY(getAnchorY() + bounds.getMinY() - computeYOffset());
-            break;
-        case BOTTOM_CENTER:
-        case BOTTOM_LEFT:
-        case BOTTOM_RIGHT:
-            setAnchorX(getAnchorX() + bounds.getMinX() - computeXOffset());
-            setAnchorY(getAnchorY() - bounds.getMinY() - bounds.getMaxY() - 1);
-            break;
-        case RIGHT_TOP:
-        case RIGHT_BOTTOM:
-        case RIGHT_CENTER:
-            setAnchorX(getAnchorX() - bounds.getMinX() - bounds.getMaxX() - 1);
-            setAnchorY(getAnchorY() + bounds.getMinY() - computeYOffset());
-            break;
+            case TOP_CENTER, TOP_LEFT, TOP_RIGHT -> {
+                setAnchorX(getAnchorX() + bounds.getMinX() - computeXOffset());
+                setAnchorY(getAnchorY() + bounds.getMinY() + getArrowSize());
+            }
+            case LEFT_TOP, LEFT_CENTER, LEFT_BOTTOM -> {
+                setAnchorX(getAnchorX() + bounds.getMinX() + getArrowSize());
+                setAnchorY(getAnchorY() + bounds.getMinY() - computeYOffset());
+            }
+            case BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT -> {
+                setAnchorX(getAnchorX() + bounds.getMinX() - computeXOffset());
+                setAnchorY(getAnchorY() - bounds.getMinY() - bounds.getMaxY() - 1);
+            }
+            case RIGHT_TOP, RIGHT_BOTTOM, RIGHT_CENTER -> {
+                setAnchorX(getAnchorX() - bounds.getMinX() - bounds.getMaxX() - 1);
+                setAnchorY(getAnchorY() + bounds.getMinY() - computeYOffset());
+            }
         }
     }
 
     private double computeXOffset() {
-        switch (getArrowLocation()) {
-        case TOP_LEFT:
-        case BOTTOM_LEFT:
-            return getCornerRadius() + getArrowIndent() + getArrowSize();
-        case TOP_CENTER:
-        case BOTTOM_CENTER:
-            return getContentNode().prefWidth(-1) / 2;
-        case TOP_RIGHT:
-        case BOTTOM_RIGHT:
-            return getContentNode().prefWidth(-1) - getArrowIndent()
-                    - getCornerRadius() - getArrowSize();
-        default:
-            return 0;
-        }
+        return switch (getArrowLocation()) {
+            case TOP_LEFT, BOTTOM_LEFT -> getCornerRadius() + getArrowIndent() + getArrowSize();
+            case TOP_CENTER, BOTTOM_CENTER -> getContentNode().prefWidth(-1) / 2;
+            case TOP_RIGHT, BOTTOM_RIGHT -> getContentNode().prefWidth(-1) - getArrowIndent() - getCornerRadius() - getArrowSize();
+            default -> 0;
+        };
     }
 
     private double computeYOffset() {
         double prefContentHeight = getContentNode().prefHeight(-1);
 
-        switch (getArrowLocation()) {
-        case LEFT_TOP:
-        case RIGHT_TOP:
-            return getCornerRadius() + getArrowIndent() + getArrowSize();
-        case LEFT_CENTER:
-        case RIGHT_CENTER:
-            return Math.max(prefContentHeight, 2 * (getCornerRadius()
-                    + getArrowIndent() + getArrowSize())) / 2;
-        case LEFT_BOTTOM:
-        case RIGHT_BOTTOM:
-            return Math.max(prefContentHeight - getCornerRadius()
-                    - getArrowIndent() - getArrowSize(), getCornerRadius()
-                    + getArrowIndent() + getArrowSize());
-        default:
-            return 0;
-        }
+        return switch (getArrowLocation()) {
+            case LEFT_TOP, RIGHT_TOP -> getCornerRadius() + getArrowIndent() + getArrowSize();
+            case LEFT_CENTER, RIGHT_CENTER -> Math.max(
+                prefContentHeight,
+                2 * (getCornerRadius() + getArrowIndent() + getArrowSize())
+            ) / 2;
+            case LEFT_BOTTOM, RIGHT_BOTTOM -> Math.max(
+                prefContentHeight - getCornerRadius() - getArrowIndent() - getArrowSize(),
+                getCornerRadius() + getArrowIndent() + getArrowSize()
+            );
+            default -> 0;
+        };
     }
 
     /**

@@ -296,17 +296,13 @@ public abstract class FilterPaneController<T extends EmulatedItem<T>> implements
     
     private boolean isDefaults(Parent parent) {
         return parent.getChildrenUnmodifiable().stream().allMatch(child -> {
-            if (child instanceof TextField)
-                if (((TextField) child).getId().equals("description"))
-                    return true;
-                else
-                    return Strings.isEmpty( ((TextField) child).getText() );
-            else if (child instanceof CheckBox)
-                return ((CheckBox) child).isSelected();
-            else if (child instanceof Pane)
-                return isDefaults((Pane) child);
-            else
-                return true;
+            return switch (child) {
+                case TextField tf when tf.getId().equals("description") -> true;
+                case TextField tf -> Strings.isEmpty(tf.getText());
+                case CheckBox cb -> cb.isSelected();
+                case Pane p -> isDefaults(p);
+                default -> true;
+            };
         });
     }
 
@@ -370,10 +366,10 @@ public abstract class FilterPaneController<T extends EmulatedItem<T>> implements
                     yearValidated = true;
             } else { // yearRange.isSelected()
                 if (Strings.isValid(yearFrom.getEditor().getText()) && Strings.isValid(yearTo.getEditor().getText())) {
-                    int valFrom = Integer.valueOf(item.getYear().replace("?", "9"));
-                    int valTo = Integer.valueOf(item.getYear().replace("?", "0"));
-                    int refFrom = Integer.valueOf(yearFrom.getEditor().getText());
-                    int refTo = Integer.valueOf(yearTo.getEditor().getText());
+                    int valFrom = Integer.parseInt(item.getYear().replace("?", "9"));
+                    int valTo = Integer.parseInt(item.getYear().replace("?", "0"));
+                    int refFrom = Integer.parseInt(yearFrom.getEditor().getText());
+                    int refTo = Integer.parseInt(yearTo.getEditor().getText());
                     yearValidated = refFrom <= valFrom && valTo <= refTo;
                 } else
                     yearValidated = true;
@@ -430,21 +426,21 @@ public abstract class FilterPaneController<T extends EmulatedItem<T>> implements
     @FXML
     protected void handleOnSetStatusAsSelection(ActionEvent event) {
         switch (currentItem.getStatus()) {
-            case GOOD:
+            case Status.GOOD -> {
                 statusGood.setSelected(true);
                 statusBad.setSelected(false);
                 statusMissing.setSelected(false);
-                break;
-            case BAD:
+            }
+            case Status.BAD -> {
                 statusGood.setSelected(false);
                 statusBad.setSelected(true);
                 statusMissing.setSelected(false);
-            case UNKNOWN:
-            default:
+            }
+            case Status.UNKNOWN -> {
                 statusGood.setSelected(false);
                 statusBad.setSelected(false);
                 statusMissing.setSelected(true);
-                break;
+            }
         }
         filterTimeline.playFromStart();
         statusGood.requestFocus();

@@ -86,32 +86,30 @@ public class MultiPathField extends Field {
         else
             choices = null;
         switch (property.getDomain()) {
-            case EXTRAS_MACHINE_ONLY:
-            case MULTIMEDIA_MACHINE_ONLY:
+            case EXTRAS_MACHINE_ONLY, MULTIMEDIA_MACHINE_ONLY -> {
                 machineToggleGroup = new ToggleGroup();
                 softwareToggleGroup = null;
                 machineRadios = new ArrayList<>();
                 softwareRadios = null;
-                break;
-            case EXTRAS_SOFTWARE_ONLY:
+            }
+            case EXTRAS_SOFTWARE_ONLY -> {
                 machineToggleGroup = null;
                 softwareToggleGroup = new ToggleGroup();
                 machineRadios = null;
                 softwareRadios = new ArrayList<>();
-                break;
-            case EXTRAS_MACHINE_SOFTWARE:
-            case MULTIMEDIA_MACHINE_SOFTWARE:
+            }
+            case EXTRAS_MACHINE_SOFTWARE, MULTIMEDIA_MACHINE_SOFTWARE -> {
                 machineToggleGroup = new ToggleGroup();
                 softwareToggleGroup = new ToggleGroup();
                 machineRadios = new ArrayList<>();
                 softwareRadios = new ArrayList<>();
-                break;
-            default:
+            }
+            default -> {
                 machineToggleGroup = null;
                 softwareToggleGroup = null;
                 machineRadios = null;
                 softwareRadios = null;
-                break;
+            }
         }
         
         if (
@@ -282,28 +280,26 @@ public class MultiPathField extends Field {
         RadioButton machineRadio;
         RadioButton softwareRadio;
         switch (property.getDomain()) {
-            case EXTRAS_MACHINE_SOFTWARE:
-            case MULTIMEDIA_MACHINE_SOFTWARE:
+            case EXTRAS_MACHINE_SOFTWARE, MULTIMEDIA_MACHINE_SOFTWARE -> {
                 machineRadio = addRadio(machineToggleGroup, column++);
                 softwareRadio = addRadio(softwareToggleGroup, column);
                 machineRadios.add(machineRadio);
                 softwareRadios.add(softwareRadio);
-                break;
-            case EXTRAS_MACHINE_ONLY:
-            case MULTIMEDIA_MACHINE_ONLY:
+            }
+            case EXTRAS_MACHINE_ONLY, MULTIMEDIA_MACHINE_ONLY -> {
                 machineRadio = addRadio(machineToggleGroup, column);
                 machineRadios.add(machineRadio);
                 softwareRadio = null;
-                break;
-            case EXTRAS_SOFTWARE_ONLY:
+            }
+            case EXTRAS_SOFTWARE_ONLY -> {
                 machineRadio = null;
                 softwareRadio = addRadio(softwareToggleGroup, column);
                 softwareRadios.add(softwareRadio);
-                break;
-            default:
+            }
+            default -> {
                 machineRadio = null;
                 softwareRadio = null;
-                break;
+            }
         }
         
         Button subtractButton = new Button();

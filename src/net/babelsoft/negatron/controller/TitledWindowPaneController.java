@@ -110,12 +110,8 @@ public class TitledWindowPaneController implements Initializable {
             children.add(minimiseButton);
         
         if (control.isIntermediateSize()) switch (control.getDisplayMode()) {
-            case INTERMEDIATE:
-                children.addAll(maximiseButton, closeButton);
-                break;
-            case MAXIMISED:
-                children.addAll(restoreButton, closeButton);
-                break;
+            case INTERMEDIATE -> children.addAll(maximiseButton, closeButton);
+            case MAXIMISED -> children.addAll(restoreButton, closeButton);
         } else
             children.addAll(closeButton);
     }
