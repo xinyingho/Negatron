@@ -158,6 +158,7 @@ public class IconNameTreeTableCell extends FavouriteTreeTableCell<IconDescriptio
     public void cancelEdit() {
         super.cancelEdit();
         CellUtils.cancelEdit(this, getConverter(), imageView);
+        controller.show(getTableRow().getTreeItem());
     }
 
     /** {@inheritDoc} */

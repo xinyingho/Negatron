@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javafx.animation.KeyFrame;
@@ -35,7 +34,6 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.Cell;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SelectionMode;
@@ -46,7 +44,6 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTablePosition;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
-import javafx.scene.control.skin.TreeTableViewSkin;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
@@ -66,9 +63,7 @@ import net.babelsoft.negatron.util.ReversedIterator;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem;
 import net.babelsoft.negatron.view.control.tree.CopyPastableTreeItem.CutCopyState;
-import net.babelsoft.negatron.view.control.tree.DateTimeTreeTableCell;
 import net.babelsoft.negatron.view.control.tree.DisclosureNode;
-import net.babelsoft.negatron.view.control.tree.FavouriteTreeTableCell;
 import net.babelsoft.negatron.view.skin.FavouriteTreeViewSkin;
 
 /**
@@ -76,7 +71,7 @@ import net.babelsoft.negatron.view.skin.FavouriteTreeViewSkin;
  * @author capan
  */
 public class FavouriteTreeView extends NegatronTreeView<Favourite> {
-    
+
     public static enum Position {
         NONE,
         BEFORE,
@@ -102,6 +97,7 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
     
     private PopOver popup;
     
+    TreeTableColumn<Favourite, ?> nonConfigurableColumn;
     private Function<TreeTablePosition<Favourite, ?>, Boolean> isCellEditable;
     
     public enum Cycle {
@@ -495,6 +491,10 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
         onDragDone = delegate;
     }
     
+    public void setNonConfigurableColumn(TreeTableColumn<Favourite, ?> column) {
+        nonConfigurableColumn = column;
+    }
+    
     public void setIsCellEditable(Function<TreeTablePosition<Favourite, ? extends Object>, Boolean> function) {
         isCellEditable = function;
     }
@@ -566,13 +566,13 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
                 }
             }
         }
-        Platform.runLater(() -> this.requestFocus());
+        Platform.runLater(this::requestFocus);
     }
     
     @Override
     public void edit(int i, TreeTableColumn<Favourite, ?> ttc) {
         super.edit(i, ttc);
-        if (i < 0)
+        if (i < 0 || ttc == nonConfigurableColumn)
             editableControl.setEditable(false);
     }
     
@@ -601,14 +601,19 @@ public class FavouriteTreeView extends NegatronTreeView<Favourite> {
             int index = cell.getIndex();
             TreeTableColumn<Favourite, ?> column = cell.getTableColumn();
             
+            TreeTablePosition<Favourite, ?> editingCell = getEditingCell();
+            TreeTablePosition<Favourite, ?> eventCell = new TreeTablePosition<>(this, index, column);
+            
+            if (editingCell != null)
+                if (editingCell.equals(eventCell))
+                    return; // try to re-edit a cell already being edited
+                else
+                    cancelEdit();
+            
             getFocusModel().focus(index, column);
             getSelectionModel().select(index, column);
             
-            boolean canEdit = switch (cell) {
-                case DateTimeTreeTableCell c -> false;
-                default -> ((FavouriteTreeTableCell) cell).canEdit();
-            };
-            if (canEdit)
+            if (isCellEditable.apply(eventCell))
                 edit(index, column);
         } else if (event.getClickCount() == 1) {
             getSelectionModel().clearAndSelect(cell.getIndex(), cell.getTableColumn());
