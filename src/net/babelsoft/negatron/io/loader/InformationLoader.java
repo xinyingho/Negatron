@@ -23,8 +23,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +79,8 @@ public class InformationLoader implements InitialisedCallable<Void> {
         Map<String, Map<String, String>> information = new HashMap<>(); // system alias > item alias > content
 
         try {
-            if (datFilePath.endsWith("dat")) {
+            PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:(?i).+\\.dat");
+            if (matcher.matches(datFilePath.getFileName())) {
                 CharsetDecoder decoder;
                 {
                     List<PathCharset> encodings = Configuration.Manager.getFilePaths(Property.INFORMATION);
