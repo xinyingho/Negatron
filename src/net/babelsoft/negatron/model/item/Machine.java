@@ -180,7 +180,7 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
     }
     
     public void setMaxNumberPlayers(String maxNumberPlayers) {
-        this.maxNumberPlayers = Integer.valueOf(maxNumberPlayers);
+        this.maxNumberPlayers = Integer.parseInt(maxNumberPlayers);
     }
 
     /**
@@ -298,7 +298,7 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
                 Collectors.toList()
         );
         
-        if (additionalSoftwareLists.size() > 0) {
+        if (!additionalSoftwareLists.isEmpty()) {
             additionalSoftwareLists.addAll(softwareLists);
             return additionalSoftwareLists;
         } else
@@ -328,14 +328,14 @@ public class Machine extends EmulatedItem<Machine> implements Describable, Param
             if (devices != null)
                 devices.clear();
             parameters.forEach(param -> {
-                if (param instanceof Slot) {
+                if (param instanceof Slot slot) {
                     if (slots == null)
                         slots = new ArrayList<>();
-                    slots.add((Slot) param);
-                } else if (param instanceof Device) {
+                    slots.add(slot);
+                } else if (param instanceof Device device) {
                     if (devices == null)
                         devices = new ArrayList<>();
-                    devices.add((Device) param);
+                    devices.add(device);
                 }
             });
         }

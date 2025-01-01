@@ -32,14 +32,14 @@ import net.babelsoft.negatron.util.Strings;
  * @author capan
  */
 public final class Device extends MachineElement<String> implements MachineComponent<String, StringProperty> {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private final String type;
     private final String tag;
     private final boolean mandatory;
     private final List<String> extensions;
     private final List<String> interfaceFormats;
-    private transient StringProperty value;
+    private StringProperty value;
     private boolean compatibleSoftwareLists;
     
     public Device(String name, String type, String tag, boolean mandatory) {
@@ -103,7 +103,7 @@ public final class Device extends MachineElement<String> implements MachineCompo
     @Override
     public StringProperty valueProperty() {
         if (value == null)
-            value = new SimpleStringProperty(this, "value");
+            value = new net.babelsoft.negatron.model.StringProperty(this, "value");
         return value;
     }
     

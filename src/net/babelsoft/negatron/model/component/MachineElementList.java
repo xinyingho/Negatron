@@ -30,6 +30,7 @@ import net.babelsoft.negatron.model.item.Machine;
  * @author capan
  */
 public class MachineElementList extends ArrayList<MachineElement<?>> {
+    private static final long serialVersionUID = 1L;
     
     private final String machine;
     

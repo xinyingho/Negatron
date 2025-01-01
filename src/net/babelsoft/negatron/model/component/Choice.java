@@ -30,7 +30,7 @@ public abstract class Choice<T extends Option<T>> extends MachineElement<T> impl
     private static final long serialVersionUID = 1L;
     
     private final List<T> options = new ArrayList<>();
-    private transient OptionProperty<T> value;
+    private OptionProperty<T> value;
     protected T defaultValue;
     
     private void initialise(Choice<T> ref) {

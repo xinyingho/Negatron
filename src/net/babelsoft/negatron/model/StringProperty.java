@@ -1,17 +1,17 @@
 /*
  * This file is part of Negatron.
- * Copyright (C) 2015-2018 BabelSoft S.A.S.U.
- *
+ * Copyright (C) 2015-2024 BabelSoft S.A.S.U.
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,27 +21,26 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  *
- * @author capan
+ * @author Xiny
  */
-public class OptionProperty<T extends Option> extends SimpleObjectProperty<T> implements Serializable {
+public class StringProperty extends SimpleStringProperty implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    public OptionProperty(Object bean, String name) {
-        super(bean, name);
+    public StringProperty(Object o, String string) {
+        super(o, string);
     }
     
     private void writeObject(ObjectOutputStream s) throws IOException {
         s.defaultWriteObject();
-        s.writeObject(get());
+        s.writeUTF(getValueSafe());
     }
 
-    @SuppressWarnings("unchecked")
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
-        setValue((T) s.readObject());
+        setValue(s.readUTF());
     }
 }
