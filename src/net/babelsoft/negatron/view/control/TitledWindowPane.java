@@ -19,11 +19,13 @@ package net.babelsoft.negatron.view.control;
 
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import net.babelsoft.negatron.controller.TitledWindowPaneController;
@@ -205,6 +207,8 @@ public class TitledWindowPane extends VBox {
     }
     
     public void showMaximised() {
+        if (content instanceof TabPane)
+            setOnceOnAnimationEnded(content::requestFocus);
         setDisplayMode(DisplayMode.MAXIMISED);
     }
 

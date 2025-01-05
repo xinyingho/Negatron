@@ -19,8 +19,8 @@ package net.babelsoft.negatron.view.control;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -115,7 +115,7 @@ public class ImageViewPane extends Region {
                     tmpPath = Paths.get(dragCopyPath + ".jpg");
                 Files.deleteIfExists(tmpPath);
                 
-                Files.copy(Paths.get(new URL(url.replace(" ", "%20")).toURI()), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(Paths.get(new URI(url.replace(" ", "%20"))), targetPath, StandardCopyOption.REPLACE_EXISTING);
                 if (onDropCompleted != null)
                     onDropCompleted.fire();
                 success = true;

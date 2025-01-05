@@ -24,7 +24,7 @@ import java.io.Serializable;
  * @author capan
  */
 public class TableColumnBaseConfiguration<S> implements Serializable {
-    private static long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     
     private String name;
     private int order;

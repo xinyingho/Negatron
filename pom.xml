@@ -4,7 +4,7 @@
 
     <groupId>net.babelsoft</groupId>
     <artifactId>Negatron</artifactId>
-    <version>0.100.1</version>
+    <version>1.0.0</version><!-- macOS forbids any versions using the pattern 0.x.x when building a dmg/pkg pack -->
     <packaging>jar</packaging>
 
     <name>Negatron</name>
@@ -59,11 +59,10 @@
         <package.runtime.output>${package.basedir}/runtime</package.runtime.output>
         <package.app.output>${package.basedir}/app</package.app.output>
         
-        <javafx.version>14.0.1</javafx.version>
-        <twelvemonkeys.version>3.5</twelvemonkeys.version>
+        <javafx.version>23.0.1</javafx.version>
+        <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
-        <vlcj.version>4.5.2</vlcj.version>
-        <vlc-jna.version>5.5.0</vlc-jna.version>
+        <vlcj.version>4.8.3</vlcj.version>
         
         <localLibPath>${project.basedir}/lib</localLibPath>
     </properties>
@@ -79,14 +78,14 @@
             <properties>
                 <os.name>Win64</os.name>
                 <bundle.type>msi</bundle.type>
-                <jpackage.home>${java.home}/../jdk</jpackage.home>
+                <jpackage.home>${java.home}</jpackage.home>
                 <icon>${project.basedir}/../Negatron-Bootstrap/Negatron-Bootstrap/Negatron.ico</icon>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.3.1</version>
                         <executions>
                             <execution>
                                 <id>copy-resources-win</id>
@@ -104,12 +103,28 @@
                                     </resources>              
                                 </configuration>            
                             </execution>
+                            <execution>
+                                <id>copy-resources-win-sdl</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${package.app.output}</outputDirectory>
+                                    <resources>          
+                                        <resource>
+                                            <directory>${project.basedir}/lib/sdl3</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>              
+                                </configuration>            
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.6.0</version>
+                        <version>3.5.0</version>
                         <executions>
                             <execution>
                                 <id>create-package</id>
@@ -157,6 +172,10 @@
                                         <argument>--java-options</argument>
                                         <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
                                         <argument>--java-options</argument>
+                                        <argument>--add-exports</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>uk.co.caprica.vlcj.natives/uk.co.caprica.vlcj.binding.support.runtime=${moduleName}</argument>
+                                        <argument>--java-options</argument>
                                         <argument>--add-opens</argument>
                                         <argument>--java-options</argument>
                                         <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
@@ -164,7 +183,9 @@
                                         <argument>--add-opens</argument>
                                         <argument>--java-options</argument>
                                         <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
-                                
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-native-access=${moduleName}</argument>
+                                        
                                         <argument>--module</argument>
                                         <argument>${moduleName}/${mainClass}</argument>
                                     </arguments>
@@ -186,14 +207,14 @@
             <properties>
                 <os.name>Mac64</os.name>
                 <bundle.type>dmg</bundle.type>
-                <jpackage.home>${java.home}/../../../jdk</jpackage.home>
+                <jpackage.home>${java.home}</jpackage.home>
                 <icon>${project.basedir}/../Negatron-Bootstrap/Negatron-Bootstrap/Negatron.icns</icon>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.3.1</version>
                         <executions>
                             <execution>
                                 <id>copy-resources-mac</id>
@@ -216,7 +237,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.6.0</version>
+                        <version>3.5.0</version>
                         <executions>
                             <execution>
                                 <id>create-package</id>
@@ -257,6 +278,10 @@
                                         <argument>--java-options</argument>
                                         <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
                                         <argument>--java-options</argument>
+                                        <argument>--add-exports</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>uk.co.caprica.vlcj.natives/uk.co.caprica.vlcj.binding.support.runtime=${moduleName}</argument>
+                                        <argument>--java-options</argument>
                                         <argument>--add-opens</argument>
                                         <argument>--java-options</argument>
                                         <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
@@ -264,6 +289,8 @@
                                         <argument>--add-opens</argument>
                                         <argument>--java-options</argument>
                                         <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-native-access=${moduleName}</argument>
                                 
                                         <argument>--module</argument>
                                         <argument>${moduleName}/${mainClass}</argument>
@@ -286,7 +313,7 @@
             <properties>
                 <os.name>Lnx64</os.name>
                 <bundle.type>deb</bundle.type>
-                <jpackage.home>${java.home}/../jdk</jpackage.home>
+                <jpackage.home>${java.home}</jpackage.home>
                 <icon>${project.basedir}/../Negatron-Bootstrap/Negatron-Bootstrap/Negatron.png</icon>
             </properties>
             <build>
@@ -294,7 +321,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.6.0</version>
+                        <version>3.5.0</version>
                         <executions>
                             <execution>
                                 <id>create-package</id>
@@ -344,6 +371,10 @@
                                         <argument>--java-options</argument>
                                         <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
                                         <argument>--java-options</argument>
+                                        <argument>--add-exports</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>uk.co.caprica.vlcj.natives/uk.co.caprica.vlcj.binding.support.runtime=${moduleName}</argument>
+                                        <argument>--java-options</argument>
                                         <argument>--add-opens</argument>
                                         <argument>--java-options</argument>
                                         <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
@@ -351,6 +382,8 @@
                                         <argument>--add-opens</argument>
                                         <argument>--java-options</argument>
                                         <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-native-access=${moduleName}</argument>
                                 
                                         <argument>--module</argument>
                                         <argument>${moduleName}/${mainClass}</argument>
@@ -482,17 +515,20 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                    <source>23</source>
+                    <target>23</target>
+                    <compilerArgs>
+                        <arg>-Xlint:unchecked</arg>
+                        <arg>-Xlint:deprecation</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.4.2</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -507,7 +543,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.8.1</version>
                 <executions>
                     <execution>
                         <id>copy-libs</id>
@@ -542,7 +578,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>copy-resources</id>
@@ -565,7 +601,7 @@
             <plugin>
                 <groupId>org.moditect</groupId>
                 <artifactId>moditect-maven-plugin</artifactId>
-                <version>1.0.0.RC1</version>
+                <version>1.2.2.Final</version>
                 <executions>
                     <execution>
                         <id>add-module-info-to-deps</id>
@@ -644,36 +680,6 @@
                                 
                                 <module>
                                     <artifact>
-                                        <groupId>net.java.dev.jna</groupId>
-                                        <artifactId>jna</artifactId>
-                                        <version>${vlc-jna.version}</version>
-                                    </artifact>
-                                    <moduleInfo>
-                                        <opensResources>
-                                            com.sun.jna.darwin;
-                                        </opensResources>
-                                    </moduleInfo>
-                                </module>
-                                <module>
-                                    <artifact>
-                                        <groupId>net.java.dev.jna</groupId>
-                                        <artifactId>jna-platform</artifactId>
-                                        <version>${vlc-jna.version}</version>
-                                    </artifact>
-                                    <moduleInfo>
-                                        <exports>
-                                            !com.sun.jna.platform.win32.COM.*;
-                                            *;
-                                        </exports>
-                                        <!--missingExports>
-                                            com.sun.jna.platform.win32.COM.tlb;
-                                            com.sun.jna.platform.win32.COM.tlb.imp;
-                                        </missingExports-->
-                                    </moduleInfo>
-                                </module>
-                                
-                                <module>
-                                    <artifact>
                                         <groupId>com.sun.activation</groupId>
                                         <artifactId>javax.activation</artifactId>
                                         <version>1.2.0</version>
@@ -702,6 +708,7 @@
                                         net.babelsoft.negatron to javafx.graphics;
                                         net.babelsoft.negatron.controller to javafx.fxml;
                                         net.babelsoft.negatron.view.control to javafx.fxml;
+                                        net.babelsoft.negatron.scene to com.sun.jna;
                                     </exports>
                                     <opens>
                                         net.babelsoft.negatron.controller to javafx.fxml;
@@ -764,10 +771,8 @@
                                 <module>${moduleName}/${mainClass}</module>
                             </launcher-->
                             <stripDebug>true</stripDebug>
-                            <compression>2</compression>
-                            <no-header-files>true</no-header-files>
-                            <no-man-pages>true</no-man-pages>
                             <ignoreSigningInformation>true</ignoreSigningInformation>
+                            <jarInclusionPolicy>APP_WITH_DEPENDENCIES</jarInclusionPolicy>
                             <jdepsExtraArgs>
                                 <args>-strip-native-commands</args>
                                 <arg>-multi-release</arg>
@@ -781,7 +786,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -794,10 +799,13 @@
                                 <argument>-Xmx2g</argument>
                                 <argument>--add-exports</argument>
                                 <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
+                                <argument>--add-exports</argument>
+                                <argument>uk.co.caprica.vlcj.natives/uk.co.caprica.vlcj.binding.support.runtime=${moduleName}</argument>
                                 <argument>--add-opens</argument>
                                 <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
                                 <argument>--add-opens</argument>
                                 <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
+                                <argument>--enable-native-access=${moduleName}</argument>
                                 <argument>--module-path</argument>
                                 <argument>${project.build.directory}/modules</argument>
                                 <argument>--module</argument>
@@ -812,8 +820,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <!-- Compiling with OpenJDK 14 but packaging is done with a recompiled bleeding edge version of OpenJDK as the JDK integrated packaging solution is still in early beta state. -->
-                            <!-- This bleeding edge version is simply the main branch of OpenJDK at http://hg.openjdk.java.net/jdk/jdk/ -->
+                            <!-- Compiling and then packaging with the regular OpenJDK. As packaging features in JDK 23+ are now stable, the custom JDK to mitigate the shortcomings of the early packaging tools in JDK 14 is not needed anymore. -->
                             <!-- Each OS requires specific packaging options, which can be found in the profile section of this pom file -->
                             <executable>${jpackage.home}/bin/jpackage</executable>
                             <workingDirectory>${project.build.directory}</workingDirectory>
@@ -830,6 +837,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
                 <executions>
                     <execution>
                         <id>cross-platform-pack</id>

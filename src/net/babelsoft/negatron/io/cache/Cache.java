@@ -47,7 +47,7 @@ public class Cache<T, S> {
     public static final Path ROOT_FOLDER = Paths.get(Configuration.getRootFolder().toString(), "Cache");
     
     public static void clearAll() throws IOException {
-        Cache cache = new Cache();
+        Cache<Object, Object> cache = new Cache<>();
         cache.clear(Cache.ROOT_FOLDER);
     }
 

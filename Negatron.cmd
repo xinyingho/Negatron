@@ -2,7 +2,7 @@
 
 set DIR=%~dp0
 set /a MINIMUMVERSION=11
-set JVM_OPTIONS=-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=negatron --add-opens javafx.controls/javafx.scene.control=negatron --add-opens javafx.controls/javafx.scene.control.skin=negatron --module-path="%DIR%modules";"%DIR%modules/win"
+set JVM_OPTIONS=-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=negatron --add-opens javafx.controls/javafx.scene.control=negatron --add-opens javafx.controls/javafx.scene.control.skin=negatron --enable-native-access=negatron --module-path="%DIR%modules";"%DIR%modules/win"
 
 :: Check whether any system-wide Java runtimes meet the minimum requirements
 

@@ -126,6 +126,10 @@ public class EmulatedItemTreePane<T extends EmulatedItem<T>> extends VBox {
         tree.setOnTreeWiseOperation(delegate);
     }
     
+    public void SetOnceOnTreeWiseOperationEnded(Delegate delegate) {
+        tree.setOnceOnTreeWiseOperationEnded(delegate);
+    }
+    
     public T getCurrentItem() {
         TreeItem<T> treeItem = tree.getSelectionModel().getSelectedItem();
         if (treeItem != null)

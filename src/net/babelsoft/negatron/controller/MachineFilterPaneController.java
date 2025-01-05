@@ -155,7 +155,7 @@ public class MachineFilterPaneController extends FilterPaneController<Machine> {
     @Override
     protected void update(
         Consumer<TextField> updateText, Consumer<RadioButton> updateRadio,
-        Consumer<Spinner> updateSpinner, Consumer<CheckBox> updateCheck
+        Consumer<Spinner<Integer>> updateSpinner, Consumer<CheckBox> updateCheck
     ) {
         super.update(updateText, updateRadio, updateSpinner, updateCheck);
         updateCheck.accept(supportGood);

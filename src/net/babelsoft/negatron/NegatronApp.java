@@ -18,6 +18,7 @@
 package net.babelsoft.negatron;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Optional;
@@ -34,7 +35,6 @@ import javafx.application.Preloader.ErrorNotification;
 import javafx.application.Preloader.StateChangeNotification;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
@@ -44,6 +44,7 @@ import net.babelsoft.negatron.io.cache.MachineListCache;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.preloader.NegatronPreloader;
 import net.babelsoft.negatron.preloader.NegatronPreloader.Notifier;
+import net.babelsoft.negatron.scene.Scene;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.Strings;
 
@@ -91,7 +92,7 @@ public class NegatronApp extends Application implements Notifier {
             });
         }
         controller.setApplication(this);
-        controller.initialiseData();
+        controller.initialiseData(stage);
         
         if (stage != null) {
             String implVersion = null;
@@ -99,7 +100,7 @@ public class NegatronApp extends Application implements Notifier {
                 // Java 8 version of the below block: implVersion = getClass().getPackage().getImplementationVersion();
                 // Since Java 9 and the advent of modules, information from manifest aren't loaded anymore and so a workaround is needed
                 String res = getClass().getResource(getClass().getSimpleName() + ".class").toString();
-                URL url = new URL(res.substring(0, res.length() - (getClass().getName() + ".class").length()) + JarFile.MANIFEST_NAME);
+                URL url = new URI(res.substring(0, res.length() - (getClass().getName() + ".class").length()) + JarFile.MANIFEST_NAME).toURL();
                 Manifest manifest = new Manifest(url.openStream());
                 implVersion = manifest.getMainAttributes().getValue(Attributes.Name.IMPLEMENTATION_VERSION);
             } catch (IOException ex) {
@@ -195,6 +196,7 @@ public class NegatronApp extends Application implements Notifier {
     public void stop() {
         if (controller != null)
             controller.dispose();
+        ((Scene) stage.getScene()).dispose();
         System.exit(0); // required to force the PDF Viewer to let go of its AWT event thread and 2 timer threads
     }
 }

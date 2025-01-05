@@ -78,7 +78,7 @@ public class SoftwareFilterPaneController extends FilterPaneController<Software>
     @Override
     protected void update(
         Consumer<TextField> updateText, Consumer<RadioButton> updateRadio,
-        Consumer<Spinner> updateSpinner, Consumer<CheckBox> updateCheck
+        Consumer<Spinner<Integer>> updateSpinner, Consumer<CheckBox> updateCheck
     ) {
         super.update(updateText, updateRadio, updateSpinner, updateCheck);
         updateCheck.accept(supportSupported);

@@ -19,8 +19,8 @@ package net.babelsoft.negatron.view.control;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -449,7 +449,7 @@ public class MediaViewPane extends Region implements Disposable {
                     tmpPath = Paths.get(dragCopyPath + ".mp4");
                 Files.deleteIfExists(tmpPath);
 
-                Files.copy(Paths.get(new URL(url.replace(" ", "%20")).toURI()), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(Paths.get(new URI(url.replace(" ", "%20"))), targetPath, StandardCopyOption.REPLACE_EXISTING);
                 if (onDropCompleted != null)
                     onDropCompleted.fire();
                 success = true;
@@ -487,7 +487,7 @@ public class MediaViewPane extends Region implements Disposable {
         getChildren().addAll(mediaView, mediaButtonBar);
 
         List<VideoTrackInfo> tracksInfo = mediaPlayer.media().info().videoTracks();
-        if (tracksInfo.size() > 0) {
+        if (!tracksInfo.isEmpty()) {
             VideoTrackInfo trackInfo = tracksInfo.get(0);
 
             // when SAR is set to an invalid 0:0 ratio, force it to default to 1:1

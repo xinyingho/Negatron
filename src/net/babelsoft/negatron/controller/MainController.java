@@ -17,7 +17,9 @@
  */
 package net.babelsoft.negatron.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +52,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -65,10 +68,12 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.robot.Robot;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -93,9 +98,13 @@ import net.babelsoft.negatron.model.favourites.SoftwareConfiguration;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.model.item.SoftwareList;
+import net.babelsoft.negatron.scene.event.GamepadEvent;
+import net.babelsoft.negatron.scene.event.JoystickEvent;
+import net.babelsoft.negatron.scene.input.GamepadButton;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.DirectoryWatchService;
 import net.babelsoft.negatron.util.Disposable;
+import net.babelsoft.negatron.util.PathUtil;
 import net.babelsoft.negatron.util.SimpleDirectoryWatchService;
 import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.util.function.Delegate;
@@ -266,15 +275,21 @@ public class MainController implements Initializable, AlertController, EditContr
     }
     
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final Pattern errorPattern = Pattern.compile("error", Pattern.CASE_INSENSITIVE);
+    private final Pattern warningPattern = Pattern.compile("warning", Pattern.CASE_INSENSITIVE);
     private void log(String s, Object... args) {
-        loggingTextFlow.getChildren().add(
-            new Text(
-                String.format("%s - %s\n\n",
-                    ZonedDateTime.now().format(dateTimeFormatter),
-                    String.format(s, args)
-                )
+        Text text = new Text(
+            String.format("%s - %s\n\n",
+                ZonedDateTime.now().format(dateTimeFormatter),
+                String.format(s, args)
             )
         );
+        
+        if (errorPattern.matcher(s).find())
+            text.setStyle("-fx-fill: red");
+        else if (warningPattern.matcher(s).find())
+            text.setStyle("-fx-fill: chocolate");
+        loggingTextFlow.getChildren().add(text);
     }
 
     @Override
@@ -467,9 +482,10 @@ public class MainController implements Initializable, AlertController, EditContr
                 softwareTreeWiseOperationDeviceValue = currentDeviceController.getText();
         });
         softwareTreePane.currentItemProperty().addListener((o, oV, newValue) -> {
-            // Don't need the below safe guard as software lists usually have below a thousand items, so easily manageable
-            /*if (isDoingSoftwareTreeWiseOperation)
-                return;*/
+            // Software lists usually have below a thousand items, easily manageable, so the below safe guard should be not needed.
+            // But then some grew to get over 2000 items...
+            if (isDoingSoftwareTreeWiseOperation)
+                return;
             
             Software software = newValue != null ? newValue.getValue() : null;
             
@@ -674,10 +690,22 @@ public class MainController implements Initializable, AlertController, EditContr
         SimpleDirectoryWatchService.getInstance().start();
         
         loggingPane.vvalueProperty().bind(loggingTextFlow.heightProperty()); // make the logs pane to always scroll automatically to the bottom
-        log("Negatron started and ready");
+        log("""
+                    Negatron started and ready.
+                        Running with Java %s (%s) and JavaFX %s on %s %s (%s).
+                        Working directory: %s
+                    """,
+                System.getProperty("java.version"),
+                System.getProperty("java.vendor"),
+                System.getProperty("javafx.version"),
+                System.getProperty("os.name"),
+                System.getProperty("os.version"),
+                System.getProperty("os.arch"),
+                Path.of("").toAbsolutePath()
+        );
     }
     
-    public void initialiseData() {
+    public void initialiseData(Stage stage) {
         notifierPopup = new NotifierPopup();
         
         cache = new CacheManager(this, (machineList, machineStats, softwareStats, selection) -> Platform.runLater(() -> {
@@ -703,7 +731,15 @@ public class MainController implements Initializable, AlertController, EditContr
                     favouriteViewButton.setSelected(true);
                     handleFavouriteViewAction(null);
                     favouriteSelection = favouriteTreePane.select(Configuration.Manager.getSelectedFavouriteId());
+                    // The machine config pane when favourites are displayed should be set to NON-editable by default.
+                    // But at this point, the machine list tree got reset during the selection of the previous code line
+                    // and thus it has also reset the pane to editable right after the favourite tree view set it to NON-editable...
+                    machineConfigurationPane.setEditable(false);
                     Platform.runLater(() -> favouriteTreePane.requestTreeFocus());
+                } else {
+                    // The machine config pane when favourites are NOT displayed should be set to editable by default.
+                    // But the favourite tree view has just been initialised by setting it to NON-editable...
+                    machineConfigurationPane.setEditable(true);
                 }
 
                 if (!favouriteSelection && selection.hasSelection()) {
@@ -719,6 +755,53 @@ public class MainController implements Initializable, AlertController, EditContr
         }));
         
         cache.execute();
+        
+        if (stage != null) stage.addEventHandler(JoystickEvent.ANY, event -> {
+            if (event.getEventType() == JoystickEvent.JOYSTICK_ADDED) {
+                log("""
+                New joystick detected:
+                    Name: %s
+                    Internal id: %s
+                    Input mapping method: buttons, sticks and triggers are mapped using educated guess. \
+                If the current gamepad doesn't behave as expected, try to use an official console gamepad instead.
+                """, event.getName(), event.getInfo());
+            } else if (event.getEventType() == JoystickEvent.JOYSTICK_GAMEPAD) {
+                log("""
+                Joystick recognised as a gamepad:
+                    Name: %s
+                    Internal id: %s
+                    Input mapping method: it has been switched to follow the standards for this gamepad.
+                """, event.getName(), event.getInfo());
+            } else if (event.getEventType() == JoystickEvent.JOYSTICK_REMOVED) {
+                log("""
+                Joystick unplugged:
+                    Name: %s
+                    Internal id: %s
+                """, event.getName(), event.getInfo());
+            } else if (event.getEventType() == JoystickEvent.JOYSTICK_ADDED_ERROR) {
+                log("""
+                New joystick detected but probing it led to a failure:
+                    Id: %s
+                    Error: %s
+                    Solution: your joystick surely went to sleep (power saving mode). \
+                Turn it on, unplug it and replug it.
+                """, event.getName(), event.getInfo());
+                
+                if (loggingWindow.isHidden())
+                    loggingWindow.show();
+            } else if (event.getEventType() == JoystickEvent.JOYSTICK_GAMEPAD_ERROR) {
+                log("""
+                Joystick recognised as a gamepad but probing it led to a failure:
+                    Id: %s
+                    Error: %s
+                    Solution: your gamepad surely went to sleep (power saving mode). \
+                Turn it on, unplug it and replug it.
+                """, event.getName(), event.getInfo());
+                
+                if (loggingWindow.isHidden())
+                    loggingWindow.show();
+            }
+        });
     }
     
     public void postInitialise(Stage stage) {
@@ -767,6 +850,28 @@ public class MainController implements Initializable, AlertController, EditContr
             if (newValue != Configuration.Manager.isWindowFullscreen()) try {
                 Configuration.Manager.updateWindowFullscreen(newValue);
             } catch (IOException ex) { }
+        });
+        
+        ///// Gamepad events management
+        
+        Robot robot = new Robot();
+        stage.addEventHandler(GamepadEvent.GAMEPAD_BUTTON_CLICKED, event -> {
+            switch (event.getButton()) {
+                case GamepadButton.WEST -> favouriteViewButton.fire();
+                case GamepadButton.BACK -> globalConfigurationButton.fire();
+                case GamepadButton.LEFT_STICK -> handleShowLogs(null);
+                case GamepadButton.RIGHT_STICK -> {
+                    Node node = mainSplitPane.getScene().getFocusOwner();
+                    if (node != null && node instanceof TreeTableView<?> treeView)
+                        treeView.scrollTo(treeView.getFocusModel().getFocusedIndex());
+                    else
+                        Platform.runLater(() -> advancedParametrisationButton.fire());
+                }
+                case GamepadButton.LEFT_TRIGGER -> robot.keyType(KeyCode.LEFT);
+                case GamepadButton.RIGHT_TRIGGER -> robot.keyType(KeyCode.RIGHT);
+                case GamepadButton.START -> launchButton.fire();
+                case GamepadButton.GUIDE -> handleHelpAction(null);
+            }
         });
         
         machineTreePane.requestTreeFocus();
@@ -887,10 +992,12 @@ public class MainController implements Initializable, AlertController, EditContr
                 // Link software tree to current device
                 currentDeviceController = controller;
 
-                boolean mustShowSoftwareInformation = false;
                 if (displayingSoftwareConfiguration != null) {
                     softwareTreePane.setCurrentItem(displayingSoftwareConfiguration.getSoftware());
-                    mustShowSoftwareInformation = true;
+                    if (softwareInformationWindow.isHidden())
+                        softwareInformationWindow.show();
+                    if (displayingSoftwareConfiguration != null && displayingSoftwareConfiguration.getSoftwarePart() == null)
+                        displayingSoftwareConfiguration = null;
                 } else {
                     String softwareName = controller.getText();
                     if (Strings.isValid(softwareName)) {
@@ -898,16 +1005,14 @@ public class MainController implements Initializable, AlertController, EditContr
                             soft -> soft.getName().equals(softwareName)
                         ).findAny();
                         if (software.isPresent()) {
-                            softwareTreePane.setCurrentItem(software.get());
-                            mustShowSoftwareInformation = true;
+                            if (isDoingSoftwareTreeWiseOperation)
+                                softwareTreePane.SetOnceOnTreeWiseOperationEnded(
+                                    () -> softwareTreePane.setCurrentItem(software.get())
+                                );
+                            else
+                                softwareTreePane.setCurrentItem(software.get());
                         }
                     }
-                }
-                if (mustShowSoftwareInformation) {
-                    if (softwareInformationWindow.isHidden())
-                        softwareInformationWindow.show();
-                    if (displayingSoftwareConfiguration != null && displayingSoftwareConfiguration.getSoftwarePart() == null)
-                        displayingSoftwareConfiguration = null;
                 }
             } else {
                 softwareTreeWindow.hide();
@@ -1365,6 +1470,8 @@ public class MainController implements Initializable, AlertController, EditContr
     private void handleShowLogs(ActionEvent event) {
         if (loggingWindow.isHidden())
             loggingWindow.show();
+        else
+            loggingWindow.hide();
     }
 
     @FXML
@@ -1453,11 +1560,19 @@ public class MainController implements Initializable, AlertController, EditContr
             machineInformationPane.setFavouriteEnabled(false);
             softwareInformationWindow.setFavouriteEnabled(false);
         } else {
-            favouriteTreeWindow.close();
-            favouriteTreePane.clearSelection();
-            
-            machineInformationPane.setFavouriteEnabled(true);
-            softwareInformationWindow.setFavouriteEnabled(true);
+            if (globalConfigurationWindow.isDisplayed()) {
+                closeGlobalConfigurationWindow();
+                favouriteViewButton.setSelected(true);
+            } else if (statisticsWindow.isDisplayed()) {
+                closeStatisticsWindow();
+                favouriteViewButton.setSelected(true);
+            } else {
+                favouriteTreeWindow.close();
+                favouriteTreePane.clearSelection();
+
+                machineInformationPane.setFavouriteEnabled(true);
+                softwareInformationWindow.setFavouriteEnabled(true);
+            }
         }
     }
     

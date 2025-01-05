@@ -41,6 +41,7 @@ public abstract class NegatronTreeView<T> extends TreeTableView<T> implements In
     private Delegate onAction;
     protected TreeItem<T> selectedTreeItem;
     private Consumer<Boolean> onTreeWiseOperation;
+    private Delegate onceOnTreeWiseOperationEnded;
     protected Editable editableControl;
     
     public NegatronTreeView() {
@@ -75,6 +76,10 @@ public abstract class NegatronTreeView<T> extends TreeTableView<T> implements In
     public final void setOnTreeWiseOperation(Consumer<Boolean> delegate) {
         onTreeWiseOperation = delegate;
     }
+
+    public final void setOnceOnTreeWiseOperationEnded(Delegate delegate) {
+        onceOnTreeWiseOperationEnded = delegate;
+    }
     
     public final void beginTreeWiseOperation() {
         if (onTreeWiseOperation != null)
@@ -107,6 +112,10 @@ public abstract class NegatronTreeView<T> extends TreeTableView<T> implements In
         
         if (onTreeWiseOperation != null)
             onTreeWiseOperation.accept(Boolean.FALSE);
+        if (onceOnTreeWiseOperationEnded != null) {
+            onceOnTreeWiseOperationEnded.fire();
+            onceOnTreeWiseOperationEnded = null;
+        }
     }
     
     private void setAllExpanded(boolean value) {

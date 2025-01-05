@@ -63,5 +63,17 @@
             <outputDirectory>/</outputDirectory>
             <fileMode>644</fileMode>
         </file>
+        <file>
+            <source>${project.basedir}/src/net/babelsoft/negatron/resource/Negatron input mapping - PlayStation version.png</source>
+            <destName>Negatron input mapping - PlayStation version v${project.version}.png</destName>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>${project.basedir}/src/net/babelsoft/negatron/resource/Negatron input mapping - Xbox version.png</source>
+            <destName>Negatron input mapping - Xbox version v${project.version}.png</destName>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
     </files>
 </assembly>

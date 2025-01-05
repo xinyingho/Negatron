@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<?import net.babelsoft.negatron.view.control.*?>
 <?import org.jpedal.*?>
 <?import javafx.scene.web.*?>
 <?import javafx.scene.media.*?>
@@ -29,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import net.babelsoft.negatron.view.control.*?>
 
 <fx:root type="javafx.scene.layout.VBox" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="600.0" styleClass="titled-pane" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.MachineInformationPaneController">
     <stylesheets>

@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<?import net.babelsoft.negatron.view.control.*?>
 <?import javafx.scene.media.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
@@ -29,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
-<?import net.babelsoft.negatron.view.control.*?>
 
 <fx:root type="net.babelsoft.negatron.view.control.TitledWindowPane" fx:id="titlePane" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.babelsoft.negatron.controller.SoftwareInformationPaneController">
     <stylesheets>

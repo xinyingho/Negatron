@@ -17,6 +17,8 @@
  */
 package net.babelsoft.negatron.controller;
 
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,10 +29,8 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -205,7 +205,7 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
         SortableTreeItem<T> root = treeView.getSortableRoot();
         root.getInternalChildren().clear();
         
-        if (folderViewType.size() > 0)
+        if (!folderViewType.isEmpty())
             folderViewType.entrySet().forEach(entry -> {
                 SortableTreeItem<T> folder = entry.getKey();
                 boolean canAddToFolder = !Strings.isEmpty(folder.getValue().getName());
@@ -219,7 +219,7 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
                             root.getInternalChildren().add(item);
                 });
                 
-                if (folder.getInternalChildren().size() > 0 && canAddToFolder)
+                if (!folder.getInternalChildren().isEmpty() && canAddToFolder)
                     root.getInternalChildren().add(folder);
             });
         else
@@ -260,8 +260,7 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
                 item -> (SortableTreeItem<T>) item
             ).flatMap(
                 item -> item.getInternalChildren().stream()
-            ).collect(
-                Collectors.toList()
+            ).toList(
             ).forEach(item -> {
                 SortableTreeItem<T> parent = (SortableTreeItem<T>) item.getParent();
                 if (parent != null && parent.getValue() != null) {
@@ -280,9 +279,7 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
         } else {
             List<TreeItem<T>> list = rootChildren.stream().filter(
                 item -> item.getValue().hasParent()
-            ).collect(
-                Collectors.toList()
-            );
+            ).toList();
             
             boolean dirty = false;
             for (TreeItem<T> item : list) {
@@ -313,7 +310,7 @@ public class EmulatedItemTreePaneController<T extends EmulatedItem<T>> extends T
                 // - New tree items that have the same value as a removed tree item.
                 // Adding such items to its children collection should trigger the wires to update its graphical state but it does not.
                 // So, the current tree view is forcefully reset to a clean state
-                list = new ArrayList<>(rootChildren);
+                list = List.copyOf(rootChildren);
                 rootChildren.clear();
                 rootChildren.addAll(list);
             }

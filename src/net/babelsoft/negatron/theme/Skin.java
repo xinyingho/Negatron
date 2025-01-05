@@ -25,6 +25,7 @@ import net.babelsoft.negatron.model.item.Item;
  * @author capan
  */
 public class Skin extends Item {
+    private static final long serialVersionUID = 1L;
 
     private String css;
     

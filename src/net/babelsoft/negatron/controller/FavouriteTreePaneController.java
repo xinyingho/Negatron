@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -39,9 +38,7 @@ import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTablePosition;
 import javafx.scene.control.TreeTableView.TreeTableViewSelectionModel;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -49,7 +46,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 import javafx.util.Duration;
@@ -62,6 +58,8 @@ import net.babelsoft.negatron.model.favourites.MachineConfiguration;
 import net.babelsoft.negatron.model.favourites.Separator;
 import net.babelsoft.negatron.model.favourites.SoftwareConfiguration;
 import net.babelsoft.negatron.model.item.Machine;
+import net.babelsoft.negatron.scene.event.GamepadEvent;
+import net.babelsoft.negatron.scene.input.GamepadButton;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.Editable;
 import net.babelsoft.negatron.util.Strings;
@@ -173,6 +171,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         treeView.setColumnFactory(machineConfiguration, () -> new MachineConfigurationTreeTableCell(this));
         treeView.setColumnFactory(dateCreated, DateTimeTreeTableCell<Favourite>::new);
         treeView.setColumnFactory(dateModified, DateTimeTreeTableCell<Favourite>::new);
+        treeView.setNonConfigurableColumn(iconName);
         treeView.setIsCellEditable(cell -> {
             final TreeTableColumn<Favourite, ?> column = cell.getTableColumn();
             final Favourite favourite = cell.getTreeItem().getValue();
@@ -196,17 +195,10 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
                 node -> node.getIndex() == cell.getRow() && node.getTableColumn() == column
             ).findAny().get();
             
-            return column.isEditable() && switch (treeCell) {
+            return switch (treeCell) {
                 case DateTimeTreeTableCell c -> false;
                 default -> ((FavouriteTreeTableCell) treeCell).canEdit();
             };*/
-            /*
-            return column.isEditable() && 
-                !(favourite instanceof Separator) &&
-                (column != machine || favourite.getMachine() != null) &&
-                (column != softwareConfiguration || favourite.getSoftwareConfiguration() != null) &&
-                (column != machineConfiguration || favourite.getMachine() != null && favourite.getMachine().isConfigurable())
-            ;*/
         });
         
         treeView.setOnDragDone(() -> {
@@ -249,6 +241,7 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
         });
         treeView.setOnKeyPressed(event -> handleKeyPressed(event));
         treeView.setOnKeyReleased(event -> handleKeyReleased(event));
+        treeView.addEventHandler(GamepadEvent.GAMEPAD_BUTTON_CLICKED, this::handleGamepadButtonClicked);
         
         listDivider = favouriteSplitPane.getDividers().get(0);
         listDivider.setPosition(1.0);
@@ -275,6 +268,15 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
             treeView.endTreeWiseOperation();
         }));
         filterField.textProperty().addListener((o, oV, nV) -> filterTimeline.playFromStart());
+        
+        editButton.setOnMouseClicked(event -> {
+            // Normally, buttons ignore mouse clicks when any key modifiers is pressed at the same time.
+            // But to do the same as F2 and Shift+F2, also allow to click on the edit button when shift keys are down.
+            if (event.isShiftDown()) {
+                editButton.fire();
+                event.consume();
+            }
+        });
     }
     
     private void initialiseTree() {
@@ -294,8 +296,6 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
             root.setExpanded(true);
             root.getValue().setIcon(rootIcon);
             treeView.setRoot(root);
-            if (editableControl != null)
-                editableControl.setEditable(true);
             
             Favourite.checkDirty(() -> saveConfiguration());
             
@@ -741,6 +741,25 @@ public class FavouriteTreePaneController extends TreePaneController<FavouriteTre
             // TreeTableView already triggers edit mode with F2, add Shift+F2
             handleEditAction(null);
             event.consume();
+        }
+    }
+    
+    private void handleGamepadButtonClicked(GamepadEvent event) {
+        if (treeView.getEditingCell() == null)
+            return;
+        
+        switch (event.getButton()) {
+            case GamepadButton.LEFT_TRIGGER -> {
+                treeView.setFieldJumpMode(Cycle.LOOK_BACKWARD);
+                treeView.edit();
+                treeView.setFieldJumpMode(Cycle.LOOK_FORWARD);
+                event.consume();
+            }
+            case GamepadButton.RIGHT_TRIGGER -> {
+                treeView.setFieldJumpMode(Cycle.LOOK_FORWARD);
+                treeView.edit();
+                event.consume();
+            }
         }
     }
 }

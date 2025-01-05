@@ -2,7 +2,7 @@
 
 DIR=`dirname $0`
 MINIMUMVERSION=11
-JVM_OPTIONS="-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=negatron --add-opens javafx.controls/javafx.scene.control=negatron --add-opens javafx.controls/javafx.scene.control.skin=negatron --module-path=\"$DIR/modules:$DIR/modules/lnx\""
+JVM_OPTIONS="-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=negatron --add-opens javafx.controls/javafx.scene.control=negatron --add-opens javafx.controls/javafx.scene.control.skin=negatron --enable-native-access=negatron --module-path=\"$DIR/modules:$DIR/modules/lnx\""
 
 # Check whether the system-wide Java runtime meets the minimum requirements
 

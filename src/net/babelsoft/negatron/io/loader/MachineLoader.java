@@ -599,7 +599,7 @@ public class MachineLoader extends Service<List<Control<?>>> {
                     switch (element) {
                         case Device d ->  views.add(new DeviceControl(d, status));
                         case Slot s -> views.add(new SlotControl(s, status));
-                        default -> views.add(new ChoiceControl((Choice) element, status)); // Bios / Ram
+                        default -> views.add(new ChoiceControl<>((Choice<?>) element, status)); // Bios / Ram
                     }
                 }
             );
