@@ -39,4 +39,12 @@ public final class Strings {
             --i;
         return s.substring(0, i + 1);
     }
+    
+    public static String orElseBlank(String s) {
+        return orElseBlank(s, s);
+    }
+    
+    public static String orElseBlank(Object test, String result) {
+        return test != null ? result : "";
+    }
 }

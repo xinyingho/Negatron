@@ -20,6 +20,7 @@ package net.babelsoft.negatron.model.favourites;
 import java.io.Serializable;
 import net.babelsoft.negatron.model.component.MachineElementList;
 import net.babelsoft.negatron.model.item.Machine;
+import net.babelsoft.negatron.util.Strings;
 
 /**
  *
@@ -33,7 +34,7 @@ public class MachineConfiguration implements Serializable {
     private MachineElementList parameters;
     
     public MachineConfiguration(final String commandLine) {
-        this.commandLine = commandLine != null ? commandLine : "";
+        this.commandLine = Strings.orElseBlank(commandLine);
         this.configurable = true;
         parameters = null;
     }

@@ -205,10 +205,11 @@ public enum Configuration {
                         property -> property.name.equals(content[0])
                     ).findAny().ifPresent(
                         property -> {
+                            String pathString = content.length > 1 ? content[1] : "";
                             if (property.domain == Domain.EXTRAS_INFORMATION)
-                                files.put(property, pathStringToFileArray(content[1]));
+                                files.put(property, pathStringToFileArray(pathString));
                             else
-                                folders.put(property, pathStringToFolderArray(property, content[1]));
+                                folders.put(property, pathStringToFolderArray(property, pathString));
                         }
                     );
                 }
@@ -343,7 +344,7 @@ public enum Configuration {
                         }
 
                         folders.put(property, contentToPathArray(
-                            content[1] + (defaultFolders != null ? ";" + defaultFolders : "")
+                            content[1] + Strings.orElseBlank(defaultFolders, ";" + defaultFolders)
                         ));
                         
                         return property;
@@ -1009,7 +1010,7 @@ public enum Configuration {
         
         if (property.domain != Domain.EXTRAS_INFORMATION) {
             property.defaultFolders.stream().map(
-                folder -> rootFolder + File.separator + folder
+                folder -> Strings.orElseBlank(rootFolder) + File.separator + folder
             ).forEach(
                 path -> {
                     boolean softwarePrimary = false, machinePrimary = false;
@@ -1033,7 +1034,7 @@ public enum Configuration {
         if (property.domain == Domain.EXTRAS_INFORMATION) {
             property.defaultFiles.keySet().stream().forEach(
                 file -> {
-                    String path = rootFolder + File.separator + file;
+                    String path = Strings.orElseBlank(rootFolder) + File.separator + file;
                     String charset = property.defaultFiles.get(file);
 
                     pathCharsets.add(new PathCharset(path, charset));

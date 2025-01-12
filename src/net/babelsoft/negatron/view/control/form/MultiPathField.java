@@ -20,7 +20,9 @@ package net.babelsoft.negatron.view.control.form;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -72,6 +74,13 @@ public class MultiPathField extends Field {
     private final List<RadioButton> machineRadios;
     private final List<RadioButton> softwareRadios;
     
+    private record FieldRow(
+        Button fileButton, Button browseButton, Button subtractButton,
+        ChoiceBox<String> choice, RadioButton machineRadio, RadioButton softwareRadio
+    ) { }
+    
+    private final Map<TextField, FieldRow> fieldRows;
+    
     public MultiPathField(GridPane grid, int row, Property property, String key, String... fileFilters) {
         list.add(this);
         
@@ -80,6 +89,7 @@ public class MultiPathField extends Field {
         this.fileFilters = fileFilters;
         
         pathFields = new ArrayList<>();
+        fieldRows = new HashMap<>();
         internalCount = 0;
         if (property.getDomain() == Domain.EXTRAS_INFORMATION)
             choices = new ArrayList<>();
@@ -150,7 +160,7 @@ public class MultiPathField extends Field {
         
         if (property.getDomain() == Domain.EXTRAS_INFORMATION) {
             List<PathCharset> files = Configuration.Manager.getFilePaths(property);
-            if (files.size() > 0) {
+            if (!files.isEmpty()) {
                 for (int i = 0; i < files.size(); ++i) {
                     Button button = newField(
                         fileFilters,
@@ -169,7 +179,7 @@ public class MultiPathField extends Field {
             }
         } else {
             List<String> folders = Configuration.Manager.getFolderPaths(property);
-            if (folders.size() > 0) {
+            if (!folders.isEmpty()) {
                 for (int i = 0; i < folders.size(); ++i) {
                     Button button = newField(fileFilters, folders.get(i));
                     if (i == 0) {
@@ -200,6 +210,7 @@ public class MultiPathField extends Field {
         int column = 0;
         
         TextField pathField = new TextField();
+        pathField.setUserData(this);
         pathField.setPromptText(promptText);
         pathField.setTooltip(new Infotip(promptText));
         internalGrid.add(pathField, column++, internalCount);
@@ -305,9 +316,9 @@ public class MultiPathField extends Field {
         Button subtractButton = new Button();
         internalGrid.add(subtractButton, subtractColumn, internalCount);
         subtractButton.setText("-");
-        subtractButton.setOnAction(event -> handleOnSubtractButton(
-            pathField, fileButton, browseButton, subtractButton,
-            choice, machineRadio, softwareRadio
+        subtractButton.setOnAction(event -> handleOnSubtractButton(pathField));
+        fieldRows.put(pathField, new FieldRow(
+            fileButton, browseButton, subtractButton, choice, machineRadio, softwareRadio
         ));
         
         ++internalCount;
@@ -329,7 +340,7 @@ public class MultiPathField extends Field {
         
         if (property.getDomain() == Domain.EXTRAS_INFORMATION) {
             List<PathCharset> files = Configuration.Manager.getDefaultFilePaths(property, rootFolder);
-            if (files != null && files.size() > 0) {
+            if (files != null && !files.isEmpty()) {
                 BiConsumer<Integer, Integer> handleFile = (i, j) -> {
                     pathFields.get(i).setText(files.get(j).getPathString());
                     choices.get(i).getSelectionModel().select(files.get(j).getCharSet());
@@ -348,7 +359,7 @@ public class MultiPathField extends Field {
             }
         } else {
             List<PathPrimary> folders = Configuration.Manager.getDefaultFolderPaths(property, rootFolder);
-            if (folders != null && folders.size() > 0) {
+            if (folders != null && !folders.isEmpty()) {
                 BiConsumer<Integer, Integer> handleFolder = (i, j) -> {
                     pathFields.get(i).setText(folders.get(j).getPath());
                     
@@ -445,35 +456,42 @@ public class MultiPathField extends Field {
             return handleOnFileAction(pathField, fileFilters);
     }
     
-    private void handleOnSubtractButton(
-        TextField pathField, Button fileButton, Button browseButton, Button subtractButton,
-        ChoiceBox<String> choice, RadioButton machineRadio, RadioButton softwareRadio
-    ) {
-        int index = pathFields.indexOf(pathField);
+    public void remove(TextField pathField) {
+        FieldRow fieldRow = fieldRows.get(pathField);
+        if (fieldRow.subtractButton.getText().equals("+")) {
+            pathField.setText(""); // first row of the multi path field, do not remove
+        } else
+            handleOnSubtractButton(pathField);
+    }
+    
+    private void handleOnSubtractButton(TextField pathField) {
+        FieldRow fieldRow = fieldRows.remove(pathField);
 
         ObservableList<Node> nodes = internalGrid.getChildren();
         nodes.remove(pathField);
-        nodes.remove(fileButton);
-        nodes.remove(browseButton);
-        nodes.remove(subtractButton);
-        pathFields.remove(pathField);
-        if (choice != null) {
-            nodes.remove(choice);
-            choices.remove(choice);
+        nodes.remove(fieldRow.fileButton);
+        nodes.remove(fieldRow.browseButton);
+        nodes.remove(fieldRow.subtractButton);
+        
+        if (fieldRow.choice != null) {
+            nodes.remove(fieldRow.choice);
+            choices.remove(fieldRow.choice);
         }
-        if (machineRadio != null) {
-            nodes.remove(machineRadio);
-            machineRadios.remove(machineRadio);
-            if (machineRadio.isSelected())
+        if (fieldRow.machineRadio != null) {
+            nodes.remove(fieldRow.machineRadio);
+            machineRadios.remove(fieldRow.machineRadio);
+            if (fieldRow.machineRadio.isSelected())
                 machineRadios.get(0).setSelected(true);
         }
-        if (softwareRadio != null) {
-            nodes.remove(softwareRadio);
-            softwareRadios.remove(softwareRadio);
-            if (softwareRadio.isSelected())
+        if (fieldRow.softwareRadio != null) {
+            nodes.remove(fieldRow.softwareRadio);
+            softwareRadios.remove(fieldRow.softwareRadio);
+            if (fieldRow.softwareRadio.isSelected())
                 softwareRadios.get(0).setSelected(true);
         }
         
+        int index = pathFields.indexOf(pathField);
+        pathFields.remove(pathField);
         removePath(property, index);
     }
 }

@@ -51,6 +51,9 @@ public class MasterConfigPathField extends SinglePathField {
                 Configuration.Manager.beginMasterConfigTransaction();
                 setDependentPathFields(pathField.getText(), "");
             } else {
+                if (Strings.isEmpty(pathField.getText())) dependentSingleFields.forEach(
+                    field -> ((MultiPathField) field.getUserData()).remove(field)
+                );
                 // end the current global transaction
                 resetDependentPathFields();
                 commitMasterConfigTransaction(this.domain);
@@ -65,13 +68,14 @@ public class MasterConfigPathField extends SinglePathField {
             }
             
             dependentMultiFields.forEach(
-                multiField -> dependentSingleFields.addAll(multiField.addDefaultPaths(newValue))
+                multiField -> dependentSingleFields.addAll(multiField.addDefaultPaths(oldValue))
             );
-            if (dependentMultiFields.size() > 0)
+            if (!dependentMultiFields.isEmpty())
                 dependentMultiFields.clear();
             dependentSingleFields.forEach(
                 field -> field.setText(field.getText().replaceFirst(
-                    Matcher.quoteReplacement(oldValue), Matcher.quoteReplacement(newValue)
+                    Matcher.quoteReplacement( Strings.orElseBlank(oldValue) ),
+                    Matcher.quoteReplacement(newValue)
                 ))
             );
             
@@ -82,11 +86,14 @@ public class MasterConfigPathField extends SinglePathField {
         
         browseButton.setOnAction(event -> {
             DirectoryChooser dc = new DirectoryChooser();
-            if (!pathField.getText().isEmpty())
+            File f;
+            try {
                 dc.setInitialDirectory(new File(pathField.getText()));
-            else
+                f = dc.showDialog(browseButton.getScene().getWindow());
+            } catch (Exception ex) {
                 dc.setInitialDirectory(new File("."));
-            File f = dc.showDialog(browseButton.getScene().getWindow());
+                f = dc.showDialog(browseButton.getScene().getWindow());
+            }
             if (f != null)
                 pathField.setText(f.getAbsolutePath());
         });
@@ -100,30 +107,29 @@ public class MasterConfigPathField extends SinglePathField {
     private void setDependentPathFields(String reference, String newReference) {
         dependentMultiFields = new ArrayList<>();
         
-        if (reference.isEmpty()) {
+        if (Strings.isEmpty(reference)) {
             // initialising
             dependentSingleFields = new ArrayList<>();
             MultiPathField.getList().forEach(multiField -> {
-                    List<TextField> fields = multiField.getPathFields();
-                    if ((
-                        domain == Domain.MULTIMEDIA_MACHINE_SOFTWARE && multiField.isMultimediaPath() ||
-                        domain == Domain.EXTRAS_MACHINE_SOFTWARE && !multiField.isMultimediaPath()
-                    ) && (
-                        Strings.isEmpty(newReference) || !multiField.isMamePath() ||
-                        fields.stream().allMatch(field -> !field.getText().startsWith(newReference))
-                    )) dependentSingleFields.addAll(multiField.addDefaultPaths(reference));
-                }
-            );
+                List<TextField> fields = multiField.getPathFields();
+                if ((
+                    domain == Domain.MULTIMEDIA_MACHINE_SOFTWARE && multiField.isMultimediaPath() ||
+                    domain == Domain.EXTRAS_MACHINE_SOFTWARE && !multiField.isMultimediaPath()
+                ) && (
+                    Strings.isEmpty(newReference) || !multiField.isMamePath() ||
+                    fields.stream().allMatch(field -> !field.getText().startsWith(newReference))
+                )) dependentSingleFields.addAll(multiField.addDefaultPaths(reference));
+            });
         } else dependentSingleFields = MultiPathField.getList().stream().flatMap(
             multiField -> {
                 List<TextField> fields = multiField.getPathFields();
                 if (
                     domain == Domain.EXTRAS_MACHINE_SOFTWARE && multiField.isExtrasPath() &&
-                    fields.stream().allMatch(field -> field.getText().isEmpty()) ||
+                    fields.stream().allMatch(field -> Strings.isEmpty(field.getText())) ||
                     domain == Domain.EXTRAS_MACHINE_SOFTWARE && multiField.isMamePath() &&
                     fields.stream().allMatch(field -> !field.getText().startsWith(reference)) ||
                     domain == Domain.MULTIMEDIA_MACHINE_SOFTWARE && multiField.isMultimediaPath() &&
-                    fields.stream().allMatch(field -> field.getText().isEmpty())
+                    fields.stream().allMatch(field -> Strings.isEmpty(field.getText()))
                 ) {
                     dependentMultiFields.add(multiField);
                     return null;

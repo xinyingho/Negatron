@@ -49,6 +49,7 @@ import java.util.zip.ZipFile;
 import net.babelsoft.negatron.io.cache.Cache;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Property;
+import net.babelsoft.negatron.util.Strings;
 
 /**
  *
@@ -133,7 +134,7 @@ public class Extras {
         
         Arrays.stream(extensions).forEach(
             extension -> res.add(
-                (system != null ? system + "/" : "") + name + extension
+                Strings.orElseBlank(system, system + "/") + name + extension
             )
         );
         

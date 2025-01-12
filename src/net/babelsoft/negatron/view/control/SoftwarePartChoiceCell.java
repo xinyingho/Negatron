@@ -22,6 +22,7 @@ import javafx.scene.control.TableCell;
 import javafx.util.StringConverter;
 import net.babelsoft.negatron.controller.DeviceController;
 import net.babelsoft.negatron.controller.SoftwareConfigurationPaneController;
+import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.view.control.adapter.SoftwarePartAdapter;
 
 /**
@@ -37,7 +38,7 @@ public class SoftwarePartChoiceCell extends TableCell<SoftwarePartAdapter, Devic
         converter = new StringConverter<DeviceController>() {
             @Override
             public String toString(DeviceController device) {
-                return device != null ? device.getMachineComponent().getName() : "";
+                return Strings.orElseBlank(device, device.getMachineComponent().getName());
             }
 
             @Override

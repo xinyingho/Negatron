@@ -23,6 +23,7 @@ import net.babelsoft.negatron.model.component.Device;
 import net.babelsoft.negatron.model.item.Machine;
 import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.model.item.SoftwarePart;
+import net.babelsoft.negatron.util.Strings;
 
 /**
  *
@@ -74,6 +75,6 @@ public class SoftwareConfiguration implements Describable, Serializable {
     
     @Override
     public String toString() {
-        return String.format("-%s %s%s", device, software.getName(), softwarePart != null ? ":" + softwarePart.getName() : "");
+        return String.format("-%s %s%s", device, software.getName(), Strings.orElseBlank(softwarePart, ":" + softwarePart.getName()));
     }
 }
