@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Locale;
@@ -31,6 +30,8 @@ import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.PathUtil;
+import net.babelsoft.negatron.util.PathUtil.PathType;
 import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.util.function.Delegate;
 
@@ -47,8 +48,8 @@ public class NegatronLanguageChoiceField extends ChoiceField<Locale> {
         
         choiceBox.getItems().add(Locale.UK);
         
-        Path path = Paths.get(Language.Manager.ROOT_PATH);
-        if (Files.exists(path)) try {
+        Path path = PathUtil.retrieveFromJavaLibraryPaths(PathType.FOLDER, Language.Manager.ROOT_PATH);
+        if (path != null) try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 
                 @Override

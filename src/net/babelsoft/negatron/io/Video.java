@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.util.PathUtil;
+import net.babelsoft.negatron.util.PathUtil.PathType;
 import net.babelsoft.negatron.util.Strings;
 import uk.co.caprica.vlcj.binding.support.runtime.RuntimeUtil;
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
@@ -110,7 +111,7 @@ public class Video {
                 ).findAny().orElse(null);
                 
                 if (libVlc == null)
-                    libVlc = PathUtil.retrieveFromJavaLibraryPaths("vlc", "libvlc.dll");
+                    libVlc = PathUtil.retrieveFromJavaLibraryPaths(PathType.FILE, "vlc", "libvlc.dll");
                     
                 if (libVlc != null)
                     Configuration.Manager.updateVlcPath(libVlc.toString());
@@ -145,7 +146,7 @@ public class Video {
                 // detect any macOS versions of VLC media player included in Negatron's installation folder
                 Path libVlc = Paths.get("VLC.app/Contents/MacOS/lib/libvlc.dylib");
                 if (!Files.exists(libVlc))
-                    libVlc = PathUtil.retrieveFromJavaLibraryPaths("VLC.app", "Contents", "MacOS", "lib", "libvlc.dylib");
+                    libVlc = PathUtil.retrieveFromJavaLibraryPaths(PathType.FILE, "VLC.app", "Contents", "MacOS", "lib", "libvlc.dylib");
                 if (libVlc != null)
                     Configuration.Manager.updateVlcPath(libVlc.toString());
                     // then VLC gets detected by UserHintedDiscoveryDirectoryProvider

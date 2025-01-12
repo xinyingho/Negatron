@@ -27,6 +27,10 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.SymbolLookup;
 import java.lang.foreign.ValueLayout;
 import java.lang.invoke.MethodHandle;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import net.babelsoft.negatron.util.Shell;
+import net.babelsoft.negatron.util.Strings;
 
 /**
  *
@@ -50,7 +54,17 @@ public class Gamepad {
     static final Arena LIBRARY_ARENA = Arena.ofAuto();
     
     static {
-        try {
+        boolean isLoaded = false;
+        String exePath = System.getProperty("jpackage.app-path");
+        if (Shell.isLinux() && Strings.isValid(exePath)) try {
+            // required for the Linux packaged versions
+            Path appPath = Paths.get(exePath).getParent().resolveSibling("lib/app");
+            File libSDL = new File(appPath.toString()+ "/" + System.mapLibraryName("SDL3"));
+            System.load(libSDL.getAbsolutePath());
+            isLoaded = true;
+        } catch (UnsatisfiedLinkError e) { }
+        
+        if (!isLoaded) try {
             File libSDL = new File("./" + System.mapLibraryName("SDL3"));
             System.load(libSDL.getAbsolutePath());
         } catch (UnsatisfiedLinkError e) {

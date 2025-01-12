@@ -63,6 +63,7 @@
         <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
         <vlcj.version>4.8.3</vlcj.version>
+        <sdl.version>3.1.8</sdl.version>
         
         <localLibPath>${project.basedir}/lib</localLibPath>
     </properties>
@@ -113,7 +114,7 @@
                                     <outputDirectory>${package.app.output}</outputDirectory>
                                     <resources>          
                                         <resource>
-                                            <directory>${project.basedir}/lib/sdl3</directory>
+                                            <directory>${project.basedir}/lib/sdl/${sdl.version}/win</directory>
                                             <filtering>false</filtering>
                                         </resource>
                                     </resources>              
@@ -232,6 +233,22 @@
                                     </resources>              
                                 </configuration>            
                             </execution>
+                            <execution>
+                                <id>copy-resources-mac-sdl</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${package.app.output}</outputDirectory>
+                                    <resources>          
+                                        <resource>
+                                            <directory>${project.basedir}/lib/sdl/${sdl.version}/mac</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>              
+                                </configuration>            
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
@@ -312,12 +329,34 @@
             </activation>
             <properties>
                 <os.name>Lnx64</os.name>
-                <bundle.type>deb</bundle.type>
+                <bundle.type>rpm</bundle.type>
                 <jpackage.home>${java.home}</jpackage.home>
                 <icon>${project.basedir}/../Negatron-Bootstrap/Negatron-Bootstrap/Negatron.png</icon>
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources-lnx-sdl</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${package.app.output}</outputDirectory>
+                                    <resources>          
+                                        <resource>
+                                            <directory>${project.basedir}/lib/sdl/${sdl.version}/lnx</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>              
+                                </configuration>            
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>

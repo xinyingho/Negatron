@@ -28,6 +28,8 @@ import javafx.scene.layout.GridPane;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.theme.Skin;
+import net.babelsoft.negatron.util.PathUtil;
+import net.babelsoft.negatron.util.PathUtil.PathType;
 import net.babelsoft.negatron.util.Strings;
 
 /**
@@ -46,8 +48,8 @@ public class SkinChoiceField extends ChoiceField<Skin> {
         
         choiceBox.getItems().add(DEFAULT_SKIN);
         
-        Path path = Paths.get("theme/skin");
-        if (Files.exists(path)) try {
+        Path path = PathUtil.retrieveFromJavaLibraryPaths(PathType.FOLDER, "theme/skin");
+        if (path != null) try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 
                 @Override

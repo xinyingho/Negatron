@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 import java.util.spi.AbstractResourceBundleProvider;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.PathUtil;
+import net.babelsoft.negatron.util.PathUtil.PathType;
 
 /**
  *
@@ -49,7 +50,7 @@ public class LanguageUiProviderImpl extends AbstractResourceBundleProvider imple
             return bundle;
         }
         
-        Path path = PathUtil.retrieveFromJavaLibraryPaths(resourceName);
+        Path path = PathUtil.retrieveFromJavaLibraryPaths(PathType.FILE, resourceName);
         
         // Embed the resource into a bundle
         if (path != null) try (

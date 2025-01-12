@@ -63,16 +63,16 @@ public enum Configuration {
     
     public static Path getRootFolder() {
         Path root = Paths.get(".");
-        if (Files.isWritable(root))
-            return root;
-        else {
-            if (Shell.isWindows())
-                return Paths.get(System.getenv("AppData"), "Negatron");
-            else if (Shell.isMacOs())
-                return Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Negatron");
-            else // Linux
-                return Paths.get(System.getProperty("user.home"), ".Negatron");
-        }
+        String exePath = System.getProperty("jpackage.app-path");
+        if (Strings.isEmpty(exePath) && Files.isWritable(root))
+            return root; // not the packaged version and got the writing rights on the working folder
+
+        if (Shell.isWindows())
+            return Paths.get(System.getenv("AppData"), "Negatron");
+        else if (Shell.isMacOs())
+            return Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Negatron");
+        else // Linux
+            return Paths.get(System.getProperty("user.home"), ".Negatron");
     }
     
     private final String MAME = "mame";

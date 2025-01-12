@@ -17,9 +17,7 @@
  */
 package net.babelsoft.negatron.controller;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -104,7 +102,6 @@ import net.babelsoft.negatron.scene.input.GamepadButton;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.DirectoryWatchService;
 import net.babelsoft.negatron.util.Disposable;
-import net.babelsoft.negatron.util.PathUtil;
 import net.babelsoft.negatron.util.SimpleDirectoryWatchService;
 import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.util.function.Delegate;
@@ -691,17 +688,17 @@ public class MainController implements Initializable, AlertController, EditContr
         
         loggingPane.vvalueProperty().bind(loggingTextFlow.heightProperty()); // make the logs pane to always scroll automatically to the bottom
         log("""
-                    Negatron started and ready.
-                        Running with Java %s (%s) and JavaFX %s on %s %s (%s).
-                        Working directory: %s
-                    """,
-                System.getProperty("java.version"),
-                System.getProperty("java.vendor"),
-                System.getProperty("javafx.version"),
-                System.getProperty("os.name"),
-                System.getProperty("os.version"),
-                System.getProperty("os.arch"),
-                Path.of("").toAbsolutePath()
+            Negatron started and ready.
+                Running with Java %s (%s) and JavaFX %s on %s %s (%s).
+                Working directory: %s
+            """,
+            System.getProperty("java.version"),
+            System.getProperty("java.vendor"),
+            System.getProperty("javafx.version"),
+            System.getProperty("os.name"),
+            System.getProperty("os.version"),
+            System.getProperty("os.arch"),
+            Path.of("").toAbsolutePath()
         );
     }
     
