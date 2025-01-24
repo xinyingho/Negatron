@@ -118,15 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <bottom>
                         <TitledWindowPane fx:id="loggingWindow" id="loggingWindow" text="%logViewer" intermediateSize="true">
                             <content>
-                                <ScrollPane fx:id="loggingPane" fitToHeight="true" fitToWidth="true">
-                                    <content>
-                                        <TextFlow fx:id="loggingTextFlow" styleClass="textFlow">
-                                            <padding>
-                                                <Insets top="10" right="10" bottom="10" left="10" />
-                                            </padding>
-                                        </TextFlow>
-                                    </content>
-                                </ScrollPane>
+                                <ScrollTextFlow fx:id="loggingTextFlow" />
                             </content>
                         </TitledWindowPane>
                     </bottom>

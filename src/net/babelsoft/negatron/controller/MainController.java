@@ -59,7 +59,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
@@ -72,8 +71,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.robot.Robot;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
@@ -114,10 +111,12 @@ import net.babelsoft.negatron.view.control.MachineFilterPane;
 import net.babelsoft.negatron.view.control.MachineFolderViewPane;
 import net.babelsoft.negatron.view.control.MachineInformationPane;
 import net.babelsoft.negatron.view.control.NotifierPopup;
+import net.babelsoft.negatron.view.control.ScrollTextFlow;
 import net.babelsoft.negatron.view.control.SoftwareConfigurationPane;
 import net.babelsoft.negatron.view.control.SoftwareFilterPane;
 import net.babelsoft.negatron.view.control.SoftwareInformationPane;
 import net.babelsoft.negatron.view.control.StatisticsPane;
+import net.babelsoft.negatron.view.control.Text;
 import net.babelsoft.negatron.view.control.TitledWindowPane;
 import net.babelsoft.negatron.view.control.TitledWindowPane.DisplayMode;
 import net.babelsoft.negatron.view.control.adapter.SelectionData;
@@ -181,9 +180,7 @@ public class MainController implements Initializable, AlertController, EditContr
     @FXML
     private TitledWindowPane loggingWindow;
     @FXML
-    private ScrollPane loggingPane;
-    @FXML
-    private TextFlow loggingTextFlow;
+    private ScrollTextFlow loggingTextFlow;
     
     @FXML
     private ToolBar buttonBar;
@@ -286,7 +283,7 @@ public class MainController implements Initializable, AlertController, EditContr
             text.setStyle("-fx-fill: red");
         else if (warningPattern.matcher(s).find())
             text.setStyle("-fx-fill: chocolate");
-        loggingTextFlow.getChildren().add(text);
+        loggingTextFlow.addNode(text);
     }
 
     @Override
@@ -686,7 +683,7 @@ public class MainController implements Initializable, AlertController, EditContr
         }
         SimpleDirectoryWatchService.getInstance().start();
         
-        loggingPane.vvalueProperty().bind(loggingTextFlow.heightProperty()); // make the logs pane to always scroll automatically to the bottom
+        loggingTextFlow.autoTail();
         log("""
             Negatron started and ready.
                 Running with Java %s (%s) and JavaFX %s on %s %s (%s).

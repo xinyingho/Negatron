@@ -40,16 +40,12 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -57,8 +53,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Shear;
 import javafx.util.Duration;
 import net.babelsoft.negatron.io.cache.InformationCache;
@@ -73,6 +67,7 @@ import net.babelsoft.negatron.util.Disposable;
 import net.babelsoft.negatron.util.function.Delegate;
 import net.babelsoft.negatron.view.control.ImageViewPane;
 import net.babelsoft.negatron.view.control.MediaViewPane;
+import net.babelsoft.negatron.view.control.ScrollTextFlow;
 import net.babelsoft.negatron.view.control.TabPane;
 import net.babelsoft.negatron.view.control.Text;
 import org.jpedal.examples.viewer.PdfViewer;
@@ -497,19 +492,109 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
         
         BiConsumer<String, String> addTab = (tabName, content) -> {
             if (content != null) {
-                TextFlow textFlow = new TextFlow();
-                textFlow.getStyleClass().add("textFlow");
-                textFlow.setPadding(new Insets(10));
-                textFlow.setTextAlignment(TextAlignment.JUSTIFY);
-                ScrollPane scrollPane = new ScrollPane(textFlow);
-                scrollPane.setFitToWidth(true);
-                informationPane.getTabs().add(new Tab(tabName, scrollPane));
-
+                ScrollTextFlow textFlow = new ScrollTextFlow();
+                informationPane.getTabs().add(new Tab(tabName, textFlow));
+                
                 content = content.replaceAll("\\n\\s{2}\\*\\s", System.lineSeparator() + "• ");
                 content = content.replaceAll("\\n\\s{4}\\*\\s", System.lineSeparator() + "\t• ");
                 content = content.replaceAll("\\n\\*\\s", System.lineSeparator() + "• ");
+                
+                if (tabName.equals("command.dat")) {
+                    // Reformat content to align move names and move commands properly
+                    // replace " " by \t while ignoring sections containing the command indication "_`"
+                    //textFlow.setStyle("-fx-font-family: 'monospaced'");
+                    
+                    // Replace command indications by glyphs
+                    // SNK style
+                    content = content.replaceAll("_A", "Ⓐ"); // light punch
+                    content = content.replaceAll("_B", "Ⓑ"); // light kick
+                    content = content.replaceAll("_C", "Ⓒ"); // strong punch
+                    content = content.replaceAll("_D", "Ⓓ"); // strong kick
+                    content = content.replaceAll("@E-button", "Ⓔ"); // leader super move in KoF XI
+                    content = content.replaceAll("\\^s", "Ⓢ"); // slash in the Samurai Shodown series
+                    // Capcom style
+                    content = content.replaceAll("\\^E", "_BⓅ"); // light punch
+                    content = content.replaceAll("\\^F", "_YⓅ"); // medium punch
+                    content = content.replaceAll("\\^G", "_RⓅ"); // strong punch
+                    content = content.replaceAll("\\^H", "_BⓀ"); // light kick
+                    content = content.replaceAll("\\^I", "_YⓀ"); // medium kick
+                    content = content.replaceAll("\\^J", "_RⓀ"); // strong kick
+                    content = content.replaceAll("\\^U", "_BⓅ+_YⓅ+_RⓅ"); // 3 punch buttons
+                    content = content.replaceAll("\\^T", "_BⓀ+_YⓀ+_RⓀ"); // 3 kick buttons
+                    content = content.replaceAll("\\^W", "Ⓟ+Ⓟ"); // 2 punch buttons
+                    content = content.replaceAll("\\^V", "Ⓚ+Ⓚ"); // 2 kick buttons
+                    content = content.replaceAll("\\^M", "MAX"); // SF Zero: MAX super move
+                    content = content.replaceAll("_x", "⭮"); // 360° on D-pad
+                    content = content.replaceAll("@M-button", "Ⓜ"); // Star Gladiator: Movement
+                    content = content.replaceAll("@L-button", "Ⓛ"); // Tenchi wo Kurau II: Sekiheki no Tatakai
+                    content = content.replaceAll("@X-button", "Ⓧ"); // Tenchi wo Kurau II: Sekiheki no Tatakai
+                    content = content.replaceAll("@R-button", "Ⓡ"); // Tenchi wo Kurau II: Sekiheki no Tatakai
+                    content = content.replaceAll("@Y-button", "Ⓨ"); // Tenchi wo Kurau II: Sekiheki no Tatakai
+                    // Sega (Virtua Fighter)
+                    content = content.replaceAll("_G", "Ⓖ"); // guard / block
+                    // Midway / NetherRealm style
+                    content = content.replaceAll("@R-button", "Ⓡ"); // run
+                    content = content.replaceAll("_c", "③"); // War Gods: 3-D button
+                    // Tecmo (Dead or Alive) style
+                    content = content.replaceAll("_H", "Ⓗ"); // hold
+                    // Atlus (Groove on Fight)
+                    content = content.replaceAll("@O-button", "Ⓞ"); // overhead attack
+                    // Data East (Karate Champ)
+                    content = content.replaceAll("@left", "⮜"); // Rear Kick ⬅
+                    content = content.replaceAll("@down", "⮟"); // Low Kick ⬇
+                    content = content.replaceAll("@right", "⮞"); // Front Kick ➡
+                    content = content.replaceAll("@up", "⮝"); // Roundhouse Kick ⬆
+                    // generic style
+                    content = content.replaceAll("_`", "• ");
+                    content = content.replaceAll("_P", "Ⓟ"); // punch
+                    content = content.replaceAll("_K", "Ⓚ"); // kick
+                    content = content.replaceAll("_S", "🅢"); // start button
+                    content = content.replaceAll("\\^S", "🆂"); // select button
+                    content = content.replaceAll("_\\+", "+");
+                    content = content.replaceAll("_N", "Ⓝ"); // neutral direction
+                    content = content.replaceAll("_\\?", "↔"); // any direction
+                    content = content.replaceAll("_1", "↙");
+                    content = content.replaceAll("\\^1", "⇙•"); // hold
+                    content = content.replaceAll("_2", "↓");
+                    content = content.replaceAll("\\^2", "⇓•"); // hold down
+                    content = content.replaceAll("_3", "↘");
+                    content = content.replaceAll("\\^3", "⇘•"); // hold
+                    content = content.replaceAll("_4", "←");
+                    content = content.replaceAll("\\^4", "⇐•"); // hold back
+                    content = content.replaceAll("_6", "→");
+                    content = content.replaceAll("\\^6", "⇒•"); // hold forward
+                    content = content.replaceAll("_7", "↖");
+                    content = content.replaceAll("\\^7", "⇖•"); // hold
+                    content = content.replaceAll("_8", "↑");
+                    content = content.replaceAll("\\^8", "⇑•"); // hold up
+                    content = content.replaceAll("_9", "↗");
+                    content = content.replaceAll("\\^9", "⇗•"); // hold
+                    content = content.replaceAll("_\\^", "🚀"); // in the air
+                    content = content.replaceAll("\\^\\*", "⮤⮧"); // repeatedly push button 🔁
+                    content = content.replaceAll("_X\\)", "tap)"); // tap on button
+                    content = content.replaceAll("_X", "tap "); // tap on button
+                    content = content.replaceAll("_O", "⭳"); // hold button
+                    content = content.replaceAll("_\\(", "🤼"); // normal throw
+                    content = content.replaceAll("_\\)", "🏃"); // command move
+                    content = content.replaceAll("_@", "🚵"); // special move
+                    content = content.replaceAll("_\\*", "🏍"); // super move
+                    content = content.replaceAll("_&", "★"); // desperation move
+                    content = content.replaceAll("_>", "☆"); // hidden desperation move
+                    content = content.replaceAll("_#", "⤮"); // alpha counter / counter attack / striker move
+                    content = content.replaceAll("\\^!", "↳"); // chaining special move
+                    content = content.replaceAll("_!", "⇢"); // chaining combo move
+                    // non-fighting games
+                    content = content.replaceAll("@F-button", "Ⓕ"); // fire
+                    content = content.replaceAll("@J-button", "Ⓙ"); // jump
+                    content = content.replaceAll("@W-button", "Ⓦ"); // weapon
+                    content = content.replaceAll("_a", "①");
+                    content = content.replaceAll("_b", "②");
+                    content = content.replaceAll("_c", "③");
+                    content = content.replaceAll("_d", "④");
+                    content = content.replaceAll("_e", "⑤");
+                    content = content.replaceAll("_f", "⑥");
+                }
 
-                ObservableList<Node> nodes = textFlow.getChildren();
                 int from = 0;
                 if (content.startsWith("\n")) {
                     from = content.indexOf("\n", 1);
@@ -517,30 +602,39 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
                     if (!title.endsWith(":")) {
                         Text text = new Text(content.substring(1, from));
                         text.getStyleClass().add("h1");
-                        nodes.add(text);
+                        textFlow.addNode(text);
                     } else
                         from = 1;
                 }
                 
                 Pattern pattern = Pattern.compile(
-                        "https?:\\/\\/\\S+[\\w/]|^- ([\\wα-ω\\(\\)\\.\\-/'\"!?&]+ )+-|={6} (\\S+ )+={6}|={5} (\\S+ )+={5}|={2} (\\S+ )+={2}|^─{10,}",
-                        Pattern.MULTILINE
+                    "https?:\\/\\/\\S+[\\w/]|^- ([\\wα-ω\\(\\)\\.\\-/'\"!?&]+ )+-|={6} (\\S+ )+={6}|={5} (\\S+ )+={5}|={2} (\\S+ )+={2}|^─{10,}|_(B|Y|R)(Ⓟ|Ⓚ)",
+                    Pattern.MULTILINE
                 );
                 Matcher matcher = pattern.matcher(content);
                 Pattern capitaliser = Pattern.compile("\\b(.)(.*?)\\b");
                 while (matcher.find()) {
                     int to = matcher.start();
-                    nodes.add(new Text(content.substring(from, to)));
+                    if (from != to)
+                        textFlow.addNode(new Text(content.substring(from, to)));
 
                     String match = matcher.group();
-                    if (match.startsWith("h")) {
+                    if (match.startsWith("_")) {
+                        Text text = new Text(match.substring(2));
+                        switch (match.substring(1, 2)) {
+                            case "B" -> text.getStyleClass().add("blue");
+                            case "Y" -> text.getStyleClass().add("green");
+                            case "R" -> text.getStyleClass().add("red");
+                        }
+                        textFlow.addNode(text);
+                    } else if (match.startsWith("h")) {
                         String label = match;
                         if (label.startsWith("http://www.arcade-history.com"))
                             label = currentName + " at http://www.arcade-history.com";
                         
                         Hyperlink hyperlink = new Hyperlink(label);
                         hyperlink.setOnAction(event -> application.getHostServices().showDocument(match));
-                        nodes.add(hyperlink);
+                        textFlow.addNode(hyperlink);
                     } else if (match.startsWith("-")) {
                         Text text = new Text(capitaliser.matcher(
                                 match.substring(2, match.length() - 2)
@@ -548,28 +642,28 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
                                 str -> str.group(1).toUpperCase() + str.group(2).toLowerCase()
                         ));
                         text.getStyleClass().add("h2");
-                        nodes.add(text);
+                        textFlow.addNode(text);
                     } else if (match.startsWith("─")) {
                         // swallow the line
                     } else if (match.startsWith("======")) {
                         Text text = new Text(match.substring(7, match.length() - 7));
                         text.getStyleClass().add("h1");
-                        nodes.add(text);
+                        textFlow.addNode(text);
                     } else if (match.startsWith("=====")) {
                         Text text = new Text(match.substring(6, match.length() - 6));
                         text.getStyleClass().add("h2");
-                        nodes.add(text);
+                        textFlow.addNode(text);
                     } else /*if (match.startsWith("=="))*/ {
                         Text text = new Text(match.substring(3, match.length() - 3));
                         text.getStyleClass().add("h3");
-                        nodes.add(text);
+                        textFlow.addNode(text);
                     }
 
                     from = matcher.end();
                 }
 
                 if (from != content.length() - 1)
-                    nodes.add(new Text(content.substring(from)));
+                    textFlow.addNode(new Text(content.substring(from)));
             }
         };
         
@@ -586,12 +680,10 @@ public abstract class InformationPaneController<T extends EmulatedItem<T>> imple
             
             Delegate displayInformation = () -> {
                 Map<String, String> data = cache.get(_systemName, currentName, parentName);
-                data.keySet().stream().forEachOrdered(
-                        tabName -> {
-                            String content = data.get(tabName);
-                            addTab.accept(tabName, content);
-                        }
-                );
+                data.keySet().stream().forEachOrdered(tabName -> {
+                    String content = data.get(tabName);
+                    addTab.accept(tabName, content);
+                });
             };
             
             if (cache.isReady()) {

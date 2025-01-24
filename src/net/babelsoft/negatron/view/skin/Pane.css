@@ -145,12 +145,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     -fx-font-weight: bold;
 }
 
-.textFlow {
+.textFlowPane {
     -fx-background-color: -fx-control-inner-background;
 }
 
-.textFlow > .text {
+.textFlowPane > .scroll-pane, .textFlowPane > .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.textFlowPane > .scroll-pane > .viewport {
+    -fx-cursor: text;
+}
+
+.textFlowPane > .scroll-pane > .viewport .text {
     -fx-fill: -fx-text-inner-color;
+}
+
+.textFlowPane > .scroll-pane > .viewport .blue {
+    -fx-fill: blue; /* rgb(43,145,175) */
+}
+
+.textFlowPane > .scroll-pane > .viewport .green {
+    -fx-fill: green;
+}
+
+.textFlowPane > .scroll-pane > .viewport .red {
+    -fx-fill: red;
+}
+
+.textFlowPane > .selection-path {
+    -fx-stroke-width: 0;
+    -fx-fill: -fx-accent;
 }
 
 .folderViewWindow.titled-pane > .title > .header-pane > .label {
