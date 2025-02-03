@@ -95,6 +95,7 @@ import net.babelsoft.negatron.model.item.Software;
 import net.babelsoft.negatron.model.item.SoftwareList;
 import net.babelsoft.negatron.scene.event.GamepadEvent;
 import net.babelsoft.negatron.scene.event.JoystickEvent;
+import net.babelsoft.negatron.scene.event.VirtualMouseEvent;
 import net.babelsoft.negatron.scene.input.GamepadButton;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.DirectoryWatchService;
@@ -750,7 +751,10 @@ public class MainController implements Initializable, AlertController, EditContr
         
         cache.execute();
         
-        if (stage != null) stage.addEventHandler(JoystickEvent.ANY, event -> {
+        if (stage == null)
+            return;
+        
+        stage.addEventHandler(JoystickEvent.ANY, event -> {
             if (event.getEventType() == JoystickEvent.JOYSTICK_ADDED) {
                 log("""
                 New joystick detected:
@@ -795,6 +799,33 @@ public class MainController implements Initializable, AlertController, EditContr
                 if (loggingWindow.isHidden())
                     loggingWindow.show();
             }
+        });
+        
+        stage.addEventHandler(VirtualMouseEvent.ANY, event -> {
+            if (event.getEventType() == VirtualMouseEvent.VMOUSE_ERROR) {
+                log("""
+                The gamepad driven virtual mouse could not be created by Negatron:
+                    Error: %s
+                    Solution: an administrator must grant the rights to create virtual event devices (evdev) \
+                to the current user. This means that a user with administrating rights must run the below shell script:
+                    
+                    #1-call the system security services daemon so that it can upgrade the cached credentials database if required.
+                    sudo sssd
+                    #2-create a new group called uinput if it does not already exist.
+                    sudo groupadd uinput
+                    #3-add the current user to the uinput group, information that gets cached into the crendentials database.
+                    sudo usermod -a -G uinput $USER
+                    #4-grant the rights to create virtual devices to the uinput group i.e. the rights to use the Evdev.UInput module i.e. the permission to write to /dev/uinput.
+                    echo 'KERNEL=="uinput", GROUP="uinput", MODE:="0660", OPTIONS+="static_node=uinput"' | sudo tee -a /etc/udev/rules.d/99-uinput.rules > /dev/null
+                    #5-ensure that the uinput kernel module is loaded. Once is enough to ensure that it will get loaded in all the subsequent user sessions.
+                    sudo modprobe uinput
+                    #6-reboot the computer to immediately activate this grant. Logging out and back in is not enough.
+                """, event.getInfo());
+                
+                if (loggingWindow.isHidden())
+                    loggingWindow.show();
+            } else if (event.getEventType() == VirtualMouseEvent.VMOUSE_WARNING)
+                log("Warning: an event of the gamepad driven virtual mouse could not be delivered to the OS: %s", event.getInfo());
         });
     }
     

@@ -19,7 +19,6 @@ package net.babelsoft.negatron.view.control;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -86,7 +85,7 @@ public class ScrollTextFlow extends StackPane {
     
     public void autoTail() {
         // make the pane to always scroll automatically to the bottom
-        scrollPane.vvalueProperty().bind(textFlow.heightProperty());
+        textFlow.heightProperty().addListener((o, oV, nV) -> scrollPane.setVvalue(1.0));
     }
     
     private void scrollNode(Node node) {

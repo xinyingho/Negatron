@@ -53,6 +53,12 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import static net.babelsoft.negatron.io.Gamepad.*;
 import net.babelsoft.negatron.io.Gamepad.SDL_InitFlags;
+import net.babelsoft.negatron.io.Mouse;
+import net.babelsoft.negatron.io.Mouse.Button;
+import net.babelsoft.negatron.io.Mouse.DeviceProperty;
+import net.babelsoft.negatron.io.Mouse.LibevdevUinputOpenMode;
+import net.babelsoft.negatron.io.Mouse.RelativeAxe;
+import net.babelsoft.negatron.io.Mouse.SynchronizationEvent;
 import net.babelsoft.negatron.io.event.SDL_Event;
 import net.babelsoft.negatron.io.event.SDL_EventType;
 import net.babelsoft.negatron.io.event.gamepad.SDL_GamepadAxisEvent;
@@ -65,6 +71,7 @@ import net.babelsoft.negatron.io.event.joystick.SDL_JoyDeviceEvent;
 import net.babelsoft.negatron.io.event.joystick.SDL_JoyHatEvent;
 import net.babelsoft.negatron.scene.event.GamepadEvent;
 import net.babelsoft.negatron.scene.event.JoystickEvent;
+import net.babelsoft.negatron.scene.event.VirtualMouseEvent;
 import net.babelsoft.negatron.scene.input.GamepadAxis;
 import net.babelsoft.negatron.scene.input.GamepadButton;
 import net.babelsoft.negatron.scene.input.GamepadType;
@@ -83,6 +90,8 @@ public class Scene extends javafx.scene.Scene implements Disposable {
     private final List<Integer> gamepadIds;
     private final Robot robot;
     private int axisMotionEventCount;
+    
+    private MemorySegment mouseUinputDevice;
     
     private record TriggerId(int gamepadId, GamepadAxis trigger) { }
     private final Map<TriggerId, LinkedList<Short>> triggerStates;
@@ -114,6 +123,7 @@ public class Scene extends javafx.scene.Scene implements Disposable {
         super(parent);
         
         axisMotionEventCount = 0;
+        mouseUinputDevice = null;
         mode = InputMode.MOUSE;
         
         boolean canPollEvents;
@@ -148,6 +158,44 @@ public class Scene extends javafx.scene.Scene implements Disposable {
         }
     }
     
+    private void initialise() {
+        MemorySegment mouseDevice = null;
+        if (mouseUinputDevice == null && Shell.isLinux()) try {
+            Arena arena = Arena.ofAuto();
+            // create a complete and valid mouse-like virtual device
+            mouseDevice = Mouse.libevdev_new();
+            Mouse.libevdev_set_name(mouseDevice, arena.allocateFrom("Negatron Virtual Mouse"));
+            Mouse.libevdev_enable_property(mouseDevice, DeviceProperty.INPUT_PROP_POINTER);
+            Mouse.libevdev_enable_event_type(mouseDevice, Mouse.EventType.EV_REL);
+            Mouse.libevdev_enable_event_code(mouseDevice, Mouse.EventType.EV_REL, RelativeAxe.REL_X, MemorySegment.NULL);
+            Mouse.libevdev_enable_event_code(mouseDevice, Mouse.EventType.EV_REL, RelativeAxe.REL_Y, MemorySegment.NULL);
+            Mouse.libevdev_enable_event_code(mouseDevice, Mouse.EventType.EV_REL, RelativeAxe.REL_WHEEL, MemorySegment.NULL);
+            /*
+            Mouse.libevdev_enable_event_type(mouseDevice, Mouse.EventType.EV_ABS);
+            Mouse.libevdev_enable_event_code(mouseDevice, Mouse.EventType.EV_ABS, AbsoluteAxe.ABS_X, MemorySegment.NULL);
+            Mouse.libevdev_enable_event_code(mouseDevice, Mouse.EventType.EV_ABS, AbsoluteAxe.ABS_Y, MemorySegment.NULL);
+            */
+            Mouse.libevdev_enable_event_type(mouseDevice, Mouse.EventType.EV_KEY);
+            Mouse.libevdev_enable_event_code(mouseDevice, Mouse.EventType.EV_KEY, Button.BTN_LEFT, MemorySegment.NULL);
+            Mouse.libevdev_enable_event_code(mouseDevice, Mouse.EventType.EV_KEY, Button.BTN_RIGHT, MemorySegment.NULL);
+            Mouse.libevdev_enable_event_code(mouseDevice, Mouse.EventType.EV_KEY, Button.BTN_MIDDLE, MemorySegment.NULL);
+
+            MemorySegment mouseUinputDevicePtr = arena.allocate(C_POINTER);
+            int errno = Mouse.libevdev_uinput_create_from_device(mouseDevice, LibevdevUinputOpenMode.LIBEVDEV_UINPUT_OPEN_MANAGED, mouseUinputDevicePtr);
+            if (errno != 0) {
+                String errorMessage = Mouse.strerror(-errno);
+                Logger.getLogger(Scene.class.getName()).log(Level.SEVERE, "Failed to create virtual mouse device: {0}", errorMessage);
+                processVirtualMouseEvent(VirtualMouseEvent.VMOUSE_ERROR, errorMessage);
+            } else
+                mouseUinputDevice = mouseUinputDevicePtr.get(C_POINTER, 0);
+            Mouse.libevdev_free(mouseDevice);
+        } catch (Throwable t) {
+            Logger.getLogger(Scene.class.getName()).log(Level.SEVERE, "Error while initialising libevdev", t);
+            processVirtualMouseEvent(VirtualMouseEvent.VMOUSE_ERROR, t.getLocalizedMessage());
+            try { Mouse.libevdev_free(mouseDevice); } catch (Throwable tt) { }
+        }
+    }
+    
     private boolean isFocused() {
         return !Stage.getWindows().filtered(window -> window.isFocused()).isEmpty();
     }
@@ -164,8 +212,10 @@ public class Scene extends javafx.scene.Scene implements Disposable {
                     if (joystick.address() == 0L) {
                         processJoystickEvent(JoystickEvent.JOYSTICK_ADDED_ERROR, Integer.toString(which), SDL_GetError());
                         SDL_ClearError();
-                    } else
+                    } else {
                         processJoystickEvent(JoystickEvent.JOYSTICK_ADDED, SDL_GetJoystickName(joystick), SDL_GetJoystickPath(joystick));
+                        initialise();
+                    }
                 }
                 case SDL_EventType.SDL_EVENT_GAMEPAD_ADDED -> {
                     final int which = SDL_GamepadDeviceEvent.which(SDL_Event.gdevice(event));
@@ -339,7 +389,6 @@ public class Scene extends javafx.scene.Scene implements Disposable {
         }
     } catch (Throwable t) {
         Logger.getLogger(Scene.class.getName()).log(Level.SEVERE, "Error while polling gamepad events", t);
-        t.printStackTrace();
     } }
     
     private void handleGamepadAxisMotionEvent(GamepadType gamepadType, GamepadAxis axis, short value) throws Throwable {
@@ -367,7 +416,7 @@ public class Scene extends javafx.scene.Scene implements Disposable {
 
                 double differential = move * screen.getBounds().getWidth() / MAX;
                 move = Math.abs(move);
-
+                
                 if (move < THRESHOLD_1)
                     differential /= 1000d;
                 else if (move < THRESHOLD_2)
@@ -377,10 +426,50 @@ public class Scene extends javafx.scene.Scene implements Disposable {
                 else
                     differential /= 50d;
 
-                if (axis == GamepadAxis.LEFTX)
-                    robot.mouseMove( mousePosition.add(differential, 0) );
-                else // GamepadAxis.LEFTY
-                    robot.mouseMove( mousePosition.add(0, differential) );
+                if (!Shell.isLinux()) {
+                    // Negatron relies on the JavaFX robot to emulate and send virtual mouse events to the OS on Windows and macOS.
+                    if (axis == GamepadAxis.LEFTX)
+                        robot.mouseMove( mousePosition.add(differential, 0) );
+                    else // GamepadAxis.LEFTY
+                        robot.mouseMove( mousePosition.add(0, differential) );
+                } else {
+                    // As of JavaFX 23, the robot is using X11 XTest framework to emulate and send virtual mouse events to the Linux kernel.
+                    // However, most modern Linux desktops have migrated from X11 to Wayland to manage desktop compositing.
+                    // Hence, the JavaFX robot must rely on the XWayland compatibility layer to work on Wayland, which is buggy:
+                    // mouse movements are sent to the kernel but not to the graphical compositing layer so applications do take into
+                    // account mouse movements but the mouse pointer doesn't move at all...
+                    
+                    // After submitting the bug to Oracle (https://bugs.openjdk.org/browse/JDK-8347154), Oracle engineers promptly replied
+                    // telling that this is a bug in Linux, not in JavaFX, so they don't have anything to fix. I didn't reach to the Linux
+                    // community as it looks like a long-standing bug that won't be fixed at all. Indeed, somebody else already reported a
+                    // similar bug to Oracle with the AWT robot, 3 years before me (https://bugs.openjdk.org/browse/JDK-8280995).
+                    
+                    // As a workaround, Negatron must then hack onto the normal software stack so that mouse emulation from gamepads
+                    // can work with the visual cues of the moving mouse pointer i.e. the stack
+                    // [Negatron > JavaFX Robot > Java > X11 XTest > XWayland > Wayland > Libevdev > Kernel] must get shorten to the stack
+                    // [Negatron > Java > Libevdev > Kernel] to squeeze out the problematic XWayland layer.
+                    Consumer<Integer> wrapError = errno -> { try {
+                        if (errno != 0) {
+                            String errorMessage = Mouse.strerror(-errno);
+                            Logger.getLogger(Scene.class.getName()).log(
+                                Level.WARNING, "Failed to simulate mouse move: {0}", errorMessage
+                            );
+                            processVirtualMouseEvent(VirtualMouseEvent.VMOUSE_WARNING, errorMessage);
+                        }
+                    } catch (Throwable t) { }};
+                    
+                    if (axis == GamepadAxis.LEFTX)
+                        wrapError.accept(Mouse.libevdev_uinput_write_event(
+                            mouseUinputDevice, Mouse.EventType.EV_REL, RelativeAxe.REL_X, (int) differential
+                        ));
+                    else
+                        wrapError.accept(Mouse.libevdev_uinput_write_event(
+                            mouseUinputDevice, Mouse.EventType.EV_REL, RelativeAxe.REL_Y, (int) differential
+                        ));
+                    wrapError.accept(Mouse.libevdev_uinput_write_event(
+                        mouseUinputDevice, Mouse.EventType.EV_SYN, SynchronizationEvent.SYN_REPORT, 0
+                    ));
+                }
                 mode = InputMode.MOUSE;
             }
             case GamepadAxis.RIGHTX -> {
@@ -544,11 +633,18 @@ public class Scene extends javafx.scene.Scene implements Disposable {
         final EventTarget eventTarget = findEventTarget();
         Event.fireEvent(eventTarget, new GamepadEvent(null, eventTarget, button));
     }
+    
+    private void processVirtualMouseEvent(EventType<VirtualMouseEvent> eventType, String info) {
+        final EventTarget eventTarget = findEventTarget();
+        Event.fireEvent(eventTarget, new VirtualMouseEvent(null, eventTarget, eventType, info));
+    }
 
     @Override
     public void dispose() {
         try {
             SDL_Quit();
+            if (Shell.isLinux())
+                Mouse.libevdev_uinput_destroy(mouseUinputDevice);
         } catch(Throwable t) {
             // swallow any exceptions
         }
