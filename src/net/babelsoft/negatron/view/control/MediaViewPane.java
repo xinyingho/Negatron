@@ -130,14 +130,26 @@ public class MediaViewPane extends Region implements Disposable {
                 initializeImageView(buffers[0], sourceWidth, sourceHeight);
             });
         }
+
+        @Override
+        public void newFormatSize(int bufferWidth, int bufferHeight, int displayWidth, int displayHeight) {
+        }
     }
     
     private class CanvasRenderCallback implements RenderCallback {
         @Override
-        public void display(MediaPlayer mediaPlayer, ByteBuffer[] nativeBuffers, BufferFormat bufferFormat) {
+        public void display(MediaPlayer mediaPlayer, ByteBuffer[] nativeBuffers, BufferFormat bufferFormat, int displayWidth, int displayHeight) {
             Platform.runLater(() -> {
                 videoPixelBuffer.updateBuffer(pb -> null);
             });
+        }
+
+        @Override
+        public void lock(MediaPlayer mp) {
+        }
+
+        @Override
+        public void unlock(MediaPlayer mp) {
         }
     }
     
