@@ -13,7 +13,7 @@ Moreover, Negatron's second objective is to ease the creation of a complete info
 
 - PREREQUISITES -
 
-Negatron requires a Java development kit (JDK) to work: ensure that your computer has at least Java 11, or newer. If you have any doubts, you can download the latest version of OpenJDK at https://jdk.java.net/ or the latest version of Java SE at https://java.oracle.com/ and install it on your computer.
+Negatron requires a Java development kit (JDK) to work: ensure that your computer has at least Java 24, or newer. If you have any doubts, you can download the latest version of OpenJDK at https://jdk.java.net/ or the latest version of Java SE at https://java.oracle.com/ and install it on your computer.
 
 Negatron also requires MAME to be installed on your computer. Although it has only been tested with v0.162 or newer, Negatron should work with MAME / MESS v0.70 and newer as well. You can get the latest version for your specific OS at https://www.mamedev.org. If you plan on using MAME v0.186 or newer, we strongly recommend you to use the derivative NegaMAME instead as recent versions of MAME disabled access to some information on emulated consoles and computers to third-party front-ends. It's available at https://www.babelsoft.net/products/negamame.htm. However, if you only play arcade games, you shouldn't see any differences between official MAME and NegaMAME.
 
@@ -60,7 +60,7 @@ To compile Negatron:
 1. Create a root folder locally that will hold the source code of Negatron and all its dependencies.
 2. Within this root folder, download the source code of Negatron, Negatron-Preloader, Negatron-Bootstrap and OpenViewerFX using git. For OpenViewerFX, you must get it from https://github.com/xinyingho/ as this version includes important modifications not available from the original repository of this project.
 3. Ensure that you have the latest version of OpenJDK or Oracle Java SE, at least v11. This won't work on earlier versions of Java.
-4. The following instructions have been tested against Apache Netbeans 24. But it should also work with other IDEs.
+4. The following instructions have been tested against Apache Netbeans 25. But it should also work with other IDEs.
 5. Open all the 3 Java projects in Netbeans. *Do not import them*, simply use "File > Open Projects...". Netbeans may issue some warnings. Ignore them as they will be solved by compiling the projects.
 6. Compile them in this order and you're done:
    1. OpenViewerFX

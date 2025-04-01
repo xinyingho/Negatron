@@ -50,7 +50,7 @@
     </developers>
 
     <properties>
-        <copyright>${project.organization.name} copyright © 2020</copyright>
+        <copyright>${project.organization.name} copyright © 2025</copyright>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <moduleName>negatron</moduleName>
         <mainClass>net.babelsoft.negatron.NegatronApp</mainClass>
@@ -59,11 +59,11 @@
         <package.runtime.output>${package.basedir}/runtime</package.runtime.output>
         <package.app.output>${package.basedir}/app</package.app.output>
         
-        <javafx.version>23.0.1</javafx.version>
+        <javafx.version>24</javafx.version>
         <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
-        <vlcj.version>4.8.3</vlcj.version>
-        <sdl.version>3.1.8</sdl.version>
+        <vlcj.version>4.10.1</vlcj.version>
+        <sdl.version>3.2.10</sdl.version>
         
         <localLibPath>${project.basedir}/lib</localLibPath>
     </properties>
@@ -203,6 +203,7 @@
             <activation>
                 <os>
                     <family>mac</family>
+                    <arch>amd64</arch>
                 </os>
             </activation>
             <properties>
@@ -244,6 +245,129 @@
                                     <resources>          
                                         <resource>
                                             <directory>${project.basedir}/lib/sdl/${sdl.version}/mac</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>              
+                                </configuration>            
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>--type</argument>
+                                        <argument>${bundle.type}</argument>
+                                        <argument>--icon</argument>
+                                        <argument>${icon}</argument>
+                                        <argument>--app-version</argument>
+                                        <argument>${project.version}</argument>
+                                        <argument>--copyright</argument>
+                                        <argument>${copyright}</argument>
+                                        <argument>--name</argument>
+                                        <argument>${project.name}</argument>
+                                        <argument>--vendor</argument>
+                                        <argument>${project.organization.name}</argument>
+                                        <argument>--description</argument>
+                                        <argument>${project.description}</argument>
+                                        <argument>--license-file</argument>
+                                        <argument>${project.basedir}/license.txt</argument>
+                                
+                                        <argument>--runtime-image</argument>
+                                        <argument>${package.runtime.output}</argument>
+                                        <argument>--input</argument>
+                                        <argument>${package.app.output}</argument>
+                                
+                                        <argument>--java-options</argument>
+                                        <argument>-Xms512m</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>-Xmx2g</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-exports</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-exports</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>uk.co.caprica.vlcj.natives/uk.co.caprica.vlcj.binding.support.runtime=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-native-access=${moduleName}</argument>
+                                
+                                        <argument>--module</argument>
+                                        <argument>${moduleName}/${mainClass}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+            <id>macos-aarch</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <os.name>MacAarch</os.name>
+                <bundle.type>dmg</bundle.type>
+                <jpackage.home>${java.home}</jpackage.home>
+                <icon>${project.basedir}/../Negatron-Bootstrap/Negatron-Bootstrap/Negatron.icns</icon>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources-mac</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${package.app.output}/VLC.app</outputDirectory>
+                                    <resources>          
+                                        <resource>
+                                            <directory>${project.basedir}/VLC.app</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>              
+                                </configuration>            
+                            </execution>
+                            <execution>
+                                <id>copy-resources-mac-sdl</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${package.app.output}</outputDirectory>
+                                    <resources>          
+                                        <resource>
+                                            <directory>${project.basedir}/lib/sdl/${sdl.version}/mac-aarch</directory>
                                             <filtering>false</filtering>
                                         </resource>
                                     </resources>              
@@ -556,8 +680,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>23</source>
-                    <target>23</target>
+                    <source>24</source>
+                    <target>24</target>
                     <compilerArgs>
                         <arg>-Xlint:unchecked</arg>
                         <arg>-Xlint:deprecation</arg>
