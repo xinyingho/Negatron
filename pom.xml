@@ -4,7 +4,7 @@
 
     <groupId>net.babelsoft</groupId>
     <artifactId>Negatron</artifactId>
-    <version>1.0.0</version><!-- macOS forbids any versions using the pattern 0.x.x when building a dmg/pkg pack -->
+    <version>1.0.1</version><!-- macOS forbids any versions using the pattern 0.x.x when building a dmg/pkg pack -->
     <packaging>jar</packaging>
 
     <name>Negatron</name>
@@ -678,14 +678,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.14.0</version>
                 <configuration>
-                    <source>24</source>
-                    <target>24</target>
                     <compilerArgs>
                         <arg>-Xlint:unchecked</arg>
                         <arg>-Xlint:deprecation</arg>
                     </compilerArgs>
+                    <release>24</release>
                 </configuration>
             </plugin>
             <plugin>
