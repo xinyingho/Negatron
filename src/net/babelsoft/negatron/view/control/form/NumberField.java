@@ -18,6 +18,7 @@
 package net.babelsoft.negatron.view.control.form;
 
 import java.util.IllegalFormatConversionException;
+import java.util.Locale;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
@@ -67,7 +68,7 @@ public abstract class NumberField<T extends Number> extends Field {
                 updating = true;
                 slider.setValue(newValue.doubleValue());
                 try {
-                    updateGlobalConfigurationSetting(key, String.format(format, newValue));
+                    updateGlobalConfigurationSetting(key, String.format(Locale.UK, format, newValue));
                 } catch (IllegalFormatConversionException ex) {
                     
                 }

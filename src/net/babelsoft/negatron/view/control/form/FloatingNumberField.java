@@ -17,6 +17,8 @@
  */
 package net.babelsoft.negatron.view.control.form;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.Locale;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
@@ -48,8 +50,13 @@ public class FloatingNumberField extends NumberField<Double> {
 
         spinner = new Spinner<>(minValue, maxValue, currentValue, step);
         spinner.getEditor().focusedProperty().addListener((o, oV, newValue) -> {
-            if (!newValue)
-                spinner.getValueFactory().setValue(Double.valueOf(spinner.getEditor().getText()));
+            if (!newValue) try {
+                spinner.getValueFactory().setValue(
+                    DecimalFormat.getInstance(Locale.getDefault()).parse(spinner.getEditor().getText()).doubleValue()
+                );
+            } catch (ParseException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         
         initialise(grid, row, key, format);
