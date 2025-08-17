@@ -17,9 +17,11 @@
  */
 package net.babelsoft.negatron.io;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -144,6 +146,25 @@ public class Mame {
             ));
             
             new ProcessBuilder(arguments).start().waitFor();
+        }
+    }
+    
+    /**
+     * If the current version of MAME is "0.279 (negamame0279-1)", this should return 279.
+     * For any version of MAME before v0.211, returns 0 as the default version.
+     * @return the current MAME version
+     */
+    public static int version() {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(newInputStream("-version")))) {
+            String version = reader.readLine(); // should retrieve something like "0.279 (negamame0279-1)"
+            if (Strings.isValid(version) && version.startsWith("0.")) {
+                version = version.split(" ")[0].split("\\.")[1]; // just want the actual version number without the meaningless "0." header e.g. "279"
+                return Integer.parseInt(version);
+            }
+            return 0; // for anything before MAME v0.211 i.e. a MAME version missing the -version option, go with a dummy default version
+        } catch (IOException ex) {
+            System.getLogger(Mame.class.getName()).log(System.Logger.Level.ERROR, "Couldn't retrieve the current MAME version", ex);
+            return 0;
         }
     }
 }

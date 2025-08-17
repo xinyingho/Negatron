@@ -26,6 +26,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import net.babelsoft.negatron.theme.Language;
+import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.view.control.Infotip;
 
 /**
@@ -45,10 +46,15 @@ public abstract class NumberField<T extends Number> extends Field {
     }
     
     public void initialise(GridPane grid, int row, String key, String format) {
+        initialise(grid, row, key, null, format);
+    }
+    
+    public void initialise(GridPane grid, int row, String key, String altTipKey, String format) {
         Label label = new Label(Language.Manager.getString("globalConf." + key));
         grid.add(label, 0, row);
         
-        Infotip tooltip = new Infotip(Language.Manager.tryGetString("globalConf." + key + ".tooltip"));
+        String tipKey = "globalConf." + key + (Strings.isValid(altTipKey) ? "-" + altTipKey : "") + ".tooltip";
+        Infotip tooltip = new Infotip(Language.Manager.tryGetString(tipKey));
         
         slider.setMaxWidth(Double.MAX_VALUE);
         slider.setShowTickLabels(true);

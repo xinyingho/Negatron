@@ -33,6 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
+import net.babelsoft.negatron.io.Mame;
 import net.babelsoft.negatron.io.configuration.Configuration;
 import net.babelsoft.negatron.io.configuration.Domain;
 import net.babelsoft.negatron.io.configuration.InputDevice;
@@ -217,6 +218,8 @@ public class GlobalConfigurationPaneController implements Initializable {
             foldersLabel2.setText(foldersLabel2.getText().replace("MAME", "MESS"));
             optionsLabel.setText(optionsLabel.getText().replace("MAME", "MESS"));
         }
+        
+        int version = Mame.version();
         
         // Folders: MAME column
         
@@ -491,7 +494,10 @@ public class GlobalConfigurationPaneController implements Initializable {
         GridAdornment.insertSpacing                         (osdGrid, rowIdx++, SPACING);
         GridAdornment.insertTitle                           (osdGrid, rowIdx++, SPACING, rb.getString("osdSoundOptions"));
         check(s -> new OSDChoiceField<>                     (osdGrid, rowIdx++, s, Sound.values()),                         "sound");
-        check(s -> new IntegerNumberField                   (osdGrid, rowIdx++, s, 1, 5, 1, 0, 1),                          "audio_latency");
+        if (version < 278)
+            check(s -> new IntegerNumberField               (osdGrid, rowIdx++, s, 0, 5, 1, 0, 1),                          "audio_latency");
+        else
+            check(s -> new FloatingNumberField              (osdGrid, rowIdx++, s, "278", "%.1f", 0.0, 50.0, 5, 9, 0.5),    "audio_latency");
 
         rowIdx = 0;
         GridAdornment.insertTitle                           (osdGrid2, rowIdx++, SPACING, rb.getString("osdVideoOptions"));

@@ -32,6 +32,10 @@ import net.babelsoft.negatron.io.configuration.Configuration;
 public class FloatingNumberField extends NumberField<Double> {
     
     public FloatingNumberField(GridPane grid, int row, String key, String format, double minValue, double maxValue, double majorTickUnit, int minorTickCount, double step) {
+        this(grid, row, key, null, format, minValue, maxValue, majorTickUnit, minorTickCount, step);
+    }
+    
+    public FloatingNumberField(GridPane grid, int row, String key, String altTipKey, String format, double minValue, double maxValue, double majorTickUnit, int minorTickCount, double step) {
         double currentValue = Double.parseDouble(Configuration.Manager.getGlobalConfiguration(key));
                 
         slider = new Slider(minValue, maxValue, currentValue);
@@ -59,6 +63,6 @@ public class FloatingNumberField extends NumberField<Double> {
             }
         });
         
-        initialise(grid, row, key, format);
+        initialise(grid, row, key, altTipKey, format);
     }
 }
