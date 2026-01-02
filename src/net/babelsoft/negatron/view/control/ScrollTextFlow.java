@@ -95,56 +95,24 @@ public class ScrollTextFlow extends StackPane {
         double minY = scrollPane.getVvalue() / range * (
             textFlow.getLayoutBounds().getHeight() - scrollPane.getViewportBounds().getHeight()
         );
-        node.setTranslateY(textFlow.getPadding().getTop() - minY);
+        node.setTranslateY(-minY);
     }
     
     private void selectText() {
         final int startIndex = selectionStartIndex < selectionEndIndex ? selectionStartIndex : selectionEndIndex;
         final int endIndex = selectionStartIndex < selectionEndIndex ? selectionEndIndex : selectionStartIndex;
 
-        PathElement[] elements = textFlow.rangeShape(startIndex, endIndex);
+        PathElement[] elements = textFlow.getRangeShape(startIndex, endIndex, true);
         Path path = new Path(elements);
         path.getStyleClass().add("selection-path");
         path.setManaged(false);
 
-        path.setTranslateX(textFlow.getPadding().getLeft());
         scrollNode(path);
 
         List<Node> children = getChildren();
         if (children.size() > 1)
             children.removeFirst();
         children.addFirst(path);
-
-        // text.setSelectionStart/End() both only work for the very first text node...
-        // TODO uncomment below block when JavaFX will be able to manage selection on several text nodes simultaneously.
-        /*int index = 0;
-        boolean foundSelection = false;
-        nodeLoop: for (Node node : textFlow.getChildrenUnmodifiable()) switch (node) {
-            case Text text -> {
-                final String currentText = text.getText();
-                if (!foundSelection) {
-                    if (index <= startIndex && startIndex < index + currentText.length()) {
-                        text.setSelectionStart(startIndex - index);
-                        if (endIndex - index < currentText.length()) {
-                            text.setSelectionEnd(endIndex - index);
-                            break nodeLoop;
-                        } else
-                            text.setSelectionEnd(currentText.length());
-                        foundSelection = true;
-                    }
-                } else {
-                    text.setSelectionStart(0);
-                    if (endIndex < index + currentText.length()) {
-                        text.setSelectionEnd(endIndex - index);
-                        break nodeLoop;
-                    } else
-                        text.setSelectionEnd(currentText.length());
-                }
-                index += currentText.length();
-            }
-            case Hyperlink link -> ++index;
-            default -> { }
-        }*/
     };
                     
     private void setOnMouseReleased(MouseEvent e) {
@@ -153,9 +121,9 @@ public class ScrollTextFlow extends StackPane {
             // So, to be able to catch keyboard events, force the focus on it
             textFlow.requestFocus();
 
-            double x = e.getX() - textFlow.getPadding().getLeft();
-            double y = e.getY() - textFlow.getPadding().getTop();
-            int selectionIndex = textFlow.hitTest(new Point2D(x, y)).getCharIndex();
+            double x = e.getX();
+            double y = e.getY();
+            int selectionIndex = textFlow.getHitInfo(new Point2D(x, y)).getCharIndex();
 
             int index = 0;
             nodeLoop: for (Node node : textFlow.getChildrenUnmodifiable()) switch (node) {
@@ -201,9 +169,9 @@ public class ScrollTextFlow extends StackPane {
             // So, to be able to catch keyboard events, force the focus on it
             textFlow.requestFocus();
 
-            double x = e.getX() - textFlow.getPadding().getLeft();
-            double y = e.getY() - textFlow.getPadding().getTop();
-            selectionStartIndex = textFlow.hitTest(new Point2D(x, y)).getCharIndex();
+            double x = e.getX();
+            double y = e.getY();
+            selectionStartIndex = textFlow.getHitInfo(new Point2D(x, y)).getCharIndex();
             selectionEndIndex = -1;
 
             List<Node> children = getChildren();
@@ -221,9 +189,9 @@ public class ScrollTextFlow extends StackPane {
     
     private void setOnMouseDragged(MouseEvent e) {
         if (e.isPrimaryButtonDown()) {
-            double x = e.getX() - textFlow.getPadding().getLeft();
-            double y = e.getY() - textFlow.getPadding().getTop();
-            selectionEndIndex = textFlow.hitTest(new Point2D(x, y)).getCharIndex();
+            double x = e.getX();
+            double y = e.getY();
+            selectionEndIndex = textFlow.getHitInfo(new Point2D(x, y)).getCharIndex();
             selectText();
             e.consume();
         }

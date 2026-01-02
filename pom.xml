@@ -50,7 +50,7 @@
     </developers>
 
     <properties>
-        <copyright>${project.organization.name} copyright © 2025</copyright>
+        <copyright>${project.organization.name} copyright © 2026</copyright>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <moduleName>negatron</moduleName>
         <mainClass>net.babelsoft.negatron.NegatronApp</mainClass>
@@ -59,10 +59,10 @@
         <package.runtime.output>${package.basedir}/runtime</package.runtime.output>
         <package.app.output>${package.basedir}/app</package.app.output>
         
-        <javafx.version>24</javafx.version>
-        <twelvemonkeys.version>3.12.0</twelvemonkeys.version>
+        <javafx.version>25.0.1</javafx.version>
+        <twelvemonkeys.version>3.13.0</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
-        <vlcj.version>4.10.1</vlcj.version>
+        <vlcj.version>4.12.1</vlcj.version>
         <sdl.version>3.2.10</sdl.version>
         
         <localLibPath>${project.basedir}/lib</localLibPath>
@@ -86,7 +86,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.4.0</version>
                         <executions>
                             <execution>
                                 <id>copy-resources-win</id>
@@ -125,7 +125,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.5.0</version>
+                        <version>3.6.2</version>
                         <executions>
                             <execution>
                                 <id>create-package</id>
@@ -216,7 +216,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.4.0</version>
                         <executions>
                             <execution>
                                 <id>copy-resources-mac</id>
@@ -255,7 +255,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.5.0</version>
+                        <version>3.6.2</version>
                         <executions>
                             <execution>
                                 <id>create-package</id>
@@ -339,7 +339,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.4.0</version>
                         <executions>
                             <execution>
                                 <id>copy-resources-mac</id>
@@ -378,7 +378,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.5.0</version>
+                        <version>3.6.2</version>
                         <executions>
                             <execution>
                                 <id>create-package</id>
@@ -461,7 +461,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.4.0</version>
                         <executions>
                             <execution>
                                 <id>copy-resources-lnx-sdl</id>
@@ -484,7 +484,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.5.0</version>
+                        <version>3.6.2</version>
                         <executions>
                             <execution>
                                 <id>create-package</id>
@@ -678,19 +678,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>3.14.1</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-Xlint:unchecked</arg>
                         <arg>-Xlint:deprecation</arg>
                     </compilerArgs>
-                    <release>24</release>
+                    <release>25</release>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.2</version>
+                <version>3.5.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -705,7 +705,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.9.0</version>
                 <executions>
                     <execution>
                         <id>copy-libs</id>
@@ -740,7 +740,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>copy-resources</id>
@@ -763,7 +763,7 @@
             <plugin>
                 <groupId>org.moditect</groupId>
                 <artifactId>moditect-maven-plugin</artifactId>
-                <version>1.2.2.Final</version>
+                <version>1.3.0.Final</version>
                 <executions>
                     <execution>
                         <id>add-module-info-to-deps</id>
@@ -948,7 +948,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -999,7 +999,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.7.1</version>
+                <version>3.8.0</version>
                 <executions>
                     <execution>
                         <id>cross-platform-pack</id>
