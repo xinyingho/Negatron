@@ -951,28 +951,23 @@
                 <version>3.6.2</version>
                 <executions>
                     <execution>
+                        <id>run-app</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
                             <executable>${java.home}/bin/java</executable>
-                            <arguments>
-                                <argument>-Xms512m</argument>
-                                <argument>-Xmx2g</argument>
-                                <argument>--add-exports</argument>
-                                <argument>javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName}</argument>
-                                <argument>--add-exports</argument>
-                                <argument>uk.co.caprica.vlcj.natives/uk.co.caprica.vlcj.binding.support.runtime=${moduleName}</argument>
-                                <argument>--add-opens</argument>
-                                <argument>javafx.controls/javafx.scene.control=${moduleName}</argument>
-                                <argument>--add-opens</argument>
-                                <argument>javafx.controls/javafx.scene.control.skin=${moduleName}</argument>
-                                <argument>--enable-native-access=${moduleName}</argument>
-                                <argument>--module-path</argument>
-                                <argument>${project.build.directory}/modules</argument>
-                                <argument>--module</argument>
-                                <argument>${moduleName}/${mainClass}</argument>
-                            </arguments>
+                            <commandlineArgs>-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName} --add-exports uk.co.caprica.vlcj.natives/uk.co.caprica.vlcj.binding.support.runtime=${moduleName} --add-opens javafx.controls/javafx.scene.control=${moduleName} --add-opens javafx.controls/javafx.scene.control.skin=${moduleName} --enable-native-access=${moduleName} --module-path ${project.build.directory}/modules --module ${moduleName}/${mainClass}</commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>debug-app</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <commandlineArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:8000 -Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=${moduleName} --add-exports uk.co.caprica.vlcj.natives/uk.co.caprica.vlcj.binding.support.runtime=${moduleName} --add-opens javafx.controls/javafx.scene.control=${moduleName} --add-opens javafx.controls/javafx.scene.control.skin=${moduleName} --enable-native-access=${moduleName} --module-path ${project.build.directory}/modules --module ${moduleName}/${mainClass}</commandlineArgs>
                         </configuration>
                     </execution>
                     <execution>
