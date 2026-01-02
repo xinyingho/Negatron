@@ -63,7 +63,7 @@
         <twelvemonkeys.version>3.13.0</twelvemonkeys.version>
         <openviewerfx.version>6.6.30-negatron</openviewerfx.version>
         <vlcj.version>4.12.1</vlcj.version>
-        <sdl.version>3.2.10</sdl.version>
+        <sdl.version>3.4.0</sdl.version>
         
         <localLibPath>${project.basedir}/lib</localLibPath>
     </properties>
