@@ -614,7 +614,10 @@ public class Gamepad {
      */
     public static String SDL_GetJoystickPath(MemorySegment joystick) throws Throwable {
         MemorySegment ms = (MemorySegment)SDL_GetJoystickPath.HANDLE.invokeExact(joystick);
-        return ms.getString(0);
+        if (ms.address() > 0x0)
+            return ms.getString(0);
+        else
+            return "None";
     }
     
     private static class SDL_GetGamepadName {
@@ -670,7 +673,10 @@ public class Gamepad {
      */
     public static String SDL_GetGamepadPath(MemorySegment gamepad) throws Throwable {
         MemorySegment ms = (MemorySegment)SDL_GetGamepadPath.HANDLE.invokeExact(gamepad);
-        return ms.getString(0);
+        if (ms.address() > 0x0)
+            return ms.getString(0);
+        else
+            return "None";
     }
 
     private static class SDL_GetError {
