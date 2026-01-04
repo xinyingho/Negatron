@@ -2,7 +2,13 @@
 
 DIR=`dirname $0`
 MINIMUMVERSION=11
-JVM_OPTIONS="-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=negatron --add-opens javafx.controls/javafx.scene.control=negatron --add-opens javafx.controls/javafx.scene.control.skin=negatron --enable-native-access=negatron --module-path=\"$DIR/modules:$DIR/modules/mac\""
+JVM_OPTIONS="-Xms512m -Xmx2g --add-exports javafx.controls/com.sun.javafx.scene.control.behavior=negatron --add-exports uk.co.caprica.vlcj.natives/uk.co.caprica.vlcj.binding.support.runtime=negatron --add-opens javafx.controls/javafx.scene.control=negatron --add-opens javafx.controls/javafx.scene.control.skin=negatron --enable-native-access=negatron"
+
+if [[ $(arch) == 'arm64' ]]; then
+    JVM_OPTIONS="$JVM_OPTIONS --module-path=\"$DIR/modules:$DIR/modules/mac-aarch\""
+else
+    JVM_OPTIONS="$JVM_OPTIONS --module-path=\"$DIR/modules:$DIR/modules/mac\""
+fi
 
 # Check whether the system-wide Java runtime meets the minimum requirements
 
