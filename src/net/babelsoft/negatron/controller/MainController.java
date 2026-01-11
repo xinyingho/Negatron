@@ -100,6 +100,7 @@ import net.babelsoft.negatron.scene.input.GamepadButton;
 import net.babelsoft.negatron.theme.Language;
 import net.babelsoft.negatron.util.DirectoryWatchService;
 import net.babelsoft.negatron.util.Disposable;
+import net.babelsoft.negatron.util.Shell;
 import net.babelsoft.negatron.util.SimpleDirectoryWatchService;
 import net.babelsoft.negatron.util.Strings;
 import net.babelsoft.negatron.util.function.Delegate;
@@ -770,6 +771,25 @@ public class MainController implements Initializable, AlertController, EditContr
                     Internal id: %s
                     Input mapping method: it has been switched to follow the standards for this gamepad.
                 """, event.getName(), event.getInfo());
+                
+                if (Shell.isLinux() && event.getName().contains("Nintendo Switch") && event.getName().contains("Pro")) {
+                    log("""
+                    Warning: Nintendo Switch 2 Pro controllers may not work because of missing access rights.
+                        Solution: an administrator must add those access rights by running the below command lines:
+                        
+                        #1-grant the rights for the controller to be able to communicate with applications
+                        echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="057e", ATTR{idProduct}=="2069", MODE="0666"' | sudo tee -a /etc/udev/rules.d/99-nintendo_switch2pro.rules > /dev/null
+                        #2-reset the rights management system for external devices
+                        sudo udevadm control --reload-rules
+                        #3-unplug and replug your controller so that it gets managed with the new rights
+                    """);
+                    if (loggingWindow.isHidden()) {
+                        loggingWindow.setOnceOnAnimationEnded(() -> new Timeline(new KeyFrame(Duration.seconds(10),
+                            evt -> { if (loggingWindow.isDisplayed()) loggingWindow.hide(); }
+                        )).play());
+                        loggingWindow.show();
+                    }
+                }
             } else if (event.getEventType() == JoystickEvent.JOYSTICK_REMOVED) {
                 log("""
                 Joystick unplugged:
