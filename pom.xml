@@ -4,7 +4,7 @@
 
     <groupId>net.babelsoft</groupId>
     <artifactId>Negatron</artifactId>
-    <version>1.0.1</version><!-- macOS forbids any versions using the pattern 0.x.x when building a dmg/pkg pack -->
+    <version>1.0.2</version><!-- macOS forbids any versions using the pattern 0.x.x when building a dmg/pkg pack -->
     <packaging>jar</packaging>
 
     <name>Negatron</name>
