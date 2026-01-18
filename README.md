@@ -37,7 +37,7 @@ For any further information, please refer to the manual (Negatron Manual vXXX.pd
 
 ## LICENSE
 
-Copyright (C) 2015-2025 BabelSoft S.A.S.U.
+Copyright (C) 2015-2026 BabelSoft S.A.S.U.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -59,8 +59,9 @@ To compile Negatron:
 1. Create a root folder locally that will hold the source code of Negatron and all its dependencies.
 2. Within this root folder, download the source code of Negatron, Negatron-Preloader, Negatron-Bootstrap and OpenViewerFX using git. For OpenViewerFX, you must get it from https://github.com/xinyingho/ as this version includes important modifications not available from the original repository of this project.
 3. Ensure that you have the latest version of OpenJDK or Oracle Java SE, at least v11. This won't work on earlier versions of Java.
-4. The following instructions have been tested against Apache Netbeans 25. But it should also work with other IDEs.
+4. The following instructions have been tested against Apache Netbeans 28. But it should also work with other IDEs.
 5. Open all the 3 Java projects in Netbeans. *Do not import them*, simply use "File > Open Projects...". Netbeans may issue some warnings. Ignore them as they will be solved by compiling the projects.
+On macOS, Netbeans 28 cannot compile Negatron anymore for some reasons. You can use JetBrains' IntelliJ Idea 2025.3 as a working alternative to open the 3 Java projects. In this case, compile them by creating a new Maven configuration with the commands "clean install".
 6. Compile them in this order and you're done:
    1. OpenViewerFX
    2. Negatron-Preloader
